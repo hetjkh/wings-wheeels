@@ -348,18 +348,6 @@ const Navbar = ({ showContactButton = true }) => {
               </>
             )}
 
-            {/* Mobile Language Toggle */}
-            <div className="lg:hidden ml-2">
-              <Button
-                onClick={toggleLanguage}
-                variant="ghost"
-                size="icon"
-                className="text-black hover:bg-black/10 h-8 w-8"
-              >
-                <Globe size={16} />
-              </Button>
-            </div>
-
             {/* Mobile Menu Button */}
             <div className="lg:hidden">
               <Button
