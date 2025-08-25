@@ -112,10 +112,10 @@ const Navbar = ({ showContactButton = true }) => {
   };
 
   return (
-    <div className="relative z-50" style={{ zIndex: 50 }}>
+    <div style={{zIndex:50}}>
       {/* Top Contact Bar */}
       <div
-        className={`bg-black z-10 text-white py-2 px-4 text-sm transition-transform duration-300 ${
+        className={`bg-black z-30 text-white py-2 px-4 text-sm transition-transform duration-300 ${
           showTopBar ? "translate-y-0" : "-translate-y-full"
         } md:translate-y-0`}
       >
@@ -335,17 +335,7 @@ const Navbar = ({ showContactButton = true }) => {
                   </div>
                 </div>
 
-                {/* Mobile Contact Button - Links directly to contact page */}
-                <div className="lg:hidden">
-                  <Button
-                    onClick={() => router.push("/contact")}
-                    className="rounded-full bg-black text-white hover:bg-gray-800 h-8 px-4 text-xs font-medium transition-all duration-300"
-                    style={{ fontFamily: isRTL ? 'Arial, sans-serif' : 'inherit' }}
-                  >
-                    {currentTranslation.getInTouch}
-                  </Button>
-                </div>
-              </>
+                </>
             )}
 
             {/* Mobile Menu Button */}
