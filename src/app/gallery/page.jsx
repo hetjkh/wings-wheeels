@@ -1,0 +1,755 @@
+"use client";
+import React, { useState, useEffect } from "react";
+import { Play, ChevronLeft, ChevronRight } from "lucide-react";
+import Footer from "../reusable/footer";
+import Navbar from "../reusable/navbar";
+import Image from "next/image";
+import { Masonry } from "@/components/mansory";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+
+// Carousel slides data
+const heroSlides = [
+  {
+    id: 1,
+    backgroundImage: "https://images.pexels.com/photos/1271619/pexels-photo-1271619.jpeg?auto=compress&cs=tinysrgb&w=1920",
+    title: "EXCLUSIVE OFFERS",
+    subtitle: "Discover unbeatable deals on dream vacations. Limited-time offers on handpicked destinations worldwide.",
+    description: "Take advantage of our exclusive travel deals and special packages. From luxury getaways to budget-friendly adventures, we have the perfect offer for every traveler. Book now and create unforgettable memories."
+  },
+  {
+    id: 2,
+    backgroundImage: "/assets/offer.jpg"
+  },
+  {
+    id: 3,
+    backgroundImage: "https://images.pexels.com/photos/1591375/pexels-photo-1591375.jpeg?auto=compress&cs=tinysrgb&w=1920",
+    title: "EXCLUSIVE OFFERS",
+    subtitle: "Discover unbeatable deals on dream vacations. Limited-time offers on handpicked destinations worldwide.",
+    description: "Take advantage of our exclusive travel deals and special packages. From luxury getaways to budget-friendly adventures, we have the perfect offer for every traveler. Book now and create unforgettable memories."
+  },
+  {
+    id: 4,
+    backgroundImage: "https://images.pexels.com/photos/1591373/pexels-photo-1591373.jpeg?auto=compress&cs=tinysrgb&w=1920",
+    title: "EXCLUSIVE OFFERS",
+    subtitle: "Discover unbeatable deals on dream vacations. Limited-time offers on handpicked destinations worldwide.",
+    description: "Take advantage of our exclusive travel deals and special packages. From luxury getaways to budget-friendly adventures, we have the perfect offer for every traveler. Book now and create unforgettable memories."
+  }
+];
+
+// Location data with all images for each location
+const locationData = {
+  // Winter locations
+  winter: {
+    'Norway': {
+      title: "Northern Lights Adventure",
+      images: [
+        "/assets/gallery/winter/norway/1.png"
+      ]
+    },
+    'Czech Republic': {
+      title: "Prague Winter Magic",
+      images: [
+        "/assets/gallery/winter/republic/1.png"
+      ]
+    },
+    'Switzerland': {
+      title: "Swiss Alps Experience",
+      images: [
+        "/assets/gallery/winter/swiss/1.jpg"
+      ]
+    },
+    'Finland': {
+      title: "Lapland Wonderland",
+      images: [
+        "/assets/gallery/winter/finland/1.jpg",
+        "/assets/gallery/winter/finland/2.jpg",
+        "/assets/gallery/winter/finland/3.jpg",
+        "/assets/gallery/winter/finland/4.jpg",
+        "/assets/gallery/winter/finland/5.jpg",
+        "/assets/gallery/winter/finland/6.jpg",
+
+
+      ]
+    },
+    'Sweden': {
+      title: "Swedish Lapland Escape",
+      images: [
+        "/assets/gallery/winter/sweden/1.jpg"
+      ]
+    },
+    'France': {
+      title: "Alpine Charm in Chamonix",
+      images: [
+        "/assets/gallery/winter/france/1.jpg"
+      ]
+    },
+    'Austria': {
+      title: "Vienna Christmas Markets",
+      images: [
+        "/assets/gallery/winter/austria/1.jpg",
+        "/assets/gallery/winter/austria/2.jpg",
+        "/assets/gallery/winter/austria/3.jpg",
+        "/assets/gallery/winter/austria/4.jpg",
+        "/assets/gallery/winter/austria/5.jpg",
+        "/assets/gallery/winter/austria/6.jpg",
+
+
+      ]
+    },
+    'Canada': {
+      title: "Banff Snowy Escape",
+      images: [
+        "/assets/gallery/winter/canada/1.jpg"
+      ]
+    },
+    'Iceland': {
+      title: "Ice Cave Adventure",
+      images: [
+        "/assets/gallery/winter/iceland/1.jpg"
+      ]
+    },
+    'Japan': {
+      title: "Snowy Hokkaido Experience",
+      images: [
+        "/assets/gallery/winter/japan/1.jpg"
+      ]
+    }
+  },
+  // Summer locations
+  summer: {
+    'Spain': {
+      title: "Barcelona Cultural Journey",
+      images: [
+        "/assets/gallery/summer/spain/1.png",
+        "/assets/gallery/summer/spain/2.jpg",
+       
+        "/assets/gallery/summer/spain/4.jpg",
+        "/assets/gallery/summer/spain/5.jpg",
+        "/assets/gallery/summer/spain/6.jpg",
+        "/assets/gallery/summer/spain/7.jpg",
+
+      ]
+    },
+    'Greece': {
+      title: "Santorini Sunset Escape",
+      images: [
+        "/assets/gallery/summer/greece/1.jpg",
+        "/assets/gallery/summer/greece/2.jpg",
+        "/assets/gallery/summer/greece/3.JPG",
+        "/assets/gallery/summer/greece/4.jpg",
+        "/assets/gallery/summer/greece/5.jpg",
+        "/assets/gallery/summer/greece/6.jpg"
+      ]
+    },
+    'Italy': {
+      title: "Amalfi Coast Adventure",
+      images: [
+        "/assets/gallery/summer/itlay/1.jpg",
+         "/assets/gallery/summer/itlay/2.jpg",
+         "/assets/gallery/summer/itlay/3.jpg",
+         "/assets/gallery/summer/itlay/4.jpg",
+         "/assets/gallery/summer/itlay/5.jpg",
+         "/assets/gallery/summer/itlay/6.jpg",
+
+      ]
+    },
+    'Indonesia': {
+      title: "Bali Island Paradise",
+      images: [
+        "/assets/gallery/summer/indonesia/1.jpg",
+         "/assets/gallery/summer/indonesia/11.jpg",
+          "/assets/gallery/summer/indonesia/2.jpg",
+           "/assets/gallery/summer/indonesia/3.jpg",
+            "/assets/gallery/summer/indonesia/4.jpg",
+            "/assets/gallery/summer/indonesia/5.jpg",
+      
+      ]
+    },
+    'Portugal': {
+      title: "Lisbon Coastal Charm",
+      images: [
+        "/assets/gallery/summer/portugal/1.jpg",
+        "/assets/gallery/summer/portugal/2.jpg",
+        "/assets/gallery/summer/portugal/4.jpg",
+        "/assets/gallery/summer/portugal/5.jpg",
+        "/assets/gallery/summer/portugal/6.jpg",
+        "/assets/gallery/summer/portugal/7.jpg",
+
+      ]
+    },
+    'Costa Rica': {
+      title: "Costa Rican Rainforest Retreat",
+      images: [
+        "/assets/gallery/summer/consta-rica/1.jpg",
+        "/assets/gallery/summer/consta-rica/2.jpg",
+        "/assets/gallery/summer/consta-rica/3.jpg",
+        "/assets/gallery/summer/consta-rica/4.jpg",
+        "/assets/gallery/summer/consta-rica/5.jpg",
+        "/assets/gallery/summer/consta-rica/6.jpg"
+      ]
+    },
+    'South Africa': {
+      title: "Cape Town Coastal Adventure",
+      images: [
+        "/assets/gallery/summer/south-africa/1.jpg",
+        "/assets/gallery/summer/south-africa/2.jpg",
+        "/assets/gallery/summer/south-africa/3.jpg",
+        "/assets/gallery/summer/south-africa/4.jpg",
+        "/assets/gallery/summer/south-africa/5.jpg",
+        "/assets/gallery/summer/south-africa/6.jpg",
+
+      ]
+    },
+    'New Zealand': {
+      title: "New Zealand Scenic Escape",
+      images: [
+        "/assets/gallery/summer/new-zeland/1.jpg",
+        "/assets/gallery/summer/new-zeland/2.jpg",
+        "/assets/gallery/summer/new-zeland/3.jpg",
+        "/assets/gallery/summer/new-zeland/4.jpg",
+
+      ]
+    },
+    'Maldives': {
+      title: "Maldives Tropical Bliss",
+      images: [
+        "/assets/gallery/summer/maldives/1.jpg",
+        "/assets/gallery/summer/maldives/2.jpg",
+        "/assets/gallery/summer/maldives/3.jpg",
+        "/assets/gallery/summer/maldives/4.jpg",
+        "/assets/gallery/summer/maldives/5.jpg",
+        "/assets/gallery/summer/maldives/6.jpg",
+
+      ]
+    }
+  }
+};
+
+// Create gallery data for the main grid view
+const createGalleryData = () => {
+  const data = [];
+  
+  // Add winter locations
+  Object.entries(locationData.winter).forEach(([location, info]) => {
+    data.push({
+      id: `winter-${location.toLowerCase().replace(/\s+/g, '-')}`,
+      image: info.images[0], // Use first image as thumbnail
+      title: info.title,
+      location,
+      category: "WINTER",
+      allImages: info.images,
+      height: 380 + Math.floor(Math.random() * 50),
+    });
+  });
+  
+  // Add summer locations
+  Object.entries(locationData.summer).forEach(([location, info]) => {
+    data.push({
+      id: `summer-${location.toLowerCase().replace(/\s+/g, '-')}`,
+      image: info.images[0], // Use first image as thumbnail
+      title: info.title,
+      location,
+      category: "SUMMER VACATION",
+      allImages: info.images,
+      height: 380 + Math.floor(Math.random() * 50),
+    });
+  });
+  
+  return data;
+};
+
+const galleryData = createGalleryData();
+
+const locations = [
+  "All",
+  "WINTER",
+  "SUMMER VACATION",
+];
+
+const TravelGallery = () => {
+  const [activeLocation, setActiveLocation] = useState("All");
+  const [isVisible, setIsVisible] = useState(false);
+  const [selectedOffer, setSelectedOffer] = useState(null);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [isOfferDialogOpen, setIsOfferDialogOpen] = useState(false);
+  const [showForm, setShowForm] = useState(false);
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    date: "",
+    message: ""
+  });
+
+  useEffect(() => setIsVisible(true), []);
+
+  // Auto-slide carousel
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
+    }, 5000); // Change slide every 5 seconds
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const filteredData =
+    activeLocation === "All"
+      ? galleryData
+      : galleryData.filter((item) => item.category === activeLocation);
+
+  const handleBookNow = () => {
+    setShowForm(true);
+    // Smooth scroll to form when it slides in
+    setTimeout(() => {
+      const formElement = document.getElementById('booking-form');
+      if (formElement) {
+        formElement.scrollIntoView({ behavior: 'smooth' });
+      }
+    }, 100);
+  };
+
+  const handleCarouselImageClick = (imageIndex) => {
+    setCurrentImageIndex(imageIndex);
+    setShowForm(false); // Hide form when changing images
+  };
+
+  const handleSeeOffers = (item) => {
+    setSelectedOffer(item);
+    setCurrentImageIndex(0); // Reset to first image when opening a new location
+    setShowForm(false);
+    setIsOfferDialogOpen(true);
+  };
+
+  const handleFormSubmit = (e) => {
+    e.preventDefault();
+    console.log("Form submitted:", { ...formData, destination: selectedOffer?.title });
+    setFormData({ name: "", email: "", phone: "" });
+    setIsOfferDialogOpen(false);
+    setSelectedOffer(null);
+  };
+
+  const handleInputChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  };
+
+  const nextSlide = () => {
+    setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
+  };
+
+  const prevSlide = () => {
+    setCurrentSlide((prev) => (prev - 1 + heroSlides.length) % heroSlides.length);
+  };
+
+  const goToSlide = (index) => {
+    setCurrentSlide(index);
+  };
+
+  return (
+    <div className="relative w-full bg-white min-h-screen">
+      {/* Hero Carousel Section */}
+      <div className="relative w-full min-h-screen overflow-hidden">
+        {/* Fixed Navbar - positioned absolutely over the carousel */}
+        <div className="absolute top-0 left-0 w-full z-30">
+          <Navbar />
+        </div>
+
+        {/* Carousel Container */}
+        <div 
+          className="flex transition-transform duration-700 ease-in-out h-screen"
+          style={{ transform: `translateX(-${currentSlide * 100}%)` }}
+        >
+          {heroSlides.map((slide, index) => (
+            <div
+              key={slide.id}
+              className="relative w-full min-h-screen flex-shrink-0 bg-cover bg-center bg-no-repeat"
+              style={{
+                backgroundImage: `url(${slide.backgroundImage})`,
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+                backgroundRepeat: "no-repeat",
+              }}
+            >
+              <div className="relative z-20 min-h-screen flex flex-col w-full">
+                {/* Main Content */}
+                <div className="flex-1 flex items-center justify-center py-8">
+                  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="text-center px-4 sm:px-8">
+                      {/* Main Heading */}
+                      <h1
+                        className={`mb-6 uppercase GeistBlack text-4xl md:text-7xl tracking-wider leading-tight text-white transition-all duration-1000 ${
+                          isVisible
+                            ? "opacity-100 translate-y-0"
+                            : "opacity-0 translate-y-4"
+                        }`}
+                      >
+                        {slide.title}
+                      </h1>
+
+                      {/* Subtitle */}
+                      <div
+                        className={`mb-6 transition-all duration-1200 Poppins delay-300 ${
+                          isVisible
+                            ? "opacity-100 translate-y-0"
+                            : "opacity-0 translate-y-4"
+                        }`}
+                      >
+                        <h2 className="text-sm PoppinBold md:text-xl max-w-3xl text-gray-200 mb-4 tracking-wide">
+                          {slide.subtitle}
+                        </h2>
+                      </div>
+
+                      {/* Description */}
+                      <p
+                        className={`Poppins text-sm md:text-lg leading-relaxed mb-8 max-w-3xl mx-auto text-gray-100 transition-all duration-1400 delay-500 ${
+                          isVisible
+                            ? "opacity-100 translate-y-0"
+                            : "opacity-0 translate-y-4"
+                        }`}
+                      >
+                        {slide.description}
+                      </p>
+
+                      <div className="absolute z-0 top-0 left-0 w-[100vw] h-full bg-gradient-to-b from-white/80 via-transparent to-transparent"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Navigation Arrows */}
+        <button
+          onClick={prevSlide}
+          className="absolute left-4 top-1/2 transform -translate-y-1/2 z-30 bg-black/30 hover:bg-black/50 text-white p-2 rounded-full transition-all duration-300 backdrop-blur-sm"
+        >
+          <ChevronLeft className="h-6 w-6" />
+        </button>
+
+        <button
+          onClick={nextSlide}
+          className="absolute right-4 top-1/2 transform -translate-y-1/2 z-30 bg-black/30 hover:bg-black/50 text-white p-2 rounded-full transition-all duration-300 backdrop-blur-sm"
+        >
+          <ChevronRight className="h-6 w-6" />
+        </button>
+
+        {/* Dot Indicators */}
+        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-30 flex space-x-2">
+          {heroSlides.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => goToSlide(index)}
+              className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                index === currentSlide 
+                  ? 'bg-white scale-125' 
+                  : 'bg-white/50 hover:bg-white/75'
+              }`}
+            />
+          ))}
+        </div>
+      </div>
+
+      {/* Gallery Section */}
+      <div className="w-full bg-gradient-to-br from-gray-50 to-gray-100 py-20">
+        <div className="max-w-7xl mx-auto px-6 space-y-14">
+          {/* Header */}
+          <div className="text-center">
+            <h2 className="text-4xl md:text-5xl font-bold GeistBold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent mb-4">
+              Limited Time Travel Deals
+            </h2>
+            <p className="text-lg text-gray-600 Poppins max-w-2xl mx-auto">
+              Explore our exclusive offers and save big on your next adventure
+            </p>
+          </div>
+
+          {/* Filters */}
+          <div className="flex flex-wrap justify-center gap-3">
+            {locations.map((loc) => (
+              <button
+                key={loc}
+                onClick={() => setActiveLocation(loc)}
+                className={`px-5 py-2 rounded-full font-medium transition-all duration-300 ${
+                  activeLocation === loc
+                    ? "bg-black text-white shadow-md scale-105"
+                    : "bg-white text-gray-700 hover:bg-gray-100 border"
+                }`}
+              >
+                {loc}
+              </button>
+            ))}
+          </div>
+
+          {/* Masonry Grid */}
+          <Masonry>
+            {filteredData.map((item, i) => (
+              <div
+                key={item.id}
+                className="group bg-white rounded-xl border overflow-hidden transition-all duration-300 flex flex-col h-full"
+              >
+                <div className="relative overflow-hidden flex-1">
+                  <Image
+                    src={item.image}
+                    alt={item.title}
+                    width={500}
+                    height={500}
+                    className="w-full h-full object-cover transition-all duration-500"
+                    loading="lazy"
+                  />
+                </div>
+
+                {/* Card Body */}
+                <div className="p-4">
+                  <h3 className="font-semibold text-gray-900 text-lg mb-1">
+                    {item.title}
+                  </h3>
+                  <p className="text-gray-600 text-sm mb-3">{item.location}</p>
+                  <Button
+                    onClick={() => handleSeeOffers(item)}
+                    className="w-full bg-black hover:bg-gray-800 text-white transition-all duration-300 font-medium py-2"
+                  >
+                    See Offers
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </Masonry>
+
+          {/* Info */}
+          <div className="text-center text-gray-600">
+            Showing {filteredData.length} destinations
+            {activeLocation !== "All" && ` in ${activeLocation}`}
+          </div>
+        </div>
+      </div>
+
+      {/* Offers Dialog */}
+      <Dialog open={isOfferDialogOpen} onOpenChange={(open) => {
+        setIsOfferDialogOpen(open);
+        if (!open) setShowForm(false);
+      }}>
+        <DialogContent className="p-0 max-w-6xl w-full h-[90vh] max-h-[800px] overflow-hidden">
+          {selectedOffer && (
+            <div className="relative h-full flex flex-col">
+              {/* Full Width Image with Overlay */}
+              <div className="relative w-full flex-1 overflow-hidden">
+                <div className={`absolute inset-0 transition-all duration-500 ${showForm ? 'w-1/2' : 'w-full'}`}>
+                  <Image
+                    src={selectedOffer.allImages[currentImageIndex]}
+                    alt={`${selectedOffer.title} - ${currentImageIndex + 1}`}
+                    fill
+                    className="object-cover w-full h-full"
+                    priority
+                    sizes="(max-width: 768px) 100vw, 50vw"
+                    style={{
+                      objectPosition: 'center center',
+                      width: '100%',
+                      height: '100%',
+                    }}
+                  />
+                </div>
+                {/* Gradient Overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent"></div>
+                
+                {/* Content Overlay */}
+                <div className={`absolute bottom-0 left-0 p-8 text-white transition-all duration-500 ${showForm ? 'w-1/2' : 'w-full'}`}>
+                  <h3 className="text-2xl md:text-3xl font-bold">{selectedOffer.title}</h3>
+                  <p className="text-gray-200">{selectedOffer.location}</p>
+                  <div className="mt-2">
+                    <div className="flex items-center gap-3">
+                      <span className="text-gray-300 line-through">AED 2,999</span>
+                      <span className="text-3xl font-bold text-white">AED 1,999</span>
+                      <span className="bg-green-500 text-white text-xs font-bold px-2 py-1 rounded">
+                        Save 33%
+                      </span>
+                    </div>
+                    <p className="text-xs text-gray-300 mt-2 ml-1 mb-3">
+                      * Prices can vary based on season and availability.
+                    </p>
+                  </div>
+                  
+                  <div className="absolute bottom-8 right-8">
+                    {!showForm && (
+                      <button
+                        onClick={handleBookNow}
+                        className="bg-white text-black hover:bg-gray-100 font-semibold py-3 px-8 rounded-full shadow-lg transition-all duration-300 transform hover:scale-105 flex items-center gap-2"
+                      >
+                        <span>Book Now</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                          <path fillRule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
+                        </svg>
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+              
+              {/* Bottom Carousel */}
+              <div className="w-full h-36 bg-gray-100 border-t border-gray-200 relative z-10">
+                <div className="h-full w-full px-4 flex items-center">
+                  <div className="w-full grid grid-cols-5 gap-4">
+                    {selectedOffer?.allImages?.slice(0, 5).map((image, index) => (
+                      <div 
+                        key={`${selectedOffer.id}-${index}`}
+                        className={`relative h-28 rounded-lg overflow-hidden border-2 transition-all cursor-pointer ${
+                          index === currentImageIndex 
+                            ? 'border-blue-500 scale-105' 
+                            : 'border-transparent hover:border-blue-500'
+                        }`}
+                        onClick={() => handleCarouselImageClick(index)}
+                      >
+                        <Image
+                          src={image}
+                          alt={`${selectedOffer.title} - ${index + 1}`}
+                          fill
+                          sizes="(max-width: 768px) 20vw, 200px"
+                          className="object-cover"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                {/* Custom scrollbar styling */}
+                <style jsx>{`
+                  .overflow-x-auto::-webkit-scrollbar {
+                    height: 6px;
+                  }
+                  .overflow-x-auto::-webkit-scrollbar-track {
+                    background: #f1f1f1;
+                    border-radius: 3px;
+                  }
+                  .overflow-x-auto::-webkit-scrollbar-thumb {
+                    background: #888;
+                    border-radius: 3px;
+                  }
+                  .overflow-x-auto::-webkit-scrollbar-thumb:hover {
+                    background: #555;
+                  }
+                `}</style>
+              </div>
+              
+              {/* Sliding Form Panel */}
+              <div 
+                id="booking-form"
+                className={`absolute top-0 right-0 h-[calc(100%-8rem)] w-1/2 bg-white shadow-xl transition-all duration-500 ease-in-out ${
+                  showForm ? 'translate-x-0' : 'translate-x-full'
+                }`}
+              >
+                <div className="p-8 h-full overflow-y-auto pb-24">
+                  <button
+                    onClick={() => setShowForm(false)}
+                    className="absolute top-4 left-4 text-gray-500 hover:text-gray-700"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                    </svg>
+                  </button>
+                  
+                  <div className="text-center mb-8">
+                    <h2 className="text-2xl font-bold text-gray-800">Book Your Adventure</h2>
+                    <p className="text-gray-500 mt-1">Fill in your details to secure your booking</p>
+                  </div>
+                  
+                  <form onSubmit={handleFormSubmit} className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="name" className="text-sm font-medium text-gray-700">Full Name</Label>
+                        <Input
+                          id="name"
+                          name="name"
+                          type="text"
+                          value={formData.name}
+                          onChange={handleInputChange}
+                          required
+                          className="bg-white"
+                          placeholder="John Doe"
+                        />
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <Label htmlFor="email" className="text-sm font-medium text-gray-700">Email</Label>
+                        <Input
+                          id="email"
+                          name="email"
+                          type="email"
+                          value={formData.email}
+                          onChange={handleInputChange}
+                          required
+                          className="bg-white"
+                          placeholder="johndoe@example.com"
+                        />
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <Label htmlFor="phone" className="text-sm font-medium text-gray-700">Phone Number</Label>
+                        <Input
+                          id="phone"
+                          name="phone"
+                          type="tel"
+                          value={formData.phone}
+                          onChange={handleInputChange}
+                          required
+                          className="bg-white"
+                          placeholder="+1 234 567 8900"
+                        />
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <Label htmlFor="date" className="text-sm font-medium text-gray-700">Travel Date</Label>
+                        <Input
+                          id="date"
+                          name="date"
+                          type="date"
+                          value={formData.date}
+                          onChange={handleInputChange}
+                          required
+                          className="bg-white"
+                        />
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="message" className="text-sm font-medium text-gray-700">Special Requests</Label>
+                      <textarea
+                        id="message"
+                        name="message"
+                        value={formData.message}
+                        onChange={handleInputChange}
+                        rows="3"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-black focus:border-black sm:text-sm"
+                        placeholder="Any special requirements or requests..."
+                      ></textarea>
+                    </div>
+                    
+                    <div className="pt-4">
+                      <Button 
+                        type="submit" 
+                        className="w-full bg-black hover:bg-gray-800 text-white py-3 text-base font-medium rounded-md shadow-md transform transition-all duration-300 hover:scale-[1.02]"
+                      >
+                        Confirm Booking
+                      </Button>
+                    </div>
+                    
+                    <p className="text-xs text-gray-500 text-center mt-4">
+                      Your personal information is safe with us. We'll only use it to process your booking.
+                    </p>
+                  </form>
+                </div>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      <Footer />
+    </div>
+  );
+};
+
+export default TravelGallery;
