@@ -112,10 +112,10 @@ const Navbar = ({ showContactButton = true }) => {
   };
 
   return (
-    <div>
+    <div className="relative z-50" style={{ zIndex: 50 }}>
       {/* Top Contact Bar */}
       <div
-        className={`bg-black z-30 text-white py-2 px-4 text-sm transition-transform duration-300 ${
+        className={`bg-black z-10 text-white py-2 px-4 text-sm transition-transform duration-300 ${
           showTopBar ? "translate-y-0" : "-translate-y-full"
         } md:translate-y-0`}
       >
