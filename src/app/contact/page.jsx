@@ -1910,17 +1910,56 @@ const ContactUsPage = () => {
                         <Label className="text-gray-600 mb-1 text-xs font-semibold uppercase block">
                           Tell us about your requirements * <span className="text-gray-400 font-normal">(10-1000 characters)</span>
                         </Label>
-                        <Textarea
-                          name="message"
-                          value={formData.message}
-                          onChange={handleInputChange}
-                          rows={4}
-                          placeholder="Please provide details about your travel requirements, special requests, budget considerations, or any questions you have..."
-                          className={`rounded-lg bg-gray-50 border transition-all duration-300 hover:bg-gray-100 hover:border-blue-600 hover:shadow-md focus:bg-white focus:border-blue-600 focus:shadow-lg resize-none ${
-                            errors.message ? 'border-red-300 bg-red-50' : 'border-gray-200'
-                          }`}
-                          maxLength={1000}
-                        />
+                        <div className="relative">
+                          <textarea
+                            name="message"
+                            value={formData.message}
+                            onChange={handleInputChange}
+                            rows={4}
+                            placeholder="Please provide details about your travel requirements, special requests, budget considerations, or any questions you have..."
+                            style={{
+                              minHeight: '120px',
+                              maxHeight: '300px',
+                              overflowY: 'auto',
+                              resize: 'none',
+                              lineHeight: '1.5rem',
+                              padding: '0.5rem 0.75rem',
+                              boxSizing: 'border-box',
+                              width: '100%',
+                              borderRadius: '0.5rem',
+                              backgroundColor: errors.message ? '#FEF2F2' : '#F9FAFB',
+                              border: errors.message ? '1px solid #FCA5A5' : '1px solid #E5E7EB',
+                              transition: 'all 0.3s',
+                              outline: 'none',
+                              fontFamily: 'inherit',
+                              fontSize: '0.875rem'
+                            }}
+                            onFocus={(e) => {
+                              e.target.style.backgroundColor = '#FFFFFF';
+                              e.target.style.borderColor = '#2563EB';
+                              e.target.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1)';
+                            }}
+                            onBlur={(e) => {
+                              e.target.style.backgroundColor = errors.message ? '#FEF2F2' : '#F9FAFB';
+                              e.target.style.borderColor = errors.message ? '#FCA5A5' : '#E5E7EB';
+                              e.target.style.boxShadow = 'none';
+                            }}
+                            onMouseEnter={(e) => {
+                              if (document.activeElement !== e.target) {
+                                e.target.style.backgroundColor = errors.message ? '#FEE2E2' : '#F3F4F6';
+                                e.target.style.borderColor = errors.message ? '#FCA5A5' : '#2563EB';
+                              }
+                            }}
+                            onMouseLeave={(e) => {
+                              if (document.activeElement !== e.target) {
+                                e.target.style.backgroundColor = errors.message ? '#FEF2F2' : '#F9FAFB';
+                                e.target.style.borderColor = errors.message ? '#FCA5A5' : '#E5E7EB';
+                                e.target.style.boxShadow = 'none';
+                              }
+                            }}
+                            maxLength={1000}
+                          />
+                        </div>
                         {errors.message && (
                           <p className="mt-1 text-xs text-red-600">{errors.message}</p>
                         )}

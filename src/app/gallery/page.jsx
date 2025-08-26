@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Play, ChevronLeft, ChevronRight } from "lucide-react";
+import { Play, ChevronLeft, ChevronRight, X } from "lucide-react";
 import Footer from "../reusable/footer";
 import Navbar from "../reusable/navbar";
 import Image from "next/image";
@@ -534,12 +534,23 @@ const TravelGallery = () => {
         setIsOfferDialogOpen(open);
         if (!open) setShowForm(false);
       }}>
-        <DialogContent className="p-0 max-w-6xl w-full h-[90vh] max-h-[800px] overflow-hidden">
+        <DialogContent className="p-0 max-w-6xl w-full h-[90vh] max-h-[800px] overflow-hidden sm:max-w-[95vw] sm:h-[95vh] sm:max-h-none">
           {selectedOffer && (
             <div className="relative h-full flex flex-col">
+              {/* Mobile Close Button */}
+              <button
+                onClick={() => {
+                  setIsOfferDialogOpen(false);
+                  setShowForm(false);
+                }}
+                className="absolute top-4 right-4 z-50 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition-all duration-300 backdrop-blur-sm sm:block md:hidden"
+              >
+                <X className="h-5 w-5" />
+              </button>
+
               {/* Full Width Image with Overlay */}
               <div className="relative w-full flex-1 overflow-hidden">
-                <div className={`absolute inset-0 transition-all duration-500 ${showForm ? 'w-1/2' : 'w-full'}`}>
+                <div className={`absolute inset-0 transition-all duration-500 ${showForm ? 'md:w-1/2 sm:w-full' : 'w-full'}`}>
                   <Image
                     src={selectedOffer.allImages[currentImageIndex]}
                     alt={`${selectedOffer.title} - ${currentImageIndex + 1}`}
@@ -558,13 +569,13 @@ const TravelGallery = () => {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent"></div>
                 
                 {/* Content Overlay */}
-                <div className={`absolute bottom-0 left-0 p-8 text-white transition-all duration-500 ${showForm ? 'w-1/2' : 'w-full'}`}>
-                  <h3 className="text-2xl md:text-3xl font-bold">{selectedOffer.title}</h3>
-                  <p className="text-gray-200">{selectedOffer.location}</p>
+                <div className={`absolute bottom-0 left-0 p-4 md:p-8 text-white transition-all duration-500 ${showForm ? 'md:w-1/2 sm:w-full' : 'w-full'}`}>
+                  <h3 className="text-xl sm:text-2xl md:text-3xl font-bold">{selectedOffer.title}</h3>
+                  <p className="text-gray-200 text-sm sm:text-base">{selectedOffer.location}</p>
                   <div className="mt-2">
-                    <div className="flex items-center gap-3">
-                      <span className="text-gray-300 line-through">AED 2,999</span>
-                      <span className="text-3xl font-bold text-white">AED 1,999</span>
+                    <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
+                      <span className="text-gray-300 line-through text-sm sm:text-base">AED 2,999</span>
+                      <span className="text-2xl sm:text-3xl font-bold text-white">AED 1,999</span>
                       <span className="bg-green-500 text-white text-xs font-bold px-2 py-1 rounded">
                         Save 33%
                       </span>
@@ -574,14 +585,14 @@ const TravelGallery = () => {
                     </p>
                   </div>
                   
-                  <div className="absolute bottom-8 right-8">
+                  <div className={`${showForm ? 'sm:relative sm:bottom-0 sm:right-0' : 'absolute bottom-4 sm:bottom-8 right-4 sm:right-8'}`}>
                     {!showForm && (
                       <button
                         onClick={handleBookNow}
-                        className="bg-white text-black hover:bg-gray-100 font-semibold py-3 px-8 rounded-full shadow-lg transition-all duration-300 transform hover:scale-105 flex items-center gap-2"
+                        className="bg-white text-black hover:bg-gray-100 font-semibold py-2 sm:py-3 px-6 sm:px-8 rounded-full shadow-lg transition-all duration-300 transform hover:scale-105 flex items-center gap-2 text-sm sm:text-base"
                       >
                         <span>Book Now</span>
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 sm:h-5 sm:w-5" viewBox="0 0 20 20" fill="currentColor">
                           <path fillRule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
                         </svg>
                       </button>
@@ -591,28 +602,31 @@ const TravelGallery = () => {
               </div>
               
               {/* Bottom Carousel */}
-              <div className="w-full h-36 bg-gray-100 border-t border-gray-200 relative z-10">
-                <div className="h-full w-full px-4 flex items-center">
-                  <div className="w-full grid grid-cols-5 gap-4">
-                    {selectedOffer?.allImages?.slice(0, 5).map((image, index) => (
-                      <div 
-                        key={`${selectedOffer.id}-${index}`}
-                        className={`relative h-28 rounded-lg overflow-hidden border-2 transition-all cursor-pointer ${
-                          index === currentImageIndex 
-                            ? 'border-blue-500 scale-105' 
-                            : 'border-transparent hover:border-blue-500'
-                        }`}
-                        onClick={() => handleCarouselImageClick(index)}
-                      >
-                        <Image
-                          src={image}
-                          alt={`${selectedOffer.title} - ${index + 1}`}
-                          fill
-                          sizes="(max-width: 768px) 20vw, 200px"
-                          className="object-cover"
-                        />
-                      </div>
-                    ))}
+              <div className="w-full h-24 sm:h-36 bg-gray-100 border-t border-gray-200 relative z-10">
+                <div className="h-full w-full flex items-center">
+                  <div className="w-full px-2 sm:px-4">
+                    <div className="flex justify-between w-full">
+                      {selectedOffer?.allImages?.slice(0, 5).map((image, index) => (
+                        <div 
+                          key={`${selectedOffer.id}-${index}`}
+                          className={`relative h-16 w-16 sm:h-28 sm:w-full rounded-lg overflow-hidden border-2 transition-all cursor-pointer flex-shrink-0 mx-1 ${
+                            index === currentImageIndex 
+                              ? 'border-blue-500 scale-105' 
+                              : 'border-transparent hover:border-blue-500'
+                          }`}
+                          style={{ flex: '1 0 auto', maxWidth: 'calc(20% - 8px)' }}
+                          onClick={() => handleCarouselImageClick(index)}
+                        >
+                          <Image
+                            src={image}
+                            alt={`${selectedOffer.title} - ${index + 1}`}
+                            fill
+                            sizes="(max-width: 768px) 64px, 112px"
+                            className="object-cover"
+                          />
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
                 {/* Custom scrollbar styling */}
@@ -637,27 +651,27 @@ const TravelGallery = () => {
               {/* Sliding Form Panel */}
               <div 
                 id="booking-form"
-                className={`absolute top-0 right-0 h-[calc(100%-8rem)] w-1/2 bg-white shadow-xl transition-all duration-500 ease-in-out ${
-                  showForm ? 'translate-x-0' : 'translate-x-full'
+                className={`absolute top-0 right-0 h-[calc(100%-6rem)] sm:h-[calc(100%-9rem)] md:h-[calc(100%-8rem)] w-full sm:w-full md:w-1/2 bg-white shadow-xl transition-all duration-500 ease-in-out ${
+                  showForm ? 'translate-x-0 sm:translate-y-0' : 'translate-x-full sm:translate-y-full md:translate-y-0 md:translate-x-full'
                 }`}
               >
-                <div className="p-8 h-full overflow-y-auto pb-24">
+                <div className="p-4 sm:p-6 md:p-8 h-full overflow-y-auto pb-16 sm:pb-20 md:pb-24">
                   <button
                     onClick={() => setShowForm(false)}
-                    className="absolute top-4 left-4 text-gray-500 hover:text-gray-700"
+                    className="absolute top-3 sm:top-4 left-3 sm:left-4 text-gray-500 hover:text-gray-700 p-1"
                   >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                     </svg>
                   </button>
                   
-                  <div className="text-center mb-8">
-                    <h2 className="text-2xl font-bold text-gray-800">Book Your Adventure</h2>
-                    <p className="text-gray-500 mt-1">Fill in your details to secure your booking</p>
+                  <div className="text-center mb-6 sm:mb-8 mt-8 sm:mt-4">
+                    <h2 className="text-xl sm:text-2xl font-bold text-gray-800">Book Your Adventure</h2>
+                    <p className="text-gray-500 mt-1 text-sm sm:text-base">Fill in your details to secure your booking</p>
                   </div>
                   
-                  <form onSubmit={handleFormSubmit} className="space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <form onSubmit={handleFormSubmit} className="space-y-3 sm:space-y-4">
+                    <div className="grid grid-cols-1 gap-3 sm:gap-4">
                       <div className="space-y-2">
                         <Label htmlFor="name" className="text-sm font-medium text-gray-700">Full Name</Label>
                         <Input
@@ -667,7 +681,7 @@ const TravelGallery = () => {
                           value={formData.name}
                           onChange={handleInputChange}
                           required
-                          className="bg-white"
+                          className="bg-white h-10 sm:h-11"
                           placeholder="John Doe"
                         />
                       </div>
@@ -681,7 +695,7 @@ const TravelGallery = () => {
                           value={formData.email}
                           onChange={handleInputChange}
                           required
-                          className="bg-white"
+                          className="bg-white h-10 sm:h-11"
                           placeholder="johndoe@example.com"
                         />
                       </div>
@@ -695,7 +709,7 @@ const TravelGallery = () => {
                           value={formData.phone}
                           onChange={handleInputChange}
                           required
-                          className="bg-white"
+                          className="bg-white h-10 sm:h-11"
                           placeholder="+1 234 567 8900"
                         />
                       </div>
@@ -709,7 +723,7 @@ const TravelGallery = () => {
                           value={formData.date}
                           onChange={handleInputChange}
                           required
-                          className="bg-white"
+                          className="bg-white h-10 sm:h-11"
                         />
                       </div>
                     </div>
@@ -722,21 +736,21 @@ const TravelGallery = () => {
                         value={formData.message}
                         onChange={handleInputChange}
                         rows="3"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-black focus:border-black sm:text-sm"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-black focus:border-black sm:text-sm text-sm resize-none"
                         placeholder="Any special requirements or requests..."
                       ></textarea>
                     </div>
                     
-                    <div className="pt-4">
+                    <div className="pt-3 sm:pt-4">
                       <Button 
                         type="submit" 
-                        className="w-full bg-black hover:bg-gray-800 text-white py-3 text-base font-medium rounded-md shadow-md transform transition-all duration-300 hover:scale-[1.02]"
+                        className="w-full bg-black hover:bg-gray-800 text-white py-2.5 sm:py-3 text-sm sm:text-base font-medium rounded-md shadow-md transform transition-all duration-300 hover:scale-[1.02]"
                       >
                         Confirm Booking
                       </Button>
                     </div>
                     
-                    <p className="text-xs text-gray-500 text-center mt-4">
+                    <p className="text-xs text-gray-500 text-center mt-3 sm:mt-4">
                       Your personal information is safe with us. We'll only use it to process your booking.
                     </p>
                   </form>
