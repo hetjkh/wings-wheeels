@@ -14,7 +14,7 @@ import { Label } from "@/components/ui/label";
 const heroSlides = [
   {
     id: 1,
-    backgroundImage: "https://images.pexels.com/photos/1271619/pexels-photo-1271619.jpeg?auto=compress&cs=tinysrgb&w=1920",
+    backgroundImage: "https://images.unsplash.com/photo-1469474968028-56623f02e42e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1920&q=80",
     title: "EXCLUSIVE OFFERS",
     subtitle: "Discover unbeatable deals on dream vacations. Limited-time offers on handpicked destinations worldwide.",
     description: "Take advantage of our exclusive travel deals and special packages. From luxury getaways to budget-friendly adventures, we have the perfect offer for every traveler. Book now and create unforgettable memories."
