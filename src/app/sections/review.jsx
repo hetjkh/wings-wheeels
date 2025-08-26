@@ -15,7 +15,7 @@ const reviews = [
     id: 2,
     name: "Ankit Mehta",
     location: "Europe Tour",
-    rating: 5,
+    rating: 4,
     review:
       "A well-planned tour from start to finish. I didn't have to worry about a thing. Great support even during the trip!",
     image:
@@ -25,7 +25,7 @@ const reviews = [
     id: 3,
     name: "Fatima Ali",
     location: "Maldives",
-    rating: 5,
+    rating: 4,
     review:
       "Smooth booking, great support, stress-free trip. Highly recommend Wings & Wheels!",
     image:
@@ -35,7 +35,7 @@ const reviews = [
     id: 4,
     name: "Sarah Johnson",
     location: "Thailand",
-    rating: 5,
+    rating: 3,
     review:
       "Exceptional service and attention to detail. Made our honeymoon absolutely perfect!",
     image:

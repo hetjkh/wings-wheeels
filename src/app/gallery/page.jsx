@@ -46,19 +46,38 @@ const locationData = {
     'Norway': {
       title: "Northern Lights Adventure",
       images: [
-        "/assets/gallery/winter/norway/1.png"
+        "/assets/gallery/winter/norway/1.png",
+          "/assets/gallery/winter/norway/1.jpg",
+          "/assets/gallery/winter/norway/2.jpg",
+          "/assets/gallery/winter/norway/4.jpg",
+          "/assets/gallery/winter/norway/5.jpg",
+          "/assets/gallery/winter/norway/6.jpg",
       ]
     },
     'Czech Republic': {
       title: "Prague Winter Magic",
       images: [
-        "/assets/gallery/winter/republic/1.png"
+        "/assets/gallery/winter/republic/1.png",
+        "/assets/gallery/winter/republic/2.jpg",
+        "/assets/gallery/winter/republic/3.jpg",
+        "/assets/gallery/winter/republic/4.jpg",
+        "/assets/gallery/winter/republic/5.jpg",
+        "/assets/gallery/winter/republic/6.jpg",
+
+
       ]
     },
     'Switzerland': {
       title: "Swiss Alps Experience",
       images: [
-        "/assets/gallery/winter/swiss/1.jpg"
+        "/assets/gallery/winter/swiss/1.jpg",
+        "/assets/gallery/winter/swiss/2.jpg",
+        "/assets/gallery/winter/swiss/3.jpg",
+        "/assets/gallery/winter/swiss/4.jpg",
+        "/assets/gallery/winter/swiss/5.jpg",
+        "/assets/gallery/winter/swiss/6.jpg",
+
+
       ]
     },
     'Finland': {
@@ -77,13 +96,27 @@ const locationData = {
     'Sweden': {
       title: "Swedish Lapland Escape",
       images: [
-        "/assets/gallery/winter/sweden/1.jpg"
+        "/assets/gallery/winter/sweden/1.jpg",
+        "/assets/gallery/winter/sweden/2.jpg",
+        "/assets/gallery/winter/sweden/3.jpg",
+        "/assets/gallery/winter/sweden/4.jpg",
+        "/assets/gallery/winter/sweden/5.jpg",
+        "/assets/gallery/winter/sweden/6.jpg",
+
+
       ]
     },
     'France': {
       title: "Alpine Charm in Chamonix",
       images: [
-        "/assets/gallery/winter/france/1.jpg"
+        "/assets/gallery/winter/france/1.jpg",
+        "/assets/gallery/winter/france/2.jpg",
+        "/assets/gallery/winter/france/3.jpg",
+        "/assets/gallery/winter/france/4.jpg",
+        "/assets/gallery/winter/france/5.jpg",
+        "/assets/gallery/winter/france/6.jpg",
+
+
       ]
     },
     'Austria': {
@@ -102,19 +135,40 @@ const locationData = {
     'Canada': {
       title: "Banff Snowy Escape",
       images: [
-        "/assets/gallery/winter/canada/1.jpg"
+        "/assets/gallery/winter/canada/1.jpg",
+        "/assets/gallery/winter/canada/2.jpg",
+        "/assets/gallery/winter/canada/3.jpg",
+        "/assets/gallery/winter/canada/4.jpg",
+        "/assets/gallery/winter/canada/5.jpg",
+        "/assets/gallery/winter/canada/6.png",
+
+
       ]
     },
     'Iceland': {
       title: "Ice Cave Adventure",
       images: [
-        "/assets/gallery/winter/iceland/1.jpg"
+        "/assets/gallery/winter/iceland/1.jpg",
+        "/assets/gallery/winter/iceland/2.jpg",
+        "/assets/gallery/winter/iceland/3.jpg",
+        "/assets/gallery/winter/iceland/4.jpg",
+        "/assets/gallery/winter/iceland/5.jpg",
+        "/assets/gallery/winter/iceland/6.jpg",
+
+
       ]
     },
     'Japan': {
       title: "Snowy Hokkaido Experience",
       images: [
-        "/assets/gallery/winter/japan/1.jpg"
+        "/assets/gallery/winter/japan/1.jpg",
+        "/assets/gallery/winter/japan/2.jpg",
+        "/assets/gallery/winter/japan/3.jpg",
+        "/assets/gallery/winter/japan/4.jpg",
+        "/assets/gallery/winter/japan/5.jpg",
+        "/assets/gallery/winter/japan/6.jpg",
+
+
       ]
     }
   },
@@ -125,7 +179,6 @@ const locationData = {
       images: [
         "/assets/gallery/summer/spain/1.png",
         "/assets/gallery/summer/spain/2.jpg",
-       
         "/assets/gallery/summer/spain/4.jpg",
         "/assets/gallery/summer/spain/5.jpg",
         "/assets/gallery/summer/spain/6.jpg",
