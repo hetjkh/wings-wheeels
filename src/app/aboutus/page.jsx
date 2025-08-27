@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
+import Image from "next/image";
 import {
   Facebook,
   Instagram,
@@ -276,11 +277,14 @@ const AboutUs = () => {
                   : "opacity-0 -translate-x-8"
               }`}
             >
-              <div className="relative overflow-hidden rounded-2xl shadow-2xl">
-                <img
-                  src="https://images.pexels.com/photos/4386467/pexels-photo-4386467.jpeg?auto=compress&cs=tinysrgb&w=800"
+              <div className="relative w-full h-96 lg:h-[500px] rounded-2xl shadow-2xl overflow-hidden">
+                <Image
+                  src="/assets/jani.jpg"
                   alt="Professional travel consultation"
-                  className="w-full h-96 lg:h-[500px] object-cover transition-all duration-500"
+                  fill
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                  className="object-cover transition-all duration-500"
+                  priority
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent"></div>
               </div>
@@ -430,11 +434,13 @@ const AboutUs = () => {
                 </div>
               </div>
               <div className="order-1 lg:order-2">
-                <div className="relative overflow-hidden rounded-2xl shadow-xl">
-                  <img
-                    src="https://images.pexels.com/photos/3935702/pexels-photo-3935702.jpeg?auto=compress&cs=tinysrgb&w=800"
+                <div className="relative w-full h-80 rounded-2xl shadow-xl overflow-hidden">
+                  <Image
+                    src="/assets/phil.jpg"
                     alt="Our travel philosophy"
-                    className="w-full h-80 object-cover transition-all duration-500"
+                    fill
+                    sizes="(max-width: 768px) 100vw, 50vw"
+                    className="object-cover transition-all duration-500"
                   />
                 </div>
               </div>
