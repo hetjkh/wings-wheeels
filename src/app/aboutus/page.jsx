@@ -38,6 +38,7 @@ import {
   PhoneCall,
   Zap,
   ArrowRight,
+  ChevronDown,
 } from "lucide-react";
 import Navbar from "../reusable/navbar";
 import Footer from "../reusable/footer";
@@ -52,6 +53,51 @@ const AboutUs = () => {
   const [isProcessVisible, setIsProcessVisible] = useState(false);
   const [isSupportVisible, setIsSupportVisible] = useState(false);
   const [isValuesVisible, setIsValuesVisible] = useState(false);
+  const [isLocationsVisible, setIsLocationsVisible] = useState(false);
+  const [selectedLocation, setSelectedLocation] = useState('juba');
+
+  const officeLocations = {
+    juba: {
+      name: 'Juba, Republic of South Sudan',
+      company: 'Holiday Dreamz Travel Management Co. Ltd',
+      phone: '+211 911544294',
+      email: 'reservation.juba@holidaydreamz.net',
+      address: 'Opp. Zain Building, Airport Ministry Road, Juba, Republic of South Sudan',
+      mapUrl: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d31730.842087472256!2d31.582096!3d4.859363!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x1735c3e2e23ac0b7%3A0x9b1e8b0e8b7d7a7c!2sJuba%2C%20South%20Sudan!5e0!3m2!1sen!2s!4v1679489234567!5m2!1sen!2s'
+    },
+    nairobi: {
+      name: 'Nairobi-Kenya',
+      company: 'Fly Holiday Dreamz Travel Mgt. Ltd.',
+      phone: '+254 742449110',
+      email: 'reservation.nbo@holidaydreamz.net',
+      address: 'No 6, Ground Floor, Park Suit\'s, Parkland Road, Nairobi, Kenya',
+      mapUrl: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3988.8195703511636!2d36.82194631475387!3d-1.2920659990617518!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x182f10c7b7d4b5b7%3A0x9b1e8b0e8b7d7a7c!2sParkland%20Rd%2C%20Nairobi%2C%20Kenya!5e0!3m2!1sen!2s!4v1679489234567!5m2!1sen!2s'
+    },
+    khartoum: {
+      name: 'Khartoum- Sudan',
+      company: 'Holiday Dreamz Travel Management Co. Ltd',
+      phone: '+249 927992295',
+      email: 'reservation.krt@holidaydreamz.net',
+      address: 'Shop No 2, Bldg No 2, Block 2cg, Sylaphos Building, Jamuhiriya Street, Khartoum East, Sudan',
+      mapUrl: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d31303.878471829754!2d32.53199!3d15.5007!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x168e8f4b6c7a0a0b%3A0x9b1e8b0e8b7d7a7c!2sKhartoum%20East%2C%20Khartoum%2C%20Sudan!5e0!3m2!1sen!2s!4v1679489234567!5m2!1sen!2s'
+    },
+    ajmer: {
+      name: 'Ajmer- India',
+      company: 'Fly Holiday Dreamz Travel Management Pvt. Ltd',
+      phone: '+91 7300078037',
+      email: 'reservation.ajm@holidaydreamz.net',
+      address: '1 ch-19 Janta Colony, Vaishali Nagar Ajmer, Rajasthan, India, 305004',
+      mapUrl: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3574.0932659963576!2d74.63394031505087!3d26.449923383324326!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x396be711bbb73d33%3A0x9b1e8b0e8b7d7a7c!2sVaishali%20Nagar%2C%20Ajmer%2C%20Rajasthan%20305004%2C%20India!5e0!3m2!1sen!2s!4v1679489234567!5m2!1sen!2s'
+    },
+    kampala: {
+      name: 'Kampala, Uganda',
+      company: 'Holiday Dreamz Travel Management Co. Ltd',
+      phone: '+256 707009367, +254 707009366',
+      email: 'reservation.kla@holidaydreamz.net',
+      address: 'UG 07,Plot 18, Nalukwago Complex, George Street, Kampala, Uganda',
+      mapUrl: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3989.7611574965946!2d32.582519614753504!3d0.3475603643742785!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x177dbbf4c6c6a9a9%3A0x9b1e8b0e8b7d7a7c!2sGeorge%20St%2C%20Kampala%2C%20Uganda!5e0!3m2!1sen!2s!4v1679489234567!5m2!1sen!2s'
+    }
+  };
 
   useEffect(() => {
     setIsVisible(true);
@@ -76,6 +122,8 @@ const AboutUs = () => {
               setIsSupportVisible(true);
             } else if (entry.target.id === "values") {
               setIsValuesVisible(true);
+            } else if (entry.target.id === "locations") {
+              setIsLocationsVisible(true);
             }
           }
         });
@@ -92,6 +140,7 @@ const AboutUs = () => {
       "process",
       "support-24-7",
       "values",
+      "locations",
     ];
     const elements = sections
       .map((id) => document.getElementById(id))
@@ -103,6 +152,8 @@ const AboutUs = () => {
       elements.forEach((element) => observer.unobserve(element));
     };
   }, []);
+
+  const currentLocation = officeLocations[selectedLocation];
 
   return (
     <div className="flex justify-center items-center flex-col w-[100vw] h-auto bg-white">
@@ -227,7 +278,7 @@ const AboutUs = () => {
             >
               <div className="relative overflow-hidden rounded-2xl shadow-2xl">
                 <img
-                  src="/assets/jani.jpg"
+                  src="https://images.pexels.com/photos/4386467/pexels-photo-4386467.jpeg?auto=compress&cs=tinysrgb&w=800"
                   alt="Professional travel consultation"
                   className="w-full h-96 lg:h-[500px] object-cover transition-all duration-500"
                 />
@@ -381,7 +432,7 @@ const AboutUs = () => {
               <div className="order-1 lg:order-2">
                 <div className="relative overflow-hidden rounded-2xl shadow-xl">
                   <img
-                    src="/assets/phil.jpg"
+                    src="https://images.pexels.com/photos/3935702/pexels-photo-3935702.jpeg?auto=compress&cs=tinysrgb&w=800"
                     alt="Our travel philosophy"
                     className="w-full h-80 object-cover transition-all duration-500"
                   />
@@ -451,7 +502,7 @@ const AboutUs = () => {
                 OUR EXPERTISE
               </h2>
               <p className="text-lg text-gray-600 max-w-3xl mx-auto leading-relaxed">
-                With over 15 years in the travel industry, we've built strong
+                With over 13 years in the travel industry, we've built strong
                 relationships with airlines, hotels, and tourism boards
                 worldwide to offer you unmatched service and competitive
                 pricing.
@@ -1139,6 +1190,175 @@ const AboutUs = () => {
                   Promoting sustainable tourism and responsible travel practices
                   for a better world.
                 </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Office Locations Section */}
+      <div id="locations" className="py-24 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div
+            className={`transition-all duration-1000 ${
+              isLocationsVisible
+                ? "opacity-100 translate-y-0"
+                : "opacity-0 translate-y-8"
+            }`}
+          >
+            <div className="text-center mb-16">
+              <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-6 tracking-wide GeistBold">
+                OUR GLOBAL PRESENCE
+              </h2>
+              <p className="text-lg text-gray-600 max-w-3xl mx-auto leading-relaxed mb-8">
+                With offices across multiple continents, we provide local expertise and personalized service wherever you are in the world.
+              </p>
+              
+              {/* Global Network Stats - Location Selector */}
+              <div className="mb-12">
+                <h3 className="text-2xl font-bold text-gray-900 mb-6 text-center GeistBold">
+                  OUR GLOBAL OFFICES
+                </h3>
+                <p className="text-gray-600 text-center mb-8">
+                  Click on any location to view details
+                </p>
+                <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+                  {Object.entries(officeLocations).map(([key, location]) => (
+                    <div 
+                      key={key} 
+                      className={`text-center p-4 rounded-xl transition-all duration-300 cursor-pointer ${
+                        selectedLocation === key 
+                          ? 'bg-gray-800 text-white' 
+                          : 'bg-white text-gray-800 hover:bg-gray-100 shadow-md'
+                      }`}
+                      onClick={() => setSelectedLocation(key)}
+                    >
+                      <div className={`w-10 h-10 rounded-full flex items-center justify-center mx-auto mb-2 ${
+                        selectedLocation === key ? 'bg-white/20' : 'bg-gray-100'
+                      }`}>
+                        <MapPin className={`h-5 w-5 ${
+                          selectedLocation === key ? 'text-white' : 'text-gray-800'
+                        }`} />
+                      </div>
+                      <h4 className="font-semibold text-sm">
+                        {location.name.split(',')[0]}
+                      </h4>
+                      <p className={`text-xs mt-1 ${
+                        selectedLocation === key ? 'text-gray-300' : 'text-gray-600'
+                      }`}>
+                        {location.name.split(',')[1]?.trim() || location.name.split('-')[1]?.trim()}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Map and Details Grid */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
+              {/* Google Maps */}
+              <div className="order-2 lg:order-1">
+                <div className="bg-gray-100 rounded-2xl overflow-hidden shadow-xl h-96">
+                  <iframe
+                    src={currentLocation.mapUrl}
+                    width="100%"
+                    height="100%"
+                    style={{ border: 0 }}
+                    allowFullScreen=""
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                    title={`Map of ${currentLocation.name}`}
+                    className="w-full h-full"
+                  ></iframe>
+                </div>
+              </div>
+
+              {/* Office Details */}
+              <div className="order-1 lg:order-2 space-y-8">
+                <div className="bg-gray-50 rounded-2xl p-8 border">
+                  <div className="flex items-center space-x-3 mb-6">
+                    <div className="p-3 bg-gray-800 rounded-lg">
+                      <Building className="h-6 w-6 text-white" />
+                    </div>
+                    <h3 className="text-2xl font-bold text-gray-900 GeistBold">
+                      {currentLocation.name}
+                    </h3>
+                  </div>
+
+                  <div className="space-y-6">
+                    {/* Company Name */}
+                    <div>
+                      <h4 className="text-lg font-bold text-gray-800 mb-2">
+                        {currentLocation.company}
+                      </h4>
+                    </div>
+
+                    {/* Address */}
+                    <div className="flex items-start space-x-4">
+                      <div className="p-2 bg-gray-200 rounded-lg flex-shrink-0 mt-1">
+                        <MapPin className="h-5 w-5 text-gray-700" />
+                      </div>
+                      <div>
+                        <h5 className="font-semibold text-gray-800 mb-1">Address:</h5>
+                        <p className="text-gray-600 leading-relaxed">
+                          {currentLocation.address}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Phone */}
+                    <div className="flex items-start space-x-4">
+                      <div className="p-2 bg-gray-200 rounded-lg flex-shrink-0 mt-1">
+                        <Phone className="h-5 w-5 text-gray-700" />
+                      </div>
+                      <div>
+                        <h5 className="font-semibold text-gray-800 mb-1">Phone:</h5>
+                        <a 
+                          href={`tel:${currentLocation.phone.split(',')[0].trim()}`}
+                          className="text-gray-600 hover:text-gray-800 transition-colors duration-300"
+                        >
+                          {currentLocation.phone}
+                        </a>
+                      </div>
+                    </div>
+
+                    {/* Email */}
+                    <div className="flex items-start space-x-4">
+                      <div className="p-2 bg-gray-200 rounded-lg flex-shrink-0 mt-1">
+                        <Mail className="h-5 w-5 text-gray-700" />
+                      </div>
+                      <div>
+                        <h5 className="font-semibold text-gray-800 mb-1">Email:</h5>
+                        <a 
+                          href={`mailto:${currentLocation.email}`}
+                          className="text-gray-600 hover:text-gray-800 transition-colors duration-300"
+                        >
+                          {currentLocation.email}
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Contact Actions */}
+                  <div className="mt-8 pt-8 border-t border-gray-200">
+                    <div className="flex flex-col sm:flex-row gap-4">
+                      <button
+                        onClick={() => window.open(`tel:${currentLocation.phone.split(',')[0].trim()}`)}
+                        className="flex items-center justify-center px-6 py-3 bg-gray-800 text-white rounded-lg hover:bg-gray-900 transition-colors duration-300 font-semibold cursor-pointer"
+                      >
+                        <Phone className="h-5 w-5 mr-2" />
+                        Call Now
+                      </button>
+                      <button
+                        onClick={() => window.open(`mailto:${currentLocation.email}`)}
+                        className="flex items-center justify-center px-6 py-3 bg-gray-100 text-gray-800 border border-gray-300 rounded-lg hover:bg-gray-200 transition-colors duration-300 font-semibold cursor-pointer"
+                      >
+                        <Mail className="h-5 w-5 mr-2" />
+                        Send Email
+                      </button>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

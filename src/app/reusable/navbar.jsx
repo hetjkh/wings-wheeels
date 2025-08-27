@@ -38,7 +38,7 @@ const translations = {
     chatWhatsApp: "Chat on WhatsApp",
     whatsAppSupport: "WhatsApp Support",
     dubaiOffice: "Dubai: +971 4 556 1050",
-    abuDhabiOffice: "Abu Dhabi: +971 2 639 4277",
+    abuDhabiOffice: "Dubai: +971 2 639 4277",
     mobileMenu: {
       phone: "+971 4 556 1050",
       email: "reservation@wwtravels.net",
@@ -158,7 +158,7 @@ const Navbar = ({ showContactButton = true }) => {
           {/* Middle Section - Phone Numbers */}
           <div className="flex flex-col sm:flex-row items-center space-y-1 sm:space-y-0 sm:space-x-6">
             <div
-              className="flex items-center space-x-1 sm:space-x-2"
+              className="flex items-center space-x-1 sm:space-x-2 cursor-pointer hover:opacity-80 transition-opacity"
               onClick={() => window.open("tel:00971547858338", "_blank")}
             >
               <Phone className="w-4 h-4 text-blue-400" />
@@ -168,7 +168,7 @@ const Navbar = ({ showContactButton = true }) => {
             </div>
             <div className="hidden sm:block text-gray-400">|</div>
             <div
-              className="flex items-center space-x-1 Poppins sm:space-x-2"
+              className="flex items-center space-x-1 Poppins sm:space-x-2 cursor-pointer hover:opacity-80 transition-opacity"
               onClick={() => window.open("tel:00971522880935", "_blank")}
             >
               <Phone className="w-4 h-4 text-blue-400" />
@@ -180,7 +180,7 @@ const Navbar = ({ showContactButton = true }) => {
 
           {/* Right Section - Email */}
           <div
-            className="hidden md:flex items-center space-x-2"
+            className="hidden md:flex items-center space-x-2 cursor-pointer hover:opacity-80 transition-opacity"
             onClick={() =>
               window.open("mailto:reservation@wwtravels.net", "_blank")
             }

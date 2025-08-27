@@ -35,7 +35,7 @@ const header = () => {
                 SERVICES
               </a>
               <Button onClick={() => window.open("tel:00971547858338")}
-              className="Poppins bg-black text-white hover:bg-gray-800 px-7 py-5 rounded-full text-sm font-medium transition-all duration-300">
+              className="Poppins bg-black text-white hover:bg-gray-800 px-7 py-5 rounded-full text-sm font-medium transition-all duration-300 cursor-pointer">
                 CONTACT AN EXPERT
               </Button>
             </div>

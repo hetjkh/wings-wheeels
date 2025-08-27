@@ -51,11 +51,9 @@ const ReasonCard = memo(({ reason }) => (
       </p>
     </div>
 
-    {/* Arrow Icon */}
+    {/* Empty container to maintain spacing - Arrow icon removed */}
     <div className="mt-8">
-      <div className="w-8 h-8 rounded-full border border-gray-300 group-hover:border-gray-400 flex items-center justify-center group-hover:bg-gray-200 transition-all duration-300">
-        <ArrowUpRight className="w-4 h-4 text-gray-400 group-hover:text-gray-600 transition-colors duration-300" />
-      </div>
+      <div className="w-8 h-8"></div>
     </div>
   </div>
 ));
