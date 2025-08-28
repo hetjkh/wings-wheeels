@@ -397,20 +397,22 @@ const Navbar = ({ showContactButton = true }) => {
 
                 {/* Currency Dropdown */}
                 {currencyDropdownOpen && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white border rounded-lg shadow-lg z-[100] max-h-64 overflow-y-auto">
+                  <div className="absolute right-0 mt-2 w-56 bg-white border border-gray-200 rounded-lg shadow-lg z-[100] max-h-64 overflow-y-auto">
                     {currencies.map((currency) => (
                       <div
                         key={currency.code}
                         onClick={() => handleCurrencyChange(currency.code)}
-                        className={`flex items-center justify-between px-4 py-2 text-sm cursor-pointer hover:bg-gray-100 ${
+                        className={`flex items-center justify-between px-4 py-2.5 text-sm cursor-pointer hover:bg-gray-50 transition-colors ${
                           selectedCurrency === currency.code ? 'bg-blue-50 text-blue-600' : 'text-gray-700'
                         }`}
                       >
-                        <div className="flex items-center">
-                          <span className="font-medium mr-2">{currency.symbol}</span>
-                          <span>{currency.code}</span>
+                        <div className="flex items-center min-w-0">
+                          <span className="font-medium w-6 text-left">{currency.symbol}</span>
+                          <span className="font-medium w-12 truncate">{currency.code}</span>
                         </div>
-                        <span className="text-xs text-gray-500">{currency.name}</span>
+                        <span className="text-xs text-gray-500 ml-2 truncate text-right flex-1">
+                          {currency.name}
+                        </span>
                       </div>
                     ))}
                     {isLoadingRates && (
