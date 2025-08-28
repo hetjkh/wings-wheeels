@@ -3,6 +3,13 @@ import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, MapPin, Clock, Star, Calendar, Users } from "lucide-react";
 
+// Currency symbols mapping
+const currencySymbols = {
+  'USD': '$', 'EUR': '€', 'GBP': '£', 'AED': 'د.إ',
+  'SAR': 'ر.س', 'JPY': '¥', 'CAD': 'C$', 'AUD': 'A$',
+  'CHF': 'Fr', 'INR': '₹'
+};
+
 const destinations = [
   {
     id: 1,
@@ -118,7 +125,131 @@ const destinations = [
 const popular = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
+  const [currentCurrency, setCurrentCurrency] = useState('AED');
+  const [exchangeRates, setExchangeRates] = useState({});
+  const [isLoadingRates, setIsLoadingRates] = useState(true);
 
+  // Extract numeric price from price string
+  const extractNumericPrice = (priceStr) => {
+    if (!priceStr) return 0;
+    const match = priceStr.match(/\d+([.,]\d+)?/);
+    return match ? parseFloat(match[0].replace(',', '')) : 0;
+  };
+
+  // Format price with currency symbol
+  const formatPrice = (amount, currency) => {
+    if (isNaN(amount)) return 'Price not available';
+    
+    const formatter = new Intl.NumberFormat(undefined, {
+      style: 'currency',
+      currency: currency,
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+      currencyDisplay: 'symbol'
+    });
+    
+    // Replace the default symbol with our custom one for better control
+    return formatter.format(amount)
+      .replace(/[A-Z]{3}/, '')
+      .trim()
+      .replace(/^([^0-9]*)([0-9])/, `${currencySymbols[currency] || currency} $2`);
+  };
+
+  // Convert price to selected currency
+  const convertPrice = (priceStr) => {
+    if (!priceStr) return 'Price not available';
+    
+    const amount = extractNumericPrice(priceStr);
+    if (amount === 0) return priceStr;
+    
+    const rate = exchangeRates[currentCurrency];
+    if (!rate) return 'Loading rates...';
+    
+    // If price is already in AED (our base currency)
+    if (priceStr.includes('AED')) {
+      const convertedAmount = amount * rate;
+      return `From ${formatPrice(convertedAmount, currentCurrency)}`;
+    }
+    
+    // If price is in another currency, we'd need to know the source currency
+    // For now, we'll assume all prices are in AED unless specified otherwise
+    return `From ${formatPrice(amount * rate, currentCurrency)}`;
+  };
+
+  // Fetch exchange rates with caching
+  useEffect(() => {
+    const fetchRates = async () => {
+      try {
+        setIsLoadingRates(true);
+        
+        // First try to get rates from localStorage if they're still fresh (less than 24 hours old)
+        const cachedData = localStorage.getItem('exchangeRates');
+        if (cachedData) {
+          const { timestamp, rates } = JSON.parse(cachedData);
+          if (Date.now() - timestamp < 24 * 60 * 60 * 1000) { // 24 hours in ms
+            setExchangeRates(rates);
+            setIsLoadingRates(false);
+            return;
+          }
+        }
+
+        // If no fresh cache or cache is expired, fetch new rates
+        const response = await fetch('https://open.er-api.com/v6/latest/AED');
+        if (!response.ok) throw new Error('Failed to fetch rates');
+        
+        const data = await response.json();
+        if (data.result !== 'success') throw new Error('Failed to fetch rates');
+        
+        setExchangeRates(data.rates);
+        
+        // Store rates in localStorage with timestamp
+        localStorage.setItem('exchangeRates', JSON.stringify({
+          rates: data.rates,
+          timestamp: Date.now(),
+          base: 'AED'
+        }));
+        
+      } catch (error) {
+        console.error('Error fetching exchange rates:', error);
+        
+        // Try to load from localStorage even if expired
+        const cachedRates = localStorage.getItem('exchangeRates');
+        if (cachedRates) {
+          try {
+            const { rates } = JSON.parse(cachedRates);
+            setExchangeRates(rates);
+          } catch (e) {
+            console.error('Error parsing cached rates:', e);
+          }
+        } else {
+          // Fallback rates (approximate)
+          setExchangeRates({
+            USD: 0.27, EUR: 0.25, GBP: 0.21, AED: 1,
+            SAR: 1.02, JPY: 30, CAD: 0.34, AUD: 0.37,
+            CHF: 0.25, INR: 22.5
+          });
+        }
+      } finally {
+        setIsLoadingRates(false);
+      }
+    };
+
+    fetchRates();
+  }, []);
+
+  // Listen for currency changes from navbar
+  useEffect(() => {
+    const handleCurrencyChange = (event) => {
+      setCurrentCurrency(event.detail.currency);
+    };
+
+    window.addEventListener('currencyChanged', handleCurrencyChange);
+    return () => {
+      window.removeEventListener('currencyChanged', handleCurrencyChange);
+    };
+  }, []);
+
+  // Auto-rotate destinations
   useEffect(() => {
     setIsVisible(true);
     const interval = setInterval(() => {
@@ -212,7 +343,7 @@ const popular = () => {
                 <div>
                   <div className="text-sm text-gray-500">Starting</div>
                   <div className="font-semibold text-gray-900">
-                    {currentDestination.price}
+                    {convertPrice(currentDestination.price)}
                   </div>
                 </div>
               </div>
@@ -262,6 +393,9 @@ const popular = () => {
                 </div>
                 <div className="text-lg opacity-90">
                   {currentDestination.country}
+                </div>
+                <div className="mt-2 text-xl font-bold">
+                  {convertPrice(currentDestination.price)}
                 </div>
               </div>
             </div>

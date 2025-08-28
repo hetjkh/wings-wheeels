@@ -1,60 +1,37 @@
-import { ArrowUpRight, Star, Quote } from "lucide-react";
+import { Quote } from "lucide-react";
 
 const reviews = [
   {
     id: 1,
-    name: "Priya Sharma",
+    name: "Usmaan",
     location: "Dubai",
-    rating: 5,
     review:
       "Booking with Wings & Wheels was the best decision I made for my Dubai trip. From the moment I contacted them, their team was super helpful and friendly. They handled my flight bookings, visa, hotel stay, and even airport transfers so smoothly. I didn't have to worry about anything. They also customized the package to fit my budget without compromising on quality. I loved how responsive they were—even at odd hours. This wasn't just a trip, it was a truly relaxing experience thanks to their planning. I'll definitely recommend them to my friends and family.",
-    image:
-      "https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=2",
   },
   {
     id: 2,
-    name: "Ankit Mehta",
+    name: "Himanshu",
     location: "Europe Tour",
-    rating: 4,
     review:
       "A well-planned tour from start to finish. I didn't have to worry about a thing. Great support even during the trip!",
-    image:
-      "https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=2",
   },
   {
     id: 3,
-    name: "Fatima Ali",
+    name: "Rashmi.P",
     location: "Maldives",
-    rating: 4,
     review:
       "Smooth booking, great support, stress-free trip. Highly recommend Wings & Wheels!",
-    image:
-      "https://images.pexels.com/photos/1130626/pexels-photo-1130626.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=2",
   },
   {
     id: 4,
-    name: "Sarah Johnson",
+    name: "Sagar",
     location: "Thailand",
-    rating: 3,
     review:
       "Exceptional service and attention to detail. Made our honeymoon absolutely perfect!",
-    image:
-      "https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=2",
   },
 ];
 
 const review = () => {
-  const renderStars = (rating) => {
-    return Array.from({ length: 5 }, (_, i) => (
-      <Star
-        key={i}
-        className={`w-4 h-4 ${
-          i < rating ? "text-yellow-400 fill-current" : "text-gray-300"
-        }`}
-      />
-    ));
-  };
-
   return (
     <div className="flex justify-center items-center flex-col w-full bg-black">
       <section className="w-[95%] text-white py-8 lg:py-12 min-h-screen flex flex-col">
@@ -80,19 +57,10 @@ const review = () => {
                   {reviews[0].review}
                 </p>
               </div>
-              <div className="flex items-center space-x-4">
-                <img
-                  src={reviews[0].image}
-                  alt={reviews[0].name}
-                  className="w-14 h-14 rounded-full object-cover"
-                  loading="lazy"
-                />
+              <div className="flex items-center">
                 <div>
                   <h4 className="font-bold text-lg">{reviews[0].name}</h4>
                   <p className="text-sm text-gray-600">{reviews[0].location}</p>
-                  <div className="flex space-x-1 mt-1">
-                    {renderStars(reviews[0].rating)}
-                  </div>
                 </div>
               </div>
             </div>
@@ -107,22 +75,11 @@ const review = () => {
                     {reviews[1].review}
                   </p>
                 </div>
-                <div className="flex items-center space-x-3 mt-4">
-                  <img
-                    src={reviews[1].image}
-                    alt={reviews[1].name}
-                    className="w-10 h-10 rounded-full object-cover"
-                    loading="lazy"
-                  />
-                  <div>
-                    <h4 className="font-bold text-sm">{reviews[1].name}</h4>
-                    <p className="text-xs text-gray-600">
-                      {reviews[1].location}
-                    </p>
-                    <div className="flex space-x-0.5 mt-0.5">
-                      {renderStars(reviews[1].rating)}
-                    </div>
-                  </div>
+                <div className="mt-4">
+                  <h4 className="font-bold text-sm">{reviews[1].name}</h4>
+                  <p className="text-xs text-gray-600">
+                    {reviews[1].location}
+                  </p>
                 </div>
               </div>
 
@@ -136,21 +93,8 @@ const review = () => {
                       {reviews[2].review}
                     </p>
                   </div>
-                  <div className="flex items-center space-x-2 mt-3">
-                    <img
-                      src={reviews[2].image}
-                      alt={reviews[2].name}
-                      className="w-8 h-8 rounded-full object-cover"
-                      loading="lazy"
-                    />
-                    <div>
-                      <h4 className="font-bold text-xs">{reviews[2].name}</h4>
-                      <div className="flex items-center space-x-1">
-                        <div className="flex">
-                          {renderStars(reviews[2].rating)}
-                        </div>
-                      </div>
-                    </div>
+                  <div className="mt-3">
+                    <h4 className="font-bold text-xs">{reviews[2].name}</h4>
                   </div>
                 </div>
 
@@ -162,23 +106,10 @@ const review = () => {
                       {reviews[3]?.review || reviews[0].review}
                     </p>
                   </div>
-                  <div className="flex items-center space-x-2 mt-3">
-                    <img
-                      src={reviews[3]?.image || reviews[0].image}
-                      alt={reviews[3]?.name || reviews[0].name}
-                      className="w-8 h-8 rounded-full object-cover"
-                      loading="lazy"
-                    />
-                    <div>
-                      <h4 className="font-bold text-xs">
-                        {reviews[3]?.name || reviews[0].name}
-                      </h4>
-                      <div className="flex items-center space-x-1">
-                        <div className="flex">
-                          {renderStars(reviews[3]?.rating || reviews[0].rating)}
-                        </div>
-                      </div>
-                    </div>
+                  <div className="mt-3">
+                    <h4 className="font-bold text-xs">
+                      {reviews[3]?.name || reviews[0].name}
+                    </h4>
                   </div>
                 </div>
               </div>

@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Play, ChevronLeft, ChevronRight, X } from "lucide-react";
 import Footer from "../reusable/footer";
 import Navbar from "../reusable/navbar";
@@ -47,7 +47,7 @@ const locationData = {
       title: "Northern Lights Adventure",
       images: [
         "/assets/gallery/winter/norway/1.png",
-          "/assets/gallery/winter/norway/1.jpg",
+          "/assets/gallery/winter/norway/11.jpg",
           "/assets/gallery/winter/norway/2.jpg",
           "/assets/gallery/winter/norway/4.jpg",
           "/assets/gallery/winter/norway/5.jpg",
@@ -338,6 +338,9 @@ const TravelGallery = () => {
     message: ""
   });
 
+  // Ref for the form panel scroll container
+  const formPanelRef = useRef(null);
+
   useEffect(() => setIsVisible(true), []);
 
   // Auto-slide carousel
@@ -348,6 +351,20 @@ const TravelGallery = () => {
 
     return () => clearInterval(interval);
   }, []);
+
+  // Prevent body scroll when modal is open
+  useEffect(() => {
+    if (isOfferDialogOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+
+    // Cleanup on unmount
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isOfferDialogOpen]);
 
   const filteredData =
     activeLocation === "All"
@@ -402,6 +419,33 @@ const TravelGallery = () => {
 
   const goToSlide = (index) => {
     setCurrentSlide(index);
+  };
+
+  // Handle wheel events to prevent scroll bubbling from form panel
+  const handleFormPanelScroll = (e) => {
+    const target = e.currentTarget;
+    const { scrollTop, scrollHeight, clientHeight } = target;
+    
+    // Prevent scroll bubbling if we're at the bounds and trying to scroll further
+    if (
+      (scrollTop === 0 && e.deltaY < 0) || 
+      (scrollTop + clientHeight >= scrollHeight && e.deltaY > 0)
+    ) {
+      // Only prevent if we're actually at the scroll bounds
+      if (scrollTop <= 0 && e.deltaY < 0) {
+        e.preventDefault();
+      } else if (scrollTop + clientHeight >= scrollHeight && e.deltaY > 0) {
+        e.preventDefault();
+      }
+    }
+    
+    // Stop event propagation to prevent it from reaching parent elements
+    e.stopPropagation();
+  };
+
+  // Handle touch scroll events for mobile
+  const handleFormPanelTouch = (e) => {
+    e.stopPropagation();
   };
 
   return (
@@ -583,11 +627,14 @@ const TravelGallery = () => {
       </div>
 
       {/* Offers Dialog */}
-      <Dialog open={isOfferDialogOpen} onOpenChange={(open) => {
-        setIsOfferDialogOpen(open);
-        if (!open) setShowForm(false);
-      }}>
-        <DialogContent className="p-0 max-w-6xl w-full h-[90vh] max-h-[800px] overflow-hidden sm:max-w-[95vw] sm:h-[95vh] sm:max-h-none">
+      <Dialog 
+        open={isOfferDialogOpen} 
+        onOpenChange={(open) => {
+          setIsOfferDialogOpen(open);
+          if (!open) setShowForm(false);
+        }}
+      >
+        <DialogContent className="p-0 w-[90vw] sm:w-[80vw] md:w-[70vw] lg:w-[60vw] xl:w-[50vw] h-[80vh] max-h-[700px] overflow-hidden">
           {selectedOffer && (
             <div className="relative h-full flex flex-col">
               {/* Mobile Close Button */}
@@ -618,22 +665,20 @@ const TravelGallery = () => {
                     }}
                   />
                 </div>
-                {/* Gradient Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent"></div>
                 
                 {/* Content Overlay */}
-                <div className={`absolute bottom-0 left-0 p-4 md:p-8 text-white transition-all duration-500 ${showForm ? 'md:w-1/2 sm:w-full' : 'w-full'}`}>
-                  <h3 className="text-xl sm:text-2xl md:text-3xl font-bold">{selectedOffer.title}</h3>
-                  <p className="text-gray-200 text-sm sm:text-base">{selectedOffer.location}</p>
-                  <div className="mt-2">
-                    <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
-                      <span className="text-gray-300 line-through text-sm sm:text-base">AED 2,999</span>
-                      <span className="text-2xl sm:text-3xl font-bold text-white">AED 1,999</span>
-                      <span className="bg-green-500 text-white text-xs font-bold px-2 py-1 rounded">
+                <div className={`absolute bottom-0 left-0 p-4 md:p-6 text-white transition-all duration-500 ${showForm ? 'md:w-1/2 sm:w-full' : 'w-full'}`}>
+                  <h3 className="text-lg sm:text-xl font-semibold">{selectedOffer.title}</h3>
+                  <p className="text-gray-200 text-xs">{selectedOffer.location}</p>
+                  <div className="mt-1">
+                    <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+                      <span className="text-gray-300 line-through text-xs">AED 2,999</span>
+                      <span className="text-lg sm:text-xl font-bold text-white">AED 1,999</span>
+                      <span className="bg-green-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded">
                         Save 33%
                       </span>
                     </div>
-                    <p className="text-xs text-gray-300 mt-2 ml-1 mb-3">
+                    <p className="text-[10px] text-gray-300 mt-1 ml-0.5 mb-2">
                       * Prices can vary based on season and availability.
                     </p>
                   </div>
@@ -708,10 +753,20 @@ const TravelGallery = () => {
                   showForm ? 'translate-x-0 sm:translate-y-0' : 'translate-x-full sm:translate-y-full md:translate-y-0 md:translate-x-full'
                 }`}
               >
-                <div className="p-4 sm:p-6 md:p-8 h-full overflow-y-auto pb-16 sm:pb-20 md:pb-24">
+                <div 
+                  ref={formPanelRef}
+                  className="p-4 sm:p-6 md:p-8 h-full overflow-y-auto pb-16 sm:pb-20 md:pb-24 scroll-smooth"
+                  onWheel={handleFormPanelScroll}
+                  onTouchMove={handleFormPanelTouch}
+                  onTouchStart={handleFormPanelTouch}
+                  style={{
+                    overscrollBehavior: 'contain',
+                    WebkitOverflowScrolling: 'touch'
+                  }}
+                >
                   <button
                     onClick={() => setShowForm(false)}
-                    className="absolute top-3 sm:top-4 left-3 sm:left-4 text-gray-500 hover:text-gray-700 p-1"
+                    className="absolute top-3 sm:top-4 left-3 sm:left-4 text-gray-500 hover:text-gray-700 p-1 z-10"
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />

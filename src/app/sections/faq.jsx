@@ -63,7 +63,7 @@ const FAQ = () => {
             >
               <button
                 onClick={() => toggleItem(index)}
-                className={`w-full px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors duration-200`}
+                className={`w-full px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors duration-200 cursor-pointer`}
               >
                 <h3 className="text-base lg:text-lg font-semibold text-gray-900 GeistMedium flex-1">
                   {item.question}
@@ -108,13 +108,13 @@ const FAQ = () => {
           <div className="flex flex-col sm:flex-row gap-3">
             <button
               onClick={() => window.open("tel:00971547858338")}
-              className="bg-black text-white hover:bg-gray-800 px-6 py-3 rounded-full text-sm font-medium transition-all duration-300 Poppins"
+              className="bg-black text-white hover:bg-gray-800 px-6 py-3 rounded-full text-sm font-medium transition-all duration-300 Poppins cursor-pointer"
             >
               Contact Agent
             </button>
             <button
               onClick={() => window.open("https://wa.me/00971547858338")}
-              className="bg-transparent border-2 border-black text-black hover:bg-black hover:text-white px-6 py-3 rounded-full text-sm font-medium transition-all duration-300 Poppins"
+              className="bg-transparent border-2 border-black text-black hover:bg-black hover:text-white px-6 py-3 rounded-full text-sm font-medium transition-all duration-300 Poppins cursor-pointer"
             >
               WhatsApp
             </button>

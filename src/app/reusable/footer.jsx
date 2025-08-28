@@ -29,13 +29,13 @@ const Footer = () => {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button
               onClick={() => window.open("tel:00971547858338")}
-              className="bg-white text-black hover:bg-gray-100 px-8 py-3 rounded-full text-sm font-medium transition-all duration-300"
+              className="bg-white text-black hover:bg-gray-100 px-8 py-3 rounded-full text-sm font-medium transition-all duration-300 cursor-pointer"
             >
               CONTACT AGENT
             </Button>
             <Button
               onClick={() => window.open("tel:00971547858338")}
-              className="bg-transparent border-2 border-white text-white hover:bg-white/10 px-8 py-3 rounded-full text-sm font-medium transition-all duration-300"
+              className="bg-transparent border-2 border-white text-white hover:bg-white/10 px-8 py-3 rounded-full text-sm font-medium transition-all duration-300 cursor-pointer"
             >
               GET A FREE QUOTE
             </Button>
