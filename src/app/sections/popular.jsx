@@ -237,10 +237,19 @@ const popular = () => {
     fetchRates();
   }, []);
 
-  // Listen for currency changes from navbar
+  // Listen for currency changes from navbar and localStorage
   useEffect(() => {
+    // Load saved currency from localStorage on initial load
+    const savedCurrency = localStorage.getItem('selectedCurrency');
+    if (savedCurrency) {
+      setCurrentCurrency(savedCurrency);
+    }
+
     const handleCurrencyChange = (event) => {
-      setCurrentCurrency(event.detail.currency);
+      const newCurrency = event.detail.currency;
+      setCurrentCurrency(newCurrency);
+      // Force re-render by updating the state
+      setExchangeRates(prev => ({ ...prev }));
     };
 
     window.addEventListener('currencyChanged', handleCurrencyChange);

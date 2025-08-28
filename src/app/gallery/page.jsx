@@ -10,6 +10,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
+// Currency symbols mapping
+const currencySymbols = {
+  'USD': '$', 'EUR': '€', 'GBP': '£', 'AED': 'د.إ',
+  'SAR': 'ر.س', 'JPY': '¥', 'CAD': 'C$', 'AUD': 'A$',
+  'CHF': 'Fr', 'INR': '₹'
+};
+
 // Carousel slides data
 const heroSlides = [
   {
@@ -337,9 +344,139 @@ const TravelGallery = () => {
     date: "",
     message: ""
   });
+  const [currentCurrency, setCurrentCurrency] = useState('AED');
+  const [exchangeRates, setExchangeRates] = useState({});
+  const [isLoadingRates, setIsLoadingRates] = useState(true);
 
   // Ref for the form panel scroll container
   const formPanelRef = useRef(null);
+
+  // Extract numeric price from price string
+  const extractNumericPrice = (priceStr) => {
+    if (!priceStr) return 0;
+    const match = priceStr.match(/\d+([.,]\d+)?/);
+    return match ? parseFloat(match[0].replace(',', '')) : 0;
+  };
+
+  // Format price with currency symbol
+  const formatPrice = (amount, currency) => {
+    if (isNaN(amount)) return 'Price not available';
+    
+    const formatter = new Intl.NumberFormat(undefined, {
+      style: 'currency',
+      currency: currency,
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+      currencyDisplay: 'symbol'
+    });
+    
+    // Replace the default symbol with our custom one for better control
+    return formatter.format(amount)
+      .replace(/[A-Z]{3}/, '')
+      .trim()
+      .replace(/^([^0-9]*)([0-9])/, `${currencySymbols[currency] || currency} $2`);
+  };
+
+  // Convert price to selected currency
+  const convertPrice = (basePrice, originalPrice = null) => {
+    const rate = exchangeRates[currentCurrency];
+    if (!rate) return 'Loading rates...';
+    
+    // Convert from AED to selected currency
+    const convertedAmount = basePrice * rate;
+    const convertedOriginal = originalPrice ? originalPrice * rate : null;
+    
+    if (convertedOriginal) {
+      return {
+        current: formatPrice(convertedAmount, currentCurrency),
+        original: formatPrice(convertedOriginal, currentCurrency)
+      };
+    }
+    
+    return formatPrice(convertedAmount, currentCurrency);
+  };
+
+  // Fetch exchange rates with caching
+  useEffect(() => {
+    const fetchRates = async () => {
+      try {
+        setIsLoadingRates(true);
+        
+        // First try to get rates from localStorage if they're still fresh (less than 24 hours old)
+        const cachedData = localStorage.getItem('exchangeRates');
+        if (cachedData) {
+          const { timestamp, rates } = JSON.parse(cachedData);
+          if (Date.now() - timestamp < 24 * 60 * 60 * 1000) { // 24 hours in ms
+            setExchangeRates(rates);
+            setIsLoadingRates(false);
+            return;
+          }
+        }
+
+        // If no fresh cache or cache is expired, fetch new rates
+        const response = await fetch('https://open.er-api.com/v6/latest/AED');
+        if (!response.ok) throw new Error('Failed to fetch rates');
+        
+        const data = await response.json();
+        if (data.result !== 'success') throw new Error('Failed to fetch rates');
+        
+        setExchangeRates(data.rates);
+        
+        // Store rates in localStorage with timestamp
+        localStorage.setItem('exchangeRates', JSON.stringify({
+          rates: data.rates,
+          timestamp: Date.now(),
+          base: 'AED'
+        }));
+        
+      } catch (error) {
+        console.error('Error fetching exchange rates:', error);
+        
+        // Try to load from localStorage even if expired
+        const cachedRates = localStorage.getItem('exchangeRates');
+        if (cachedRates) {
+          try {
+            const { rates } = JSON.parse(cachedRates);
+            setExchangeRates(rates);
+          } catch (e) {
+            console.error('Error parsing cached rates:', e);
+          }
+        } else {
+          // Fallback rates (approximate)
+          setExchangeRates({
+            USD: 0.27, EUR: 0.25, GBP: 0.21, AED: 1,
+            SAR: 1.02, JPY: 30, CAD: 0.34, AUD: 0.37,
+            CHF: 0.25, INR: 22.5
+          });
+        }
+      } finally {
+        setIsLoadingRates(false);
+      }
+    };
+
+    fetchRates();
+  }, []);
+
+  // Listen for currency changes from navbar and localStorage
+  useEffect(() => {
+    // Load saved currency from localStorage on initial load
+    const savedCurrency = localStorage.getItem('selectedCurrency');
+    if (savedCurrency) {
+      setCurrentCurrency(savedCurrency);
+    }
+
+    const handleCurrencyChange = (event) => {
+      const newCurrency = event.detail.currency;
+      setCurrentCurrency(newCurrency);
+      // Force re-render by updating the state
+      setExchangeRates(prev => ({ ...prev }));
+    };
+
+    window.addEventListener('currencyChanged', handleCurrencyChange);
+    return () => {
+      window.removeEventListener('currencyChanged', handleCurrencyChange);
+    };
+  }, []);
 
   useEffect(() => setIsVisible(true), []);
 
@@ -672,8 +809,12 @@ const TravelGallery = () => {
                   <p className="text-gray-200 text-xs">{selectedOffer.location}</p>
                   <div className="mt-1">
                     <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
-                      <span className="text-gray-300 line-through text-xs">AED 2,999</span>
-                      <span className="text-lg sm:text-xl font-bold text-white">AED 1,999</span>
+                      <span className="text-gray-300 line-through text-xs">
+                        {typeof convertPrice(2999, 2999) === 'object' ? convertPrice(2999, 2999).original : convertPrice(2999)}
+                      </span>
+                      <span className="text-lg sm:text-xl font-bold text-white">
+                        {typeof convertPrice(1999, 2999) === 'object' ? convertPrice(1999, 2999).current : convertPrice(1999)}
+                      </span>
                       <span className="bg-green-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded">
                         Save 33%
                       </span>

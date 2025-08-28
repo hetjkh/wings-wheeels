@@ -380,13 +380,13 @@ const Navbar = ({ showContactButton = true }) => {
             </div>
 
             {/* Currency Changer - Desktop */}
-            <div className="hidden lg:flex items-center mr-4">
+            <div className="hidden lg:flex items-center mr-4 cursor-pointer">
               <div className="relative">
                 <Button
                   onClick={() => setCurrencyDropdownOpen(!currencyDropdownOpen)}
                   variant="ghost"
                   size="sm"
-                  className="flex items-center space-x-1 text-black hover:bg-black/10 h-8 px-3"
+                  className="flex items-center space-x-1 text-black hover:bg-black/10 h-8 px-3 cursor-pointer"
                 >
                   <DollarSign className="w-4 h-4" />
                   <span className="text-sm font-medium">
@@ -429,7 +429,7 @@ const Navbar = ({ showContactButton = true }) => {
                 onClick={toggleLanguage}
                 variant="ghost"
                 size="sm"
-                className="flex items-center space-x-1 text-black hover:bg-black/10 h-8 px-3"
+                className="flex items-center space-x-1 text-black hover:bg-black/10 h-8 px-3 cursor-pointer"
               >
                 <Globe className="w-4 h-4" />
                 <span className="text-sm font-medium">
@@ -455,7 +455,7 @@ const Navbar = ({ showContactButton = true }) => {
                       onMouseEnter={() => setOpen(true)}
                     >
                       <Button 
-                        className="rounded-full bg-transparent border border-black hover:bg-black hover:text-white h-10 px-6 text-black text-sm font-medium transition-all duration-300 hover:scale-105"
+                        className="rounded-full bg-transparent border border-black hover:bg-black hover:text-white h-10 px-6 text-black text-sm font-medium transition-all duration-300 hover:scale-105 cursor-pointer"
                         style={{ fontFamily: isRTL ? 'Arial, sans-serif' : 'inherit' }}
                       >
                         {currentTranslation.getInTouch}
