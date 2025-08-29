@@ -7,6 +7,7 @@ const Service = lazy(() => import('./sections/services'));
 const Popular = lazy(() => import('./sections/popular'));
 const Chooseus = lazy(() => import('./sections/chooseus'));
 const Review = lazy(() => import('./sections/review'));
+const Brands = lazy(() => import('./sections/brands'));
 const Beforego = lazy(() => import('./sections/beforego'));
 const Footer = lazy(() => import('./reusable/footer'));
 const FAQ = lazy(() => import('./sections/faq'));
@@ -41,6 +42,10 @@ const Home = () => {
 
       <Suspense fallback={<LoadingSpinner />}>
         <Review />
+      </Suspense>
+
+      <Suspense fallback={<LoadingSpinner />}>
+        <Brands />
       </Suspense>
 
       <Suspense fallback={<LoadingSpinner />}>
