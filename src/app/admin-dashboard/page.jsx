@@ -6,8 +6,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { RefreshCw, Smartphone, User, Calendar, AlertCircle, LogOut, QrCode, X, Settings, Menu, Building2, Phone, Mail, Globe, CheckCircle, Clock, Shield } from 'lucide-react';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { RefreshCw, Smartphone, User, Calendar, AlertCircle, LogOut, QrCode, X, Settings, Menu, Building2, Phone, Mail, Globe, CheckCircle, Clock, Shield, Tag } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -65,10 +65,282 @@ export default function AdminDashboard() {
   const [updateLoading, setUpdateLoading] = useState(false);
   const [updateError, setUpdateError] = useState('');
   const [updateSuccess, setUpdateSuccess] = useState(false);
+  
+  // State for offers
+  const [offers, setOffers] = useState([]);
+  const [offersLoading, setOffersLoading] = useState(false);
+  const [offersError, setOffersError] = useState('');
+  
+  // State for new offer form
+  const [newOffer, setNewOffer] = useState({
+    name: '',
+    price: '',
+    alt: '',
+    image: null
+  });
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editingOffer, setEditingOffer] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Refs for intervals
   const statusCheckInterval = useRef(null);
   const connectionCheckInterval = useRef(null);
+
+  // Effects and callbacks
+  useEffect(() => {
+    checkAuthentication();
+    return () => {
+      // Cleanup intervals
+      if (statusCheckInterval.current) clearInterval(statusCheckInterval.current);
+      if (connectionCheckInterval.current) clearInterval(connectionCheckInterval.current);
+    };
+  }, []);
+
+  // Load settings when settings tab is active
+  useEffect(() => {
+    if (activeTab === 'settings' && !settings && !settingsLoading) {
+      fetchSettings();
+    }
+  }, [activeTab, settings, settingsLoading]);
+
+  // Fetch offers from API
+  const fetchOffers = useCallback(async () => {
+    setOffersLoading(true);
+    setOffersError('');
+    const token = Cookies.get('authToken');
+    
+    try {
+      const response = await fetch('https://wwtravels.net/api/offers/all', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch offers');
+      }
+      
+      const data = await response.json();
+      setOffers(data.offers || []);
+    } catch (error) {
+      console.error('Error fetching offers:', error);
+      setOffersError('Failed to load offers. Please try again.');
+    } finally {
+      setOffersLoading(false);
+    }
+  }, []);
+
+  // Load offers when offers tab is active
+  useEffect(() => {
+    if (activeTab === 'offers') {
+      fetchOffers();
+    }
+  }, [activeTab, fetchOffers]);
+
+  // Handle input change for offer form
+  const handleOfferChange = (e, isEdit = false) => {
+    const { name, value, files } = e.target;
+    
+    if (isEdit) {
+      setEditingOffer(prev => ({
+        ...prev,
+        [name]: name === 'price' ? parseFloat(value) || '' : value,
+        // Keep the existing image if not changed
+        ...(name === 'image' && { image: files[0], imageChanged: true })
+      }));
+    } else {
+      setNewOffer(prev => ({
+        ...prev,
+        [name]: name === 'price' ? parseFloat(value) || '' : value,
+        ...(name === 'image' && { image: files[0] })
+      }));
+    }
+  };
+
+  // Handle edit button click
+  const handleEditClick = (offer) => {
+    setEditingOffer({
+      ...offer,
+      image: null,
+      imageChanged: false
+    });
+    setIsEditModalOpen(true);
+  };
+
+  // Handle update offer
+  const handleUpdateOffer = async (e) => {
+    e.preventDefault();
+    
+    if (!editingOffer.name || !editingOffer.price) {
+      setOffersError('Please fill all required fields');
+      return;
+    }
+
+    setIsSubmitting(true);
+    setOffersError('');
+    
+    const token = Cookies.get('authToken');
+    const formData = new FormData();
+    
+    // Append all form data
+    formData.append('id', editingOffer._id);
+    formData.append('name', editingOffer.name);
+    formData.append('price', editingOffer.price);
+    formData.append('alt', editingOffer.alt || 'Offer image');
+    
+    // Only append image if it was changed
+    if (editingOffer.imageChanged && editingOffer.image) {
+      formData.append('image', editingOffer.image);
+    }
+    
+    try {
+      const response = await fetch('https://wwtravels.net/api/offers/update', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+        body: formData,
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to update offer');
+      }
+      
+      const data = await response.json();
+      
+      // Update the offer in the list
+      setOffers(prev => prev.map(offer => 
+        offer._id === data.offer._id ? data.offer : offer
+      ));
+      
+      // Close modal and reset form
+      setIsEditModalOpen(false);
+      setEditingOffer(null);
+      
+    } catch (error) {
+      console.error('Error updating offer:', error);
+      setOffersError(error.message || 'Failed to update offer. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  // Handle delete offer
+  const handleDeleteOffer = async (id) => {
+    if (!confirm('Are you sure you want to delete this offer? This action cannot be undone.')) {
+      return;
+    }
+
+    const token = Cookies.get('authToken');
+    
+    try {
+      const response = await fetch('https://wwtravels.net/api/offers/delete', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ id })
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to delete offer');
+      }
+
+      // Remove the deleted offer from the state
+      setOffers(prev => prev.filter(offer => offer._id !== id));
+      
+    } catch (error) {
+      console.error('Error deleting offer:', error);
+      setOffersError(error.message || 'Failed to delete offer. Please try again.');
+    }
+  };
+
+  // Handle form submission for creating a new offer
+  const handleCreateOffer = async (e) => {
+    e.preventDefault();
+    
+    if (!newOffer.name || !newOffer.price || !newOffer.image) {
+      setOffersError('Please fill all required fields');
+      return;
+    }
+
+    setIsSubmitting(true);
+    setOffersError('');
+    
+    const token = Cookies.get('authToken');
+    const formData = new FormData();
+    
+    // Append all form data
+    formData.append('name', newOffer.name);
+    formData.append('price', newOffer.price);
+    formData.append('alt', newOffer.alt || 'Offer image');
+    formData.append('image', newOffer.image);
+    
+    try {
+      const response = await fetch('https://wwtravels.net/api/offers/create', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+        body: formData,
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to create offer');
+      }
+      
+      const data = await response.json();
+      
+      // Add new offer to the list and close modal
+      setOffers(prev => [data.offer, ...prev]);
+      setNewOffer({
+        name: '',
+        price: '',
+        alt: '',
+        image: null
+      });
+      setIsCreateModalOpen(false);
+      
+    } catch (error) {
+      console.error('Error creating offer:', error);
+      setOffersError(error.message || 'Failed to create offer. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  // Helper functions (moved after all hooks)
+  const getStatusColor = (status) => {
+    switch (status?.toLowerCase()) {
+      case 'connected':
+        return 'bg-green-100 text-green-800 border-green-200';
+      case 'disconnected':
+        return 'bg-red-100 text-red-800 border-red-200';
+      case 'connecting':
+        return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+      default:
+        return 'bg-gray-100 text-gray-800 border-gray-200';
+    }
+  };
+
+  const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
+
+  const formatPhone = (phone) => {
+    if (!phone) return 'N/A';
+    return phone.replace(/(\d{2})(\d{4})(\d{6})/, '+$1 $2-$3');
+  };
 
   // Authentication check function
   const checkAuthentication = async () => {
@@ -495,36 +767,11 @@ export default function AdminDashboard() {
     return null;
   }
 
-  const getStatusColor = (status) => {
-    switch (status?.toLowerCase()) {
-      case 'connected':
-        return 'bg-green-100 text-green-800 border-green-200';
-      case 'disconnected':
-        return 'bg-red-100 text-red-800 border-red-200';
-      case 'connecting':
-        return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-      default:
-        return 'bg-gray-100 text-gray-800 border-gray-200';
-    }
-  };
 
-  const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  };
-
-  const formatPhone = (phone) => {
-    if (!phone) return 'N/A';
-    return phone.replace(/(\d{2})(\d{4})(\d{6})/, '+$1 $2-$3');
-  };
 
   const sidebarItems = [
     { id: 'instances', label: 'WhatsApp Instances', icon: Smartphone },
+    { id: 'offers', label: 'Offers', icon: Tag },
     { id: 'settings', label: 'Settings', icon: Settings },
   ];
 
@@ -838,6 +1085,301 @@ export default function AdminDashboard() {
         autoReplyMessage: settings.autoReplyMessage || ''
       });
     }
+  };
+
+  const renderOffers = () => {
+    return (
+      <div className="space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">
+              Special Offers
+            </h1>
+            <p className="mt-2 text-gray-600">
+              Manage your special offers and promotions
+            </p>
+          </div>
+          <Button 
+            onClick={() => setIsCreateModalOpen(true)}
+            className="mt-4 sm:mt-0"
+          >
+            Create New Offer
+          </Button>
+        </div>
+
+        {offersError && (
+          <Alert variant="destructive" className="mb-6">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>{offersError}</AlertDescription>
+          </Alert>
+        )}
+
+        {/* Create Offer Modal */}
+        <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
+          <DialogContent className="sm:max-w-[425px]">
+            <DialogHeader>
+              <DialogTitle>Create New Offer</DialogTitle>
+              <DialogDescription>
+                Fill in the details below to create a new special offer.
+              </DialogDescription>
+            </DialogHeader>
+            <form onSubmit={handleCreateOffer} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="name">Offer Name *</Label>
+                <Input
+                  id="name"
+                  name="name"
+                  value={newOffer.name}
+                  onChange={(e) => handleOfferChange(e, false)}
+                  placeholder="e.g., Summer Special"
+                  required
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="price">Price (₹) *</Label>
+                <Input
+                  id="price"
+                  name="price"
+                  type="number"
+                  value={newOffer.price}
+                  onChange={(e) => handleOfferChange(e, false)}
+                  placeholder="e.g., 999"
+                  min="0"
+                  step="0.01"
+                  required
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="alt">Image Description (Alt Text)</Label>
+                <Input
+                  id="alt"
+                  name="alt"
+                  value={newOffer.alt}
+                  onChange={(e) => handleOfferChange(e, false)}
+                  placeholder="Describe the image for accessibility"
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="image">Offer Image *</Label>
+                <Input
+                  id="image"
+                  name="image"
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => handleOfferChange(e, false)}
+                  className="cursor-pointer"
+                  required
+                />
+                <p className="text-xs text-gray-500">
+                  Recommended size: 800x600px. Max file size: 5MB
+                </p>
+              </div>
+              
+              <div className="flex justify-end space-x-2 pt-4">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setIsCreateModalOpen(false)}
+                  disabled={isSubmitting}
+                >
+                  Cancel
+                </Button>
+                <Button type="submit" disabled={isSubmitting}>
+                  {isSubmitting ? (
+                    <>
+                      <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
+                      Creating...
+                    </>
+                  ) : (
+                    'Create Offer'
+                  )}
+                </Button>
+              </div>
+            </form>
+          </DialogContent>
+        </Dialog>
+
+        {/* Edit Offer Modal */}
+        <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
+          <DialogContent className="sm:max-w-[425px]">
+            <DialogHeader>
+              <DialogTitle>Edit Offer</DialogTitle>
+              <DialogDescription>
+                Update the details of this offer.
+              </DialogDescription>
+            </DialogHeader>
+            {editingOffer && (
+              <form onSubmit={handleUpdateOffer} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="edit-name">Offer Name *</Label>
+                  <Input
+                    id="edit-name"
+                    name="name"
+                    value={editingOffer.name || ''}
+                    onChange={(e) => handleOfferChange(e, true)}
+                    placeholder="e.g., Summer Special"
+                    required
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="edit-price">Price (₹) *</Label>
+                  <Input
+                    id="edit-price"
+                    name="price"
+                    type="number"
+                    value={editingOffer.price || ''}
+                    onChange={(e) => handleOfferChange(e, true)}
+                    placeholder="e.g., 999"
+                    min="0"
+                    step="0.01"
+                    required
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="edit-alt">Image Description (Alt Text)</Label>
+                  <Input
+                    id="edit-alt"
+                    name="alt"
+                    value={editingOffer.alt || ''}
+                    onChange={(e) => handleOfferChange(e, true)}
+                    placeholder="Describe the image for accessibility"
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="edit-image">Update Image (Optional)</Label>
+                  <div className="flex items-center space-x-4">
+                    <div className="relative h-16 w-16">
+                      <Image
+                        src={editingOffer.imageChanged && editingOffer.image ? 
+                          URL.createObjectURL(editingOffer.image) : 
+                          editingOffer.imageUrl || '/placeholder.svg'}
+                        alt={editingOffer.alt || 'Offer image'}
+                        fill
+                        className="object-cover rounded-md"
+                      />
+                    </div>
+                    <div className="flex-1">
+                      <Input
+                        id="edit-image"
+                        name="image"
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => handleOfferChange(e, true)}
+                        className="cursor-pointer"
+                      />
+                      <p className="text-xs text-gray-500 mt-1">
+                        Leave empty to keep current image
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="flex justify-end space-x-2 pt-4">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => {
+                      setIsEditModalOpen(false);
+                      setEditingOffer(null);
+                    }}
+                    disabled={isSubmitting}
+                  >
+                    Cancel
+                  </Button>
+                  <Button type="submit" disabled={isSubmitting}>
+                    {isSubmitting ? (
+                      <>
+                        <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
+                        Updating...
+                      </>
+                    ) : (
+                      'Update Offer'
+                    )}
+                  </Button>
+                </div>
+              </form>
+            )}
+          </DialogContent>
+        </Dialog>
+
+        {offersLoading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[...Array(3)].map((_, i) => (
+              <Card key={i} className="h-72">
+                <CardHeader className="pb-4">
+                  <Skeleton className="h-40 w-full rounded-t-lg" />
+                </CardHeader>
+                <CardContent className="space-y-2">
+                  <Skeleton className="h-6 w-3/4" />
+                  <Skeleton className="h-4 w-1/2" />
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        ) : offers.length === 0 ? (
+          <div className="text-center py-12 border-2 border-dashed rounded-lg">
+            <Tag className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+            <h3 className="text-lg font-medium text-gray-900 mb-2">No offers available</h3>
+            <p className="text-gray-600 mb-4">Create your first offer to get started</p>
+            <Button>
+              Create Offer
+            </Button>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {offers.map((offer) => (
+              <Card key={offer._id} className="overflow-hidden hover:shadow-lg transition-shadow duration-200">
+                <div className="relative h-48 bg-gray-100">
+                  <Image
+                    src={offer.image}
+                    alt={offer.alt || 'Offer image'}
+                    fill
+                    className="object-cover"
+                    onError={(e) => {
+                      e.target.src = '/placeholder.svg';
+                    }}
+                  />
+                </div>
+                <CardHeader>
+                  <CardTitle className="text-xl">{offer.name}</CardTitle>
+                  <div className="flex items-center justify-between">
+                    <span className="text-2xl font-bold text-primary">${offer.price}</span>
+                    <Badge variant="outline" className="text-sm">
+                      {new Date(offer.createdAt).toLocaleDateString()}
+                    </Badge>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex space-x-2">
+                    <Button 
+                      size="sm" 
+                      variant="outline"
+                      onClick={() => handleEditClick(offer)}
+                    >
+                      Edit
+                    </Button>
+                    <Button 
+                      size="sm" 
+                      variant="outline" 
+                      className="text-red-600 border-red-200 hover:bg-red-50"
+                      onClick={() => handleDeleteOffer(offer._id)}
+                    >
+                      Delete
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
+      </div>
+    );
   };
 
   const renderSettings = () => {
@@ -1318,6 +1860,7 @@ export default function AdminDashboard() {
           <div className="py-6">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               {activeTab === 'instances' && renderInstances()}
+              {activeTab === 'offers' && renderOffers()}
               {activeTab === 'settings' && renderSettings()}
             </div>
           </div>

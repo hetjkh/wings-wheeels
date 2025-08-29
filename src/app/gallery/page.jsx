@@ -327,6 +327,7 @@ const locations = [
   "All",
   "WINTER",
   "SUMMER VACATION",
+  "EXCLUSIVE OFFERS",
 ];
 
 const TravelGallery = () => {
@@ -344,118 +345,64 @@ const TravelGallery = () => {
     date: "",
     message: ""
   });
-  const [currentCurrency, setCurrentCurrency] = useState('AED');
-  const [exchangeRates, setExchangeRates] = useState({});
-  const [isLoadingRates, setIsLoadingRates] = useState(true);
+  // Removed currency conversion state as we're using static AED prices
+  
+  // New states for API data
+  const [apiOffers, setApiOffers] = useState([]);
+  const [isLoadingOffers, setIsLoadingOffers] = useState(false);
+  const [apiError, setApiError] = useState(null);
 
   // Ref for the form panel scroll container
   const formPanelRef = useRef(null);
 
-  // Extract numeric price from price string
-  const extractNumericPrice = (priceStr) => {
-    if (!priceStr) return 0;
-    const match = priceStr.match(/\d+([.,]\d+)?/);
-    return match ? parseFloat(match[0].replace(',', '')) : 0;
-  };
-
-  // Format price with currency symbol
-  const formatPrice = (amount, currency) => {
-    if (isNaN(amount)) return 'Price not available';
-    
-    const formatter = new Intl.NumberFormat(undefined, {
-      style: 'currency',
-      currency: currency,
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-      currencyDisplay: 'symbol'
-    });
-    
-    // Replace the default symbol with our custom one for better control
-    return formatter.format(amount)
-      .replace(/[A-Z]{3}/, '')
-      .trim()
-      .replace(/^([^0-9]*)([0-9])/, `${currencySymbols[currency] || currency} $2`);
-  };
-
-  // Convert price to selected currency
-  const convertPrice = (basePrice, originalPrice = null) => {
-    const rate = exchangeRates[currentCurrency];
-    if (!rate) return 'Loading rates...';
-    
-    // Convert from AED to selected currency
-    const convertedAmount = basePrice * rate;
-    const convertedOriginal = originalPrice ? originalPrice * rate : null;
-    
-    if (convertedOriginal) {
-      return {
-        current: formatPrice(convertedAmount, currentCurrency),
-        original: formatPrice(convertedOriginal, currentCurrency)
-      };
-    }
-    
-    return formatPrice(convertedAmount, currentCurrency);
-  };
-
-  // Fetch exchange rates with caching
+  // Fetch API offers
   useEffect(() => {
-    const fetchRates = async () => {
+    const fetchOffers = async () => {
       try {
-        setIsLoadingRates(true);
+        setIsLoadingOffers(true);
+        setApiError(null);
         
-        // First try to get rates from localStorage if they're still fresh (less than 24 hours old)
-        const cachedData = localStorage.getItem('exchangeRates');
-        if (cachedData) {
-          const { timestamp, rates } = JSON.parse(cachedData);
-          if (Date.now() - timestamp < 24 * 60 * 60 * 1000) { // 24 hours in ms
-            setExchangeRates(rates);
-            setIsLoadingRates(false);
-            return;
-          }
+        const response = await fetch('https://wwtravels.net/api/offers/all');
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
         }
-
-        // If no fresh cache or cache is expired, fetch new rates
-        const response = await fetch('https://open.er-api.com/v6/latest/AED');
-        if (!response.ok) throw new Error('Failed to fetch rates');
         
         const data = await response.json();
-        if (data.result !== 'success') throw new Error('Failed to fetch rates');
         
-        setExchangeRates(data.rates);
-        
-        // Store rates in localStorage with timestamp
-        localStorage.setItem('exchangeRates', JSON.stringify({
-          rates: data.rates,
-          timestamp: Date.now(),
-          base: 'AED'
-        }));
-        
-      } catch (error) {
-        console.error('Error fetching exchange rates:', error);
-        
-        // Try to load from localStorage even if expired
-        const cachedRates = localStorage.getItem('exchangeRates');
-        if (cachedRates) {
-          try {
-            const { rates } = JSON.parse(cachedRates);
-            setExchangeRates(rates);
-          } catch (e) {
-            console.error('Error parsing cached rates:', e);
-          }
+        if (data.success && data.offers) {
+          // Transform API data to match our gallery structure
+          const transformedOffers = data.offers.map((offer, index) => ({
+            id: `exclusive-${offer._id}`,
+            image: offer.image,
+            title: offer.name,
+            location: "Special Deal",
+            category: "EXCLUSIVE OFFERS",
+            allImages: [offer.image], // API only provides one image per offer
+            height: 380 + Math.floor(Math.random() * 50),
+            price: offer.price,
+            apiData: offer // Store original API data for reference
+          }));
+          
+          setApiOffers(transformedOffers);
         } else {
-          // Fallback rates (approximate)
-          setExchangeRates({
-            USD: 0.27, EUR: 0.25, GBP: 0.21, AED: 1,
-            SAR: 1.02, JPY: 30, CAD: 0.34, AUD: 0.37,
-            CHF: 0.25, INR: 22.5
-          });
+          throw new Error('Invalid API response format');
         }
+      } catch (error) {
+        console.error('Error fetching offers:', error);
+        setApiError(error.message);
       } finally {
-        setIsLoadingRates(false);
+        setIsLoadingOffers(false);
       }
     };
 
-    fetchRates();
+    fetchOffers();
   }, []);
+
+  // Format price in AED
+  const formatPrice = (amount) => {
+    if (isNaN(amount)) return 'Price not available';
+    return `AED ${Math.round(amount).toLocaleString()}`;
+  };
 
   // Listen for currency changes from navbar and localStorage
   useEffect(() => {
@@ -503,10 +450,18 @@ const TravelGallery = () => {
     };
   }, [isOfferDialogOpen]);
 
-  const filteredData =
-    activeLocation === "All"
-      ? galleryData
-      : galleryData.filter((item) => item.category === activeLocation);
+  // Get filtered data based on active location
+  const getFilteredData = () => {
+    if (activeLocation === "All") {
+      return [...galleryData, ...apiOffers];
+    } else if (activeLocation === "EXCLUSIVE OFFERS") {
+      return apiOffers;
+    } else {
+      return galleryData.filter((item) => item.category === activeLocation);
+    }
+  };
+
+  const filteredData = getFilteredData();
 
   const handleBookNow = () => {
     setShowForm(true);
@@ -534,7 +489,7 @@ const TravelGallery = () => {
   const handleFormSubmit = (e) => {
     e.preventDefault();
     console.log("Form submitted:", { ...formData, destination: selectedOffer?.title });
-    setFormData({ name: "", email: "", phone: "" });
+    setFormData({ name: "", email: "", phone: "", date: "", message: "" });
     setIsOfferDialogOpen(false);
     setSelectedOffer(null);
   };
@@ -716,44 +671,88 @@ const TravelGallery = () => {
                 }`}
               >
                 {loc}
+                {loc === "EXCLUSIVE OFFERS" && isLoadingOffers && (
+                  <span className="ml-2 inline-block w-3 h-3 border border-gray-400 border-t-transparent rounded-full animate-spin"></span>
+                )}
               </button>
             ))}
           </div>
 
-          {/* Masonry Grid */}
-          <Masonry>
-            {filteredData.map((item, i) => (
-              <div
-                key={item.id}
-                className="group bg-white rounded-xl border overflow-hidden transition-all duration-300 flex flex-col h-full"
-              >
-                <div className="relative overflow-hidden flex-1">
-                  <Image
-                    src={item.image}
-                    alt={item.title}
-                    width={500}
-                    height={500}
-                    className="w-full h-full object-cover transition-all duration-500"
-                    loading="lazy"
-                  />
-                </div>
-
-                {/* Card Body */}
-                <div className="p-4">
-                  <h3 className="font-semibold text-gray-900 text-lg mb-1">
-                    {item.title}
-                  </h3>
-                  <p className="text-gray-600 text-sm mb-3">{item.location}</p>
-                  <Button
-                    onClick={() => handleSeeOffers(item)}
-                    className="w-full bg-black hover:bg-gray-800 text-white transition-all duration-300 font-medium py-2"
-                  >
-                    See Offers
-                  </Button>
-                </div>
+          {/* API Error Message */}
+          {apiError && activeLocation === "EXCLUSIVE OFFERS" && (
+            <div className="text-center py-8">
+              <div className="bg-red-50 border border-red-200 rounded-lg p-4 max-w-md mx-auto">
+                <p className="text-red-600 text-sm">
+                  Failed to load exclusive offers: {apiError}
+                </p>
+                <button 
+                  onClick={() => window.location.reload()}
+                  className="mt-2 text-red-700 hover:text-red-800 underline text-xs"
+                >
+                  Try refreshing the page
+                </button>
               </div>
-            ))}
-          </Masonry>
+            </div>
+          )}
+
+          {/* Loading state for exclusive offers */}
+          {isLoadingOffers && activeLocation === "EXCLUSIVE OFFERS" && (
+            <div className="text-center py-12">
+              <div className="inline-block w-8 h-8 border-4 border-gray-300 border-t-black rounded-full animate-spin"></div>
+              <p className="text-gray-600 mt-4">Loading exclusive offers...</p>
+            </div>
+          )}
+
+          {/* Masonry Grid */}
+          {!isLoadingOffers && !apiError && (
+            <Masonry>
+              {filteredData.map((item, i) => (
+                <div
+                  key={item.id}
+                  className="group bg-white rounded-xl border overflow-hidden transition-all duration-300 flex flex-col h-full"
+                >
+                  <div className="relative overflow-hidden flex-1">
+                    <Image
+                      src={item.image}
+                      alt={item.title}
+                      width={500}
+                      height={500}
+                      className="w-full h-full object-cover transition-all duration-500"
+                      loading="lazy"
+                    />
+                    {/* Price badge for API offers */}
+                    {item.category === "EXCLUSIVE OFFERS" && item.price && (
+                      <div className="absolute top-3 right-3 bg-green-500 text-white px-2 py-1 rounded-lg font-bold text-sm shadow-lg">
+                        {formatPrice(item.price)}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Card Body */}
+                  <div className="p-4">
+                    <h3 className="font-semibold text-gray-900 text-lg mb-1">
+                      {item.title}
+                    </h3>
+                    <p className="text-gray-600 text-sm mb-3">{item.location}</p>
+                    {item.category === "EXCLUSIVE OFFERS" && item.price && (
+                      <div className="mb-3">
+                        <span className="text-lg font-bold text-green-600">
+                          {formatPrice(item.price)}
+                        </span>
+                        <span className="text-xs text-gray-500 block">Starting from</span>
+                      </div>
+                    )}
+                    <Button
+                      onClick={() => handleSeeOffers(item)}
+                      className="w-full bg-black hover:bg-gray-800 text-white transition-all duration-300 font-medium py-2"
+                    >
+                      See Offers
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </Masonry>
+          )}
 
           {/* Info */}
           <div className="text-center text-gray-600">
@@ -809,15 +808,28 @@ const TravelGallery = () => {
                   <p className="text-gray-200 text-xs">{selectedOffer.location}</p>
                   <div className="mt-1">
                     <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
-                      <span className="text-gray-300 line-through text-xs">
-                        {typeof convertPrice(2999, 2999) === 'object' ? convertPrice(2999, 2999).original : convertPrice(2999)}
-                      </span>
-                      <span className="text-lg sm:text-xl font-bold text-white">
-                        {typeof convertPrice(1999, 2999) === 'object' ? convertPrice(1999, 2999).current : convertPrice(1999)}
-                      </span>
-                      <span className="bg-green-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded">
-                        Save 33%
-                      </span>
+                      {selectedOffer.category === "EXCLUSIVE OFFERS" && selectedOffer.price ? (
+                        <>
+                          <span className="text-lg sm:text-xl font-bold text-white">
+                            {formatPrice(selectedOffer.price)}
+                          </span>
+                          <span className="bg-green-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded">
+                            Special Deal
+                          </span>
+                        </>
+                      ) : (
+                        <>
+                          <span className="text-gray-300 line-through text-xs">
+                            {formatPrice(2999)}
+                          </span>
+                          <span className="text-lg sm:text-xl font-bold text-white">
+                            {formatPrice(1999)}
+                          </span>
+                          <span className="bg-green-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded">
+                            Save 33%
+                          </span>
+                        </>
+                      )}
                     </div>
                     <p className="text-[10px] text-gray-300 mt-1 ml-0.5 mb-2">
                       * Prices can vary based on season and availability.
@@ -840,63 +852,65 @@ const TravelGallery = () => {
                 </div>
               </div>
               
-              {/* Bottom Carousel */}
-              <div className="w-full h-24 sm:h-36 bg-gray-100 border-t border-gray-200 relative z-10">
-                <div className="h-full w-full flex items-center">
-                  <div className="w-full px-2 sm:px-4">
-                    <div className="flex justify-between w-full">
-                      {selectedOffer?.allImages?.slice(0, 5).map((image, index) => (
-                        <div 
-                          key={`${selectedOffer.id}-${index}`}
-                          className={`relative h-16 w-16 sm:h-28 sm:w-full rounded-lg overflow-hidden border-2 transition-all cursor-pointer flex-shrink-0 mx-1 ${
-                            index === currentImageIndex 
-                              ? 'border-blue-500 scale-105' 
-                              : 'border-transparent hover:border-blue-500'
-                          }`}
-                          style={{ flex: '1 0 auto', maxWidth: 'calc(20% - 8px)' }}
-                          onClick={() => handleCarouselImageClick(index)}
-                        >
-                          <Image
-                            src={image}
-                            alt={`${selectedOffer.title} - ${index + 1}`}
-                            fill
-                            sizes="(max-width: 768px) 64px, 112px"
-                            className="object-cover"
-                          />
-                        </div>
-                      ))}
+              {/* Bottom Carousel - Only show for locations with multiple images */}
+              {selectedOffer?.allImages?.length > 1 && (
+                <div className="w-full h-24 sm:h-36 bg-gray-100 border-t border-gray-200 relative z-10">
+                  <div className="h-full w-full flex items-center">
+                    <div className="w-full px-2 sm:px-4">
+                      <div className="flex justify-between w-full">
+                        {selectedOffer?.allImages?.slice(0, 5).map((image, index) => (
+                          <div 
+                            key={`${selectedOffer.id}-${index}`}
+                            className={`relative h-16 w-16 sm:h-28 sm:w-full rounded-lg overflow-hidden border-2 transition-all cursor-pointer flex-shrink-0 mx-1 ${
+                              index === currentImageIndex 
+                                ? 'border-blue-500 scale-105' 
+                                : 'border-transparent hover:border-blue-500'
+                            }`}
+                            style={{ flex: '1 0 auto', maxWidth: 'calc(20% - 8px)' }}
+                            onClick={() => handleCarouselImageClick(index)}
+                          >
+                            <Image
+                              src={image}
+                              alt={`${selectedOffer.title} - ${index + 1}`}
+                              fill
+                              sizes="(max-width: 768px) 64px, 112px"
+                              className="object-cover"
+                            />
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   </div>
+                  {/* Custom scrollbar styling */}
+                  <style jsx>{`
+                    .overflow-x-auto::-webkit-scrollbar {
+                      height: 6px;
+                    }
+                    .overflow-x-auto::-webkit-scrollbar-track {
+                      background: #f1f1f1;
+                      border-radius: 3px;
+                    }
+                    .overflow-x-auto::-webkit-scrollbar-thumb {
+                      background: #888;
+                      border-radius: 3px;
+                    }
+                    .overflow-x-auto::-webkit-scrollbar-thumb:hover {
+                      background: #555;
+                    }
+                  `}</style>
                 </div>
-                {/* Custom scrollbar styling */}
-                <style jsx>{`
-                  .overflow-x-auto::-webkit-scrollbar {
-                    height: 6px;
-                  }
-                  .overflow-x-auto::-webkit-scrollbar-track {
-                    background: #f1f1f1;
-                    border-radius: 3px;
-                  }
-                  .overflow-x-auto::-webkit-scrollbar-thumb {
-                    background: #888;
-                    border-radius: 3px;
-                  }
-                  .overflow-x-auto::-webkit-scrollbar-thumb:hover {
-                    background: #555;
-                  }
-                `}</style>
-              </div>
+              )}
               
               {/* Sliding Form Panel */}
               <div 
                 id="booking-form"
-                className={`absolute top-0 right-0 h-[calc(100%-6rem)] sm:h-[calc(100%-9rem)] md:h-[calc(100%-8rem)] w-full sm:w-full md:w-1/2 bg-white shadow-xl transition-all duration-500 ease-in-out ${
-                  showForm ? 'translate-x-0 sm:translate-y-0' : 'translate-x-full sm:translate-y-full md:translate-y-0 md:translate-x-full'
+                className={`absolute top-0 right-0 h-full w-full sm:w-full md:w-1/2 bg-white shadow-xl transition-all duration-500 ease-in-out ${
+                  showForm ? 'translate-x-0' : 'translate-x-full'
                 }`}
               >
                 <div 
                   ref={formPanelRef}
-                  className="p-4 sm:p-6 md:p-8 h-full overflow-y-auto pb-16 sm:pb-20 md:pb-24 scroll-smooth"
+                  className="p-4 sm:p-6 md:p-8 h-full overflow-y-auto pb-20 sm:pb-24 md:pb-28 scroll-smooth"
                   onWheel={handleFormPanelScroll}
                   onTouchMove={handleFormPanelTouch}
                   onTouchStart={handleFormPanelTouch}

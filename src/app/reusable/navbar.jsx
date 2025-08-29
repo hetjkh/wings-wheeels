@@ -2,6 +2,10 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   Menu,
   X,
@@ -59,7 +63,12 @@ const translations = {
       phone: "+971 4 556 1050",
       email: "reservation@wwtravels.net",
       whatsapp: "WhatsApp Support"
-    }
+    },
+    currencyConverter: "Currency Converter",
+    amount: "Amount",
+    from: "From",
+    to: "To",
+    convertedAmount: "Converted Amount"
   },
   ar: {
     navItems: [
@@ -84,7 +93,12 @@ const translations = {
       email: "reservation@wwtravels.net",
       whatsapp: "دعم واتساب"
     },
-    emailDisplay: "reservation@wwtravels.net"
+    emailDisplay: "reservation@wwtravels.net",
+    currencyConverter: "محول العملات",
+    amount: "المبلغ",
+    from: "من",
+    to: "إلى",
+    convertedAmount: "المبلغ المحول"
   },
 };
 
@@ -102,39 +116,55 @@ const Navbar = ({ showContactButton = true }) => {
   const [exchangeRates, setExchangeRates] = useState({});
   const [isLoadingRates, setIsLoadingRates] = useState(false);
 
+  // Converter modal state
+  const [isConverterOpen, setIsConverterOpen] = useState(false);
+  const [amount, setAmount] = useState(1);
+  const [fromCurrency, setFromCurrency] = useState('USD');
+  const [toCurrency, setToCurrency] = useState('AED');
+  const [converted, setConverted] = useState(0);
+
   const currentTranslation = translations[language];
   const isRTL = language === "ar";
   const currentCurrency = currencies.find(c => c.code === selectedCurrency) || currencies[0];
 
-  // Fetch exchange rates from ExchangeRate-API
-  const fetchExchangeRates = async (baseCurrency = 'AED') => {
+  // Fetch exchange rates from ExchangeRate-API with USD as base
+  const fetchExchangeRates = async () => {
     setIsLoadingRates(true);
     try {
       // First try to get rates from localStorage if they're still fresh (less than 24 hours old)
       const cachedData = localStorage.getItem('exchangeRates');
       if (cachedData) {
-        const { timestamp, rates } = JSON.parse(cachedData);
-        if (Date.now() - timestamp < 24 * 60 * 60 * 1000) { // 24 hours in ms
+        const { timestamp, rates, base } = JSON.parse(cachedData);
+        if (Date.now() - timestamp < 24 * 60 * 60 * 1000 && base === 'USD') {
           setExchangeRates(rates);
-          return;
+          return rates;
         }
       }
 
-      // If no fresh cache or cache is expired, fetch new rates
-      const response = await fetch(`https://open.er-api.com/v6/latest/${baseCurrency}`);
+      // Fetch rates with USD as base
+      const response = await fetch('https://open.er-api.com/v6/latest/USD');
       if (!response.ok) throw new Error('Failed to fetch rates');
       
       const data = await response.json();
       if (data.result !== 'success') throw new Error('Failed to fetch rates');
       
-      setExchangeRates(data.rates);
+      // Use the rates directly as they are already in USD base
+      const usdRates = data.rates;
+      
+      // Ensure USD is exactly 1 (should be already, but just in case)
+      usdRates.USD = 1;
+      
+      setExchangeRates(usdRates);
       
       // Store rates in localStorage with timestamp
-      localStorage.setItem('exchangeRates', JSON.stringify({
-        rates: data.rates,
+      const cacheData = {
+        rates: usdRates,
         timestamp: Date.now(),
-        base: baseCurrency
-      }));
+        base: 'USD' // Mark that these rates are in USD base
+      };
+      
+      localStorage.setItem('exchangeRates', JSON.stringify(cacheData));
+      return usdRates;
       
     } catch (error) {
       console.error('Error fetching exchange rates:', error);
@@ -144,24 +174,28 @@ const Navbar = ({ showContactButton = true }) => {
         try {
           const { rates } = JSON.parse(cachedRates);
           setExchangeRates(rates);
-          return;
+          return rates;
         } catch (e) {
           console.error('Error parsing cached rates:', e);
         }
       }
       // Fallback rates (approximate)
-      setExchangeRates({
+      const fallbackRates = {
         USD: 0.27, EUR: 0.25, GBP: 0.21, AED: 1,
         SAR: 1.02, JPY: 30, CAD: 0.34, AUD: 0.37,
         CHF: 0.25, INR: 22.5
-      });
+      };
+      setExchangeRates(fallbackRates);
+      return fallbackRates;
     } finally {
       setIsLoadingRates(false);
     }
   };
 
+  // Initialize rates when component mounts
   useEffect(() => {
     initLenis();
+    // Initialize with USD as base currency
     fetchExchangeRates();
     return () => {
       destroyLenis();
@@ -181,6 +215,16 @@ const Navbar = ({ showContactButton = true }) => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  // Converter calculation
+  useEffect(() => {
+    if (exchangeRates[fromCurrency] && exchangeRates[toCurrency] && amount > 0) {
+      const rate = exchangeRates[toCurrency] / exchangeRates[fromCurrency];
+      setConverted((amount * rate).toFixed(2));
+    } else {
+      setConverted(0);
+    }
+  }, [amount, fromCurrency, toCurrency, exchangeRates]);
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -228,12 +272,13 @@ const Navbar = ({ showContactButton = true }) => {
   }, []);
 
   // Function to convert price (can be used by other components)
-  const convertPrice = (basePrice, fromCurrency = 'USD', toCurrency = selectedCurrency) => {
+  const convertPrice = (price, fromCurrency, toCurrency) => {
     if (!exchangeRates[fromCurrency] || !exchangeRates[toCurrency]) {
-      return basePrice;
+      return price; // Return original price if rates aren't loaded
     }
     
-    const usdPrice = basePrice / exchangeRates[fromCurrency];
+    // Convert to USD first, then to target currency
+    const usdPrice = price / exchangeRates[fromCurrency];
     const convertedPrice = usdPrice * exchangeRates[toCurrency];
     
     return Math.round(convertedPrice * 100) / 100;
@@ -306,18 +351,83 @@ const Navbar = ({ showContactButton = true }) => {
             </div>
           </div>
 
-          {/* Right Section - Email */}
-          <div
-            className="hidden md:flex items-center space-x-2 cursor-pointer hover:opacity-80 transition-opacity"
-            onClick={() =>
-              window.open("mailto:reservation@wwtravels.net", "_blank")
-            }
-          >
-            <Mail className="w-4 h-4 text-red-400" />
-            <span className="Poppins">{currentTranslation.email}</span>
+          {/* Right Section - Converter Icon and Email */}
+          <div className="flex items-center space-x-3">
+            {/* Currency Converter Icon */}
+            <DollarSign
+              className="w-4 h-4 cursor-pointer hover:text-yellow-400 transition-colors"
+              onClick={() => setIsConverterOpen(true)}
+            />
+            {/* Email */}
+            <div
+              className="flex items-center space-x-2 cursor-pointer hover:opacity-80 transition-opacity"
+              onClick={() =>
+                window.open("mailto:reservation@wwtravels.net", "_blank")
+              }
+            >
+              <Mail className="w-4 h-4 text-red-400" />
+              <span className="hidden md:inline Poppins">{currentTranslation.email}</span>
+            </div>
           </div>
         </div>
       </div>
+
+      {/* Currency Converter Modal */}
+      <Dialog open={isConverterOpen} onOpenChange={setIsConverterOpen}>
+        <DialogContent dir={isRTL ? "rtl" : "ltr"}>
+          <DialogHeader>
+            <DialogTitle>{currentTranslation.currencyConverter}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="amount">{currentTranslation.amount}</Label>
+              <Input
+                id="amount"
+                type="number"
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+                min="0"
+              />
+            </div>
+            <div>
+              <Label htmlFor="from">{currentTranslation.from}</Label>
+              <Select value={fromCurrency} onValueChange={setFromCurrency}>
+                <SelectTrigger id="from">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {currencies.map((currency) => (
+                    <SelectItem key={currency.code} value={currency.code}>
+                      {currency.code} - {currency.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label htmlFor="to">{currentTranslation.to}</Label>
+              <Select value={toCurrency} onValueChange={setToCurrency}>
+                <SelectTrigger id="to">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {currencies.map((currency) => (
+                    <SelectItem key={currency.code} value={currency.code}>
+                      {currency.code} - {currency.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label>{currentTranslation.convertedAmount}</Label>
+              <p className="text-lg font-bold">
+                {isLoadingRates ? "Loading rates..." : `${converted} ${toCurrency}`}
+              </p>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* Main Navigation */}
       <nav className="py-2 md:py-4 relative z-50 bg-white/95 backdrop-blur-sm md:bg-transparent md:backdrop-blur-none">

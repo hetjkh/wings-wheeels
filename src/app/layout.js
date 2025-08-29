@@ -1,7 +1,6 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import WhatsAppWidget from "./components/WhatsAppWidget";
-import WelcomeModal from "./components/WelcomeModal";
+import ClientLayout from "./ClientLayout";
 
 
 const geistSans = Geist({
@@ -12,7 +11,7 @@ const geistSans = Geist({
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
-});
+}); 
 
 export const metadata = {
   title: "Wings & Wheels Travel and Tourism | Seamless Travel Experiences",
@@ -76,11 +75,9 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
       <body className="bg-background font-sans antialiased">
-        
+        <ClientLayout>
           {children}
-          <WhatsAppWidget />
-          <WelcomeModal />
-    
+        </ClientLayout>
       </body>
     </html>
   );
