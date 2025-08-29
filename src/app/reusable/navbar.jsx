@@ -112,7 +112,6 @@ const Navbar = ({ showContactButton = true }) => {
   
   // Currency state
   const [selectedCurrency, setSelectedCurrency] = useState('USD');
-  const [currencyDropdownOpen, setCurrencyDropdownOpen] = useState(false);
   const [exchangeRates, setExchangeRates] = useState({});
   const [isLoadingRates, setIsLoadingRates] = useState(false);
 
@@ -489,51 +488,7 @@ const Navbar = ({ showContactButton = true }) => {
               </div>
             </div>
 
-            {/* Currency Changer - Desktop */}
-            <div className="hidden lg:flex items-center mr-4 cursor-pointer">
-              <div className="relative">
-                <Button
-                  onClick={() => setCurrencyDropdownOpen(!currencyDropdownOpen)}
-                  variant="ghost"
-                  size="sm"
-                  className="flex items-center space-x-1 text-black hover:bg-black/10 h-8 px-3 cursor-pointer"
-                >
-                  <DollarSign className="w-4 h-4" />
-                  <span className="text-sm font-medium">
-                    {currentCurrency.code}
-                  </span>
-                  <ChevronDown className={`w-3 h-3 transition-transform ${currencyDropdownOpen ? 'rotate-180' : ''}`} />
-                </Button>
 
-                {/* Currency Dropdown */}
-                {currencyDropdownOpen && (
-                  <div className="absolute right-0 mt-2 w-56 bg-white border border-gray-200 rounded-lg shadow-lg z-[100] max-h-64 overflow-y-auto">
-                    {currencies.map((currency) => (
-                      <div
-                        key={currency.code}
-                        onClick={() => handleCurrencyChange(currency.code)}
-                        className={`flex items-center justify-between px-4 py-2.5 text-sm cursor-pointer hover:bg-gray-50 transition-colors ${
-                          selectedCurrency === currency.code ? 'bg-blue-50 text-blue-600' : 'text-gray-700'
-                        }`}
-                      >
-                        <div className="flex items-center min-w-0">
-                          <span className="font-medium w-6 text-left">{currency.symbol}</span>
-                          <span className="font-medium w-12 truncate">{currency.code}</span>
-                        </div>
-                        <span className="text-xs text-gray-500 ml-2 truncate text-right flex-1">
-                          {currency.name}
-                        </span>
-                      </div>
-                    ))}
-                    {isLoadingRates && (
-                      <div className="px-4 py-2 text-xs text-gray-500 text-center">
-                        Updating rates...
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-            </div>
 
             {/* Language Toggle Button */}
             <div className="hidden lg:flex items-center mr-4">
@@ -651,41 +606,6 @@ const Navbar = ({ showContactButton = true }) => {
                     {item.name}
                   </div>
                 ))}
-
-                {/* Mobile Currency Changer */}
-                <div className="px-6 py-3 border-b border-gray-100">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm font-medium text-gray-700" style={{ fontFamily: isRTL ? 'Arial, sans-serif' : 'inherit' }}>
-                      {currentTranslation.currency}
-                    </span>
-                    <Button
-                      onClick={() => setCurrencyDropdownOpen(!currencyDropdownOpen)}
-                      variant="ghost"
-                      size="sm"
-                      className="h-6 px-2"
-                    >
-                      <span className="text-sm">{currentCurrency.code}</span>
-                      <ChevronDown className={`w-3 h-3 ml-1 transition-transform ${currencyDropdownOpen ? 'rotate-180' : ''}`} />
-                    </Button>
-                  </div>
-                  
-                  {currencyDropdownOpen && (
-                    <div className="grid grid-cols-2 gap-2 mt-2">
-                      {currencies.map((currency) => (
-                        <div
-                          key={currency.code}
-                          onClick={() => handleCurrencyChange(currency.code)}
-                          className={`flex items-center p-2 rounded cursor-pointer text-sm ${
-                            selectedCurrency === currency.code ? 'bg-blue-50 text-blue-600' : 'hover:bg-gray-50'
-                          }`}
-                        >
-                          <span className="font-medium mr-1">{currency.symbol}</span>
-                          <span>{currency.code}</span>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
 
                 {/* Mobile Language Toggle in Menu */}
                 <div className="px-6 py-3 border-b border-gray-100">
