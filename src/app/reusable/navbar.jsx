@@ -373,56 +373,78 @@ const Navbar = ({ showContactButton = true }) => {
 
       {/* Currency Converter Modal */}
       <Dialog open={isConverterOpen} onOpenChange={setIsConverterOpen}>
-        <DialogContent dir={isRTL ? "rtl" : "ltr"}>
-          <DialogHeader>
-            <DialogTitle>{currentTranslation.currencyConverter}</DialogTitle>
+        <DialogContent dir={isRTL ? "rtl" : "ltr"} className="sm:max-w-[425px] p-6">
+          <DialogHeader className="pb-4 px-1">
+            <DialogTitle className="text-xl font-semibold text-gray-800">{currentTranslation.currencyConverter}</DialogTitle>
           </DialogHeader>
-          <div className="space-y-4">
-            <div>
-              <Label htmlFor="amount">{currentTranslation.amount}</Label>
+          <div className="space-y-6 px-1">
+            <div className="space-y-3">
+              <Label htmlFor="amount" className="text-sm font-medium">{currentTranslation.amount}</Label>
               <Input
                 id="amount"
                 type="number"
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
                 min="0"
+                className="w-full text-base py-2 px-3 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
-            <div>
-              <Label htmlFor="from">{currentTranslation.from}</Label>
-              <Select value={fromCurrency} onValueChange={setFromCurrency}>
-                <SelectTrigger id="from">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {currencies.map((currency) => (
-                    <SelectItem key={currency.code} value={currency.code}>
-                      {currency.code} - {currency.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="from" className="text-sm font-medium">{currentTranslation.from}</Label>
+                <Select value={fromCurrency} onValueChange={setFromCurrency}>
+                  <SelectTrigger id="from" className="w-full">
+                    <SelectValue placeholder="Select currency" />
+                  </SelectTrigger>
+                  <SelectContent className="max-h-60 overflow-y-auto">
+                    {currencies.map((currency) => (
+                      <SelectItem key={currency.code} value={currency.code} className="px-4 py-2">
+                        <div className="flex items-center">
+                          <span className="font-medium">{currency.code}</span>
+                          <span className="text-gray-500 ml-2">{currency.name}</span>
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              {/* To Currency */}
+              <div className="space-y-2">
+                <Label htmlFor="to" className="text-sm font-medium">{currentTranslation.to}</Label>
+                <Select value={toCurrency} onValueChange={setToCurrency}>
+                  <SelectTrigger id="to" className="w-full">
+                    <SelectValue placeholder="Select currency" />
+                  </SelectTrigger>
+                  <SelectContent className="max-h-60 overflow-y-auto">
+                    {currencies.map((currency) => (
+                      <SelectItem key={currency.code} value={currency.code} className="px-4 py-2">
+                        <div className="flex items-center">
+                          <span className="font-medium">{currency.code}</span>
+                          <span className="text-gray-500 ml-2">{currency.name}</span>
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
-            <div>
-              <Label htmlFor="to">{currentTranslation.to}</Label>
-              <Select value={toCurrency} onValueChange={setToCurrency}>
-                <SelectTrigger id="to">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {currencies.map((currency) => (
-                    <SelectItem key={currency.code} value={currency.code}>
-                      {currency.code} - {currency.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <Label>{currentTranslation.convertedAmount}</Label>
-              <p className="text-lg font-bold">
-                {isLoadingRates ? "Loading rates..." : `${converted} ${toCurrency}`}
+
+            {/* Converted Amount */}
+            <div className="bg-gray-50 p-5 rounded-lg border border-gray-200 mt-2">
+              <Label className="text-sm font-medium text-gray-600">{currentTranslation.convertedAmount}</Label>
+              <p className="text-2xl font-bold text-blue-600 mt-1">
+                {isLoadingRates ? (
+                  <span className="text-gray-500">Loading rates...</span>
+                ) : (
+                  `${converted} ${toCurrency}`
+                )}
               </p>
+              {!isLoadingRates && converted > 0 && (
+                <p className="text-sm text-gray-500 mt-1">
+                  1 {fromCurrency} = {(converted / amount).toFixed(6)} {toCurrency}
+                </p>
+              )}
             </div>
           </div>
         </DialogContent>
