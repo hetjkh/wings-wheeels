@@ -2214,14 +2214,89 @@ const ContactUsPage = () => {
 
                   {/* Social Media Icons Grid */}
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-4">
-                    {socialMediaLinks.slice(0, 4).map((social, index) => {
-                      const IconComponent = social.icon;
-                      return (
-                        <div key={index} className="text-center">
+                    {socialMediaLinks.slice(0, 4).map((social, index) => (
+                      <div key={index} className="text-center">
+                        {social.name === 'Facebook' ? (
                           <Button
                             variant="outline"
                             size="icon"
-                            className="w-12 h-12 rounded-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
+                            className="w-16 h-16 rounded-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-lg cursor-pointer bg-transparent"
+                            style={{ 
+                              backgroundColor: 'transparent',
+                              borderColor: 'transparent',
+                              boxShadow: 'none'
+                            }}
+                            onClick={() => window.open(social.url, '_blank')}
+                            title={`Follow us on ${social.name}`}
+                          >
+                            <img 
+                              src="/assets/gallery/winter/facebook.png" 
+                              alt="Facebook" 
+                              className="w-10 h-10"
+                            />
+                          </Button>
+                        ) : social.name === 'Instagram' ? (
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            className="w-16 h-16 rounded-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-lg cursor-pointer bg-transparent"
+                            style={{ 
+                              backgroundColor: 'transparent',
+                              borderColor: 'transparent',
+                              boxShadow: 'none'
+                            }}
+                            onClick={() => window.open(social.url, '_blank')}
+                            title={`Follow us on ${social.name}`}
+                          >
+                            <img 
+                              src="/assets/gallery/winter/instagram.png" 
+                              alt="Instagram" 
+                              className="w-10 h-10"
+                            />
+                          </Button>
+                        ) : social.name === 'LinkedIn' ? (
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            className="w-16 h-16 rounded-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-lg cursor-pointer bg-transparent"
+                            style={{ 
+                              backgroundColor: 'transparent',
+                              borderColor: 'transparent',
+                              boxShadow: 'none'
+                            }}
+                            onClick={() => window.open(social.url, '_blank')}
+                            title={`Follow us on ${social.name}`}
+                          >
+                            <img 
+                              src="/assets/gallery/winter/linkedin.png" 
+                              alt="LinkedIn" 
+                              className="w-10 h-10"
+                            />
+                          </Button>
+                        ) : social.name === 'WhatsApp' ? (
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            className="w-16 h-16 rounded-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-lg cursor-pointer bg-transparent"
+                            style={{ 
+                              backgroundColor: 'transparent',
+                              borderColor: 'transparent',
+                              boxShadow: 'none'
+                            }}
+                            onClick={() => window.open(social.url, '_blank')}
+                            title={`Follow us on ${social.name}`}
+                          >
+                            <img 
+                              src="/assets/gallery/winter/social.png" 
+                              alt="WhatsApp" 
+                              className="w-10 h-10"
+                            />
+                          </Button>
+                        ) : (
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            className="w-12 h-12 rounded-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-lg cursor-pointer"
                             style={{ 
                               backgroundColor: social.color,
                               borderColor: social.color,
@@ -2230,14 +2305,14 @@ const ContactUsPage = () => {
                             onClick={() => window.open(social.url, '_blank')}
                             title={`Follow us on ${social.name}`}
                           >
-                            <IconComponent size={24} />
+                            <social.icon size={24} />
                           </Button>
-                          <p className="mt-1 text-xs font-medium text-gray-600">
-                            {social.name}
-                          </p>
-                        </div>
-                      );
-                    })}
+                        )}
+                        <p className="mt-1 text-xs font-medium text-gray-600">
+                          {social.name}
+                        </p>
+                      </div>
+                    ))}
                   </div>
                 
                   <div className="h-4"></div>
@@ -2256,7 +2331,11 @@ const ContactUsPage = () => {
                     className="flex items-center gap-2 cursor-pointer p-2 rounded-lg bg-green-50 border border-green-200 transition-all duration-300 hover:bg-green-100 hover:-translate-y-0.5"
                     onClick={() => window.open(socialMediaLinks[3].url, '_blank')}
                   >
-                    <MessageCircle size={24} className="text-green-600" />
+                    <img 
+                      src="/assets/gallery/winter/social.png" 
+                      alt="WhatsApp" 
+                      className="w-6 h-6"
+                    />
                     <div className="w-full flex justify-center h-auto items-start flex-col">
                       <p className="font-semibold text-black text-sm">
                         <div className="h-auto"></div>
