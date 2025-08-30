@@ -720,12 +720,7 @@ const TravelGallery = () => {
                       className="w-full h-full object-cover transition-all duration-500"
                       loading="lazy"
                     />
-                    {/* Price badge for API offers */}
-                    {item.category === "EXCLUSIVE OFFERS" && item.price && (
-                      <div className="absolute top-3 right-3 bg-green-500 text-white px-2 py-1 rounded-lg font-bold text-sm shadow-lg">
-                        {formatPrice(item.price)}
-                      </div>
-                    )}
+                    {/* Price badge removed as per request */}
                   </div>
 
                   {/* Card Body */}
