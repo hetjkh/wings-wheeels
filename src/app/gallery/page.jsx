@@ -827,7 +827,7 @@ const TravelGallery = () => {
                 }}
                 className="absolute top-4 right-4 z-50 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition-all duration-300 backdrop-blur-sm sm:block md:hidden"
               >
-                <X className="h-5 w-5" />
+                <div className="h-5 w-5" />
               </button>
 
               {/* Full Width Image with Overlay */}

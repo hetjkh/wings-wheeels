@@ -284,7 +284,7 @@ const ContactUsPage = () => {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     
-    // Apply length limits
+    // Apply length limits and formatting
     let processedValue = value;
     switch (name) {
       case 'fullName':
@@ -292,7 +292,8 @@ const ContactUsPage = () => {
         break;
       case 'phone':
       case 'whatsappNumber':
-        processedValue = value.slice(0, 20);
+        // Remove any non-digit characters
+        processedValue = value.replace(/\D/g, '');
         break;
       case 'message':
         processedValue = value.slice(0, 1000);
@@ -486,16 +487,54 @@ const ContactUsPage = () => {
     setSubmitError('');
 
     try {
+      // Ensure phone number is not empty and has required digits
+      if (!formData.phone || formData.phone.length < 7) {
+        throw new Error('Please enter a valid phone number (at least 7 digits)');
+      }
+
+      // Format phone numbers with country code
+      const formatPhoneNumber = (phone, countryCode) => {
+        if (!phone) return '';
+        // Remove any non-digit characters
+        const digits = phone.replace(/\D/g, '');
+        // If the number already starts with the country code, return as is
+        if (countryCode && phone.startsWith(countryCode.replace('+', ''))) {
+          return `+${digits}`;
+        }
+        // Otherwise, prepend the country code (without the +)
+        const countryCodeDigits = countryCode ? countryCode.replace(/\D/g, '') : '';
+        return `+${countryCodeDigits}${digits}`;
+      };
+
+      const formattedPhone = formatPhoneNumber(formData.phone, formData.phoneCode);
+      const formattedWhatsapp = formData.whatsappNumber 
+        ? formatPhoneNumber(formData.whatsappNumber, formData.whatsappCode || formData.phoneCode)
+        : formattedPhone;
+
+      // Get full country and state names
+      const getCountryName = (countryCode) => {
+        if (!countryCode) return 'Not specified';
+        const country = countries.find(c => c.isoCode === countryCode);
+        return country ? country.name : countryCode;
+      };
+
+      const getStateName = (countryCode, stateCode) => {
+        if (!countryCode || !stateCode) return 'Not specified';
+        const states = State.getStatesOfCountry(countryCode);
+        const state = states.find(s => s.isoCode === stateCode);
+        return state ? state.name : stateCode;
+      };
+
       // Base booking data
       const bookingData = {
         fullName: formData.fullName,
         email: formData.email,
-        phone: formData.phone,
-        whatsappNumber: formData.whatsappNumber || formData.phone,
+        phone: formattedPhone,
+        whatsappNumber: formattedWhatsapp,
         serviceType: serviceType,
-        nationality: formData.nationality || 'Not specified',
-        destinationCountry: destinationCountry,
-        destinationState: destinationState,
+        nationality: getCountryName(formData.nationality) || 'Not specified',
+        destinationCountry: getCountryName(destinationCountry),
+        destinationState: getStateName(destinationCountry, destinationState),
         message: formData.message
       };
 
