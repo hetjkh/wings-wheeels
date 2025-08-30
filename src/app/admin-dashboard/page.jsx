@@ -1116,78 +1116,133 @@ export default function AdminDashboard() {
 
         {/* Create Offer Modal */}
         <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
-          <DialogContent className="sm:max-w-[425px]">
-            <DialogHeader>
-              <DialogTitle>Create New Offer</DialogTitle>
-              <DialogDescription>
+          <DialogContent className="sm:max-w-[500px] bg-white rounded-lg shadow-xl">
+            <DialogHeader className="px-6 pt-6 pb-4 border-b border-gray-100">
+              <DialogTitle className="text-xl font-semibold text-gray-900">Create New Offer</DialogTitle>
+              <DialogDescription className="text-gray-600 mt-1">
                 Fill in the details below to create a new special offer.
               </DialogDescription>
             </DialogHeader>
-            <form onSubmit={handleCreateOffer} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="name">Offer Name *</Label>
+            
+            <form onSubmit={handleCreateOffer} className="px-6 py-4 space-y-6">
+              <div className="space-y-1.5">
+                <Label htmlFor="name" className="text-sm font-medium text-gray-700">
+                  Offer Name <span className="text-red-500">*</span>
+                </Label>
                 <Input
                   id="name"
                   name="name"
                   value={newOffer.name}
                   onChange={(e) => handleOfferChange(e, false)}
                   placeholder="e.g., Summer Special"
+                  className="mt-1.5 py-2 px-3 text-base"
                   required
                 />
               </div>
               
-              <div className="space-y-2">
-                <Label htmlFor="price">Price (₹) *</Label>
-                <Input
-                  id="price"
-                  name="price"
-                  type="number"
-                  value={newOffer.price}
-                  onChange={(e) => handleOfferChange(e, false)}
-                  placeholder="e.g., 999"
-                  min="0"
-                  step="0.01"
-                  required
-                />
+              <div className="space-y-1.5">
+                <Label htmlFor="price" className="text-sm font-medium text-gray-700">
+                  Price (₹) <span className="text-red-500">*</span>
+                </Label>
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm font-medium text-gray-500">AED</span>
+                  <Input
+                    id="price"
+                    name="price"
+                    type="number"
+                    value={newOffer.price}
+                    onChange={(e) => handleOfferChange(e, false)}
+                    placeholder="0.00"
+                    min="0"
+                    step="0.01"
+                    className="mt-1.5 py-2 pl-16 pr-3 text-base"
+                    required
+                  />
+                </div>
               </div>
               
-              <div className="space-y-2">
-                <Label htmlFor="alt">Image Description (Alt Text)</Label>
+              <div className="space-y-1.5">
+                <Label htmlFor="alt" className="text-sm font-medium text-gray-700">
+                  Image Description (Alt Text)
+                </Label>
                 <Input
                   id="alt"
                   name="alt"
                   value={newOffer.alt}
                   onChange={(e) => handleOfferChange(e, false)}
                   placeholder="Describe the image for accessibility"
+                  className="mt-1.5 py-2 px-3 text-base"
                 />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="image">Offer Image *</Label>
-                <Input
-                  id="image"
-                  name="image"
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => handleOfferChange(e, false)}
-                  className="cursor-pointer"
-                  required
-                />
-                <p className="text-xs text-gray-500">
-                  Recommended size: 800x600px. Max file size: 5MB
+                <p className="mt-1 text-xs text-gray-500">
+                  This helps with accessibility and SEO.
                 </p>
               </div>
               
-              <div className="flex justify-end space-x-2 pt-4">
+              <div className="space-y-1.5">
+                <Label htmlFor="image" className="text-sm font-medium text-gray-700">
+                  Offer Image <span className="text-red-500">*</span>
+                </Label>
+                <div className="mt-1.5 flex flex-col items-center justify-center px-6 pt-5 pb-6 border-2 border-dashed border-gray-300 rounded-md">
+                  <div className="space-y-1 text-center">
+                    <svg
+                      className="mx-auto h-12 w-12 text-gray-400"
+                      stroke="currentColor"
+                      fill="none"
+                      viewBox="0 0 48 48"
+                      aria-hidden="true"
+                    >
+                      <path
+                        d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
+                        strokeWidth={2}
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                    <div className="flex text-sm text-gray-600">
+                      <label
+                        htmlFor="image"
+                        className="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none"
+                      >
+                        <span>Upload a file</span>
+                        <input
+                          id="image"
+                          name="image"
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => handleOfferChange(e, false)}
+                          className="sr-only"
+                          required
+                        />
+                      </label>
+                      <p className="pl-1">or drag and drop</p>
+                    </div>
+                    <p className="text-xs text-gray-500">
+                      PNG, JPG, GIF up to 5MB
+                    </p>
+                  </div>
+                </div>
+                {newOffer.image && (
+                  <p className="mt-1 text-sm text-green-600">
+                    ✓ {newOffer.image.name} selected
+                  </p>
+                )}
+              </div>
+              
+              <div className="flex justify-end space-x-3 pt-4 border-t border-gray-100">
                 <Button
                   type="button"
                   variant="outline"
                   onClick={() => setIsCreateModalOpen(false)}
                   disabled={isSubmitting}
+                  className="px-4 py-2 text-sm font-medium"
                 >
                   Cancel
                 </Button>
-                <Button type="submit" disabled={isSubmitting}>
+                <Button 
+                  type="submit" 
+                  disabled={isSubmitting}
+                  className="px-4 py-2 text-sm font-medium bg-blue-600 hover:bg-blue-700"
+                >
                   {isSubmitting ? (
                     <>
                       <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
@@ -1204,40 +1259,49 @@ export default function AdminDashboard() {
 
         {/* Edit Offer Modal */}
         <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
-          <DialogContent className="sm:max-w-[425px]">
-            <DialogHeader>
-              <DialogTitle>Edit Offer</DialogTitle>
-              <DialogDescription>
+          <DialogContent className="sm:max-w-[500px] bg-white rounded-lg shadow-xl">
+            <DialogHeader className="px-6 pt-6 pb-4 border-b border-gray-100">
+              <DialogTitle className="text-xl font-semibold text-gray-900">Edit Offer</DialogTitle>
+              <DialogDescription className="text-gray-600 mt-1">
                 Update the details of this offer.
               </DialogDescription>
             </DialogHeader>
             {editingOffer && (
-              <form onSubmit={handleUpdateOffer} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="edit-name">Offer Name *</Label>
+              <form onSubmit={handleUpdateOffer} className="px-6 py-4 space-y-6">
+                <div className="space-y-1.5">
+                  <Label htmlFor="edit-name" className="text-sm font-medium text-gray-700">
+                    Offer Name <span className="text-red-500">*</span>
+                  </Label>
                   <Input
                     id="edit-name"
                     name="name"
                     value={editingOffer.name || ''}
                     onChange={(e) => handleOfferChange(e, true)}
                     placeholder="e.g., Summer Special"
+                    className="mt-1.5 py-2 px-3 text-base"
                     required
                   />
                 </div>
                 
-                <div className="space-y-2">
-                  <Label htmlFor="edit-price">Price (₹) *</Label>
-                  <Input
-                    id="edit-price"
-                    name="price"
-                    type="number"
-                    value={editingOffer.price || ''}
-                    onChange={(e) => handleOfferChange(e, true)}
-                    placeholder="e.g., 999"
-                    min="0"
-                    step="0.01"
-                    required
-                  />
+                <div className="space-y-1.5">
+                  <Label htmlFor="edit-price" className="text-sm font-medium text-gray-700">
+                    Price (AED) <span className="text-red-500">*</span>
+                  </Label>
+                  <div className="relative">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm font-medium text-gray-500">AED</span>
+                    <Input
+                      id="edit-price"
+                      name="price"
+                      type="number"
+                      value={editingOffer.price || ''}
+                      onChange={(e) => handleOfferChange(e, true)}
+                      placeholder="0.00"
+                      min="0"
+                      step="0.01"
+                      className="mt-1.5 py-2 pl-16 pr-3 text-base"
+                      required
+                    />
+                  </div>
                 </div>
                 
                 <div className="space-y-2">
@@ -1349,7 +1413,10 @@ export default function AdminDashboard() {
                 <CardHeader>
                   <CardTitle className="text-xl">{offer.name}</CardTitle>
                   <div className="flex items-center justify-between">
-                    <span className="text-2xl font-bold text-primary">${offer.price}</span>
+                    <div className="flex items-baseline">
+                      <span className="text-sm font-medium text-gray-500 mr-1">AED</span>
+                      <span className="text-2xl font-bold text-primary">{offer.price}</span>
+                    </div>
                     <Badge variant="outline" className="text-sm">
                       {new Date(offer.createdAt).toLocaleDateString()}
                     </Badge>
