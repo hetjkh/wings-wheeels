@@ -20,7 +20,8 @@ const SearchableSelect = ({
   renderOption, 
   renderSelected,
   emptyMessage = "No options found",
-  error = ""
+  error = "",
+  valueKey = null // Add valueKey prop to specify which property to use for matching
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [isOpen, setIsOpen] = useState(false);
@@ -43,6 +44,25 @@ const SearchableSelect = ({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  // Find selected option based on valueKey or fallback logic
+  const findSelectedOption = () => {
+    if (!value) return null;
+    
+    if (valueKey) {
+      return options.find(opt => opt[valueKey] === value);
+    }
+    
+    // Fallback logic for different object types
+    return options.find(opt => 
+      opt.phoneCode === value || 
+      opt.isoCode === value || 
+      opt.id === value ||
+      opt.name === value
+    );
+  };
+
+  const selectedOption = findSelectedOption();
+
   return (
     <div className="relative w-full" ref={selectRef}>
       <div 
@@ -51,11 +71,9 @@ const SearchableSelect = ({
           error ? 'border-red-300 bg-red-50' : 'border-gray-200'
         }`}
       >
-        {value ? (
+        {selectedOption ? (
           <span className="truncate">
-            {renderSelected 
-              ? renderSelected(options.find(opt => opt.phoneCode === value || opt.isoCode === value) || {}) 
-              : options.find(opt => opt.phoneCode === value || opt.isoCode === value)?.name || value}
+            {renderSelected ? renderSelected(selectedOption) : renderOption(selectedOption)}
           </span>
         ) : (
           <span className="text-gray-500">{placeholder}</span>
@@ -84,21 +102,24 @@ const SearchableSelect = ({
           </div>
           <div className="max-h-60 overflow-y-auto">
             {filteredOptions.length > 0 ? (
-              filteredOptions.map((option) => (
-                <div
-                  key={option.isoCode || option.phoneCode}
-                  className={`px-4 py-2 text-sm cursor-pointer hover:bg-blue-50 ${
-                    value === (option.phoneCode || option.isoCode) ? 'bg-blue-50 text-blue-700 font-medium' : 'text-gray-700'
-                  }`}
-                  onClick={() => {
-                    onValueChange(option.phoneCode || option.isoCode);
-                    setIsOpen(false);
-                    setSearchTerm("");
-                  }}
-                >
-                  {renderOption(option)}
-                </div>
-              ))
+              filteredOptions.map((option, index) => {
+                const optionValue = valueKey ? option[valueKey] : (option.phoneCode || option.isoCode || option.id || option.name);
+                return (
+                  <div
+                    key={optionValue || index}
+                    className={`px-4 py-2 text-sm cursor-pointer hover:bg-blue-50 ${
+                      value === optionValue ? 'bg-blue-50 text-blue-700 font-medium' : 'text-gray-700'
+                    }`}
+                    onClick={() => {
+                      onValueChange(optionValue, option); // Pass both value and full option object
+                      setIsOpen(false);
+                      setSearchTerm("");
+                    }}
+                  >
+                    {renderOption(option)}
+                  </div>
+                );
+              })
             ) : (
               <div className="px-4 py-2 text-sm text-gray-500">{emptyMessage}</div>
             )}
@@ -134,7 +155,11 @@ const ContactUsPage = () => {
   const [gender, setGender] = useState('male');
   const [selectedCountry, setSelectedCountry] = useState('juba');
   const [destinationCountry, setDestinationCountry] = useState('');
+  const [selectedCountryObj, setSelectedCountryObj] = useState(null);
   const [destinationState, setDestinationState] = useState('');
+  const [cities, setCities] = useState([]);
+  const [selectedCity, setSelectedCity] = useState('');
+  const [selectedCityObj, setSelectedCityObj] = useState(null);
   const [nationality, setNationality] = useState('');
   
   // Validation errors state
@@ -149,6 +174,54 @@ const ContactUsPage = () => {
     return State.getStatesOfCountry(countryCode);
   };
 
+  // Get cities based on selected country and state
+  const getCities = (countryCode, stateCode) => {
+    if (!countryCode || !stateCode) return [];
+    return City.getCitiesOfState(countryCode, stateCode);
+  };
+
+  // Handle country change
+  const handleCountryChange = (countryCode) => {
+    setDestinationCountry(countryCode);
+    setDestinationState('');
+    setSelectedCity('');
+    setSelectedCityObj(null);
+    setCities([]);
+    
+    // Update selected country object
+    const country = countries.find(c => c.isoCode === countryCode);
+    if (country) {
+      setSelectedCountryObj(country);
+    }
+  };
+
+  // Handle state change
+  const handleStateChange = (stateCode) => {
+    setDestinationState(stateCode);
+    setSelectedCity('');
+    setSelectedCityObj(null);
+    
+    if (destinationCountry && stateCode) {
+      const cityList = getCities(destinationCountry, stateCode);
+      setCities(cityList);
+    } else {
+      setCities([]);
+    }
+  };
+
+  // Handle city selection
+  const handleCitySelection = (cityName, cityObj) => {
+    setSelectedCity(cityName);
+    setSelectedCityObj(cityObj);
+    setHotelDestinationCity(cityName);
+    if (errors.hotelDestinationCity) {
+      setErrors(prev => ({ ...prev, hotelDestinationCity: '' }));
+    }
+  };
+  
+  // Get states for the selected country
+  const states = destinationCountry ? getStates(destinationCountry) : [];
+  
   // Validation functions
   const validateEmail = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -542,6 +615,8 @@ const ContactUsPage = () => {
       setNumberOfRooms('');
       setRoomType('');
       setHotelBudget('');
+      setSelectedCity('');
+      setSelectedCityObj(null);
       
       // Reset tours states
       setNumberOfNights('');
@@ -562,22 +637,15 @@ const ContactUsPage = () => {
     }
   };
 
-  // Handle country change
-  const handleCountryChange = (countryCode) => {
-    setDestinationCountry(countryCode);
-    setDestinationState('');
-  };
+  // Update cities when service type or location changes
+  useEffect(() => {
+    if (serviceType === 'hotels' && destinationCountry && destinationState) {
+      const cityList = getCities(destinationCountry, destinationState);
+      setCities(cityList);
+    }
+  }, [serviceType, destinationCountry, destinationState]);
   
-  // Handle state change
-  const handleStateChange = (stateCode) => {
-    setDestinationState(stateCode);
-  };
-  
-  // Get selected country object
-  const selectedCountryObj = countries.find(c => c.isoCode === destinationCountry);
-  
-  // Get states for selected country
-  const states = getStates(destinationCountry);
+  // States will be fetched and used directly in the JSX where needed
   
   // Form state
   const [formData, setFormData] = useState({
@@ -674,7 +742,7 @@ const ContactUsPage = () => {
     }
   };
 
-  // Handle city selection
+  // Handle city selection for flights
   const handleCitySelect = (city, type) => {
     const cityText = `${city.name}${city.state ? `, ${city.state}` : ''}, ${city.countryName}`;
     if (type === 'departure') {
@@ -981,6 +1049,7 @@ const ContactUsPage = () => {
                                     renderOption={(country) => country.displayText}
                                     renderSelected={(country) => country?.selectedText || ''}
                                     emptyMessage="No country found"
+                                    valueKey="phoneCode"
                                   />
                                 </div>
                                 <Input
@@ -1025,6 +1094,7 @@ const ContactUsPage = () => {
                                     renderOption={(country) => country.displayText}
                                     renderSelected={(country) => country?.selectedText || ''}
                                     emptyMessage="No country found"
+                                    valueKey="phoneCode"
                                   />
                                 </div>
                                 <Input
@@ -1067,6 +1137,7 @@ const ContactUsPage = () => {
                               renderOption={(country) => `${country.flag} ${country.name} (${country.isoCode})`}
                               emptyMessage="No countries found"
                               error={errors.nationality}
+                              valueKey="isoCode"
                             />
                           </div>
                         </div>
@@ -1136,6 +1207,7 @@ const ContactUsPage = () => {
                               options={countries}
                               renderOption={(country) => `${country.flag} ${country.name} (${country.isoCode})`}
                               emptyMessage="No countries found"
+                              valueKey="isoCode"
                             />
                           </div>
 
@@ -1146,7 +1218,12 @@ const ContactUsPage = () => {
                               </Label>
                               <SearchableSelect
                                 value={destinationState}
-                                onValueChange={handleStateChange}
+                                onValueChange={(value) => {
+                                  handleStateChange(value);
+                                  if (errors.destinationState) {
+                                    setErrors(prev => ({ ...prev, destinationState: '' }));
+                                  }
+                                }}
                                 disabled={!destinationCountry}
                                 placeholder={
                                   selectedCountryObj 
@@ -1155,8 +1232,14 @@ const ContactUsPage = () => {
                                 }
                                 options={states}
                                 renderOption={(state) => state.name}
+                                renderSelected={(state) => state ? state.name : ''}
                                 emptyMessage="No states found"
+                                error={errors.destinationState}
+                                valueKey="isoCode"
                               />
+                              {errors.destinationState && (
+                                <p className="mt-1 text-xs text-red-600">{errors.destinationState}</p>
+                              )}
                             </div>
                           )}
                         </div>
@@ -1213,16 +1296,21 @@ const ContactUsPage = () => {
                               </Select>
                             </div>
 
-                            <div className="relative">
+                            <div>
                               <Label className="text-gray-600 mb-1 text-xs font-semibold uppercase block">
                                 Departure City * <span className="text-gray-400 font-normal">(Max 100 chars)</span>
                               </Label>
                               <Input
                                 type="text"
+                                name="departureCity"
                                 value={departureCity}
-                                onChange={(e) => handleDepartureCityChange(e.target.value)}
-                                onFocus={() => departureCity && setShowDepartureSuggestions(true)}
-                                placeholder="Type departure city (e.g., New York, London)"
+                                onChange={(e) => {
+                                  setDepartureCity(e.target.value);
+                                  if (errors.departureCity) {
+                                    setErrors(prev => ({ ...prev, departureCity: '' }));
+                                  }
+                                }}
+                                placeholder="Enter departure city (e.g., New York, London)"
                                 className={`rounded-lg bg-gray-50 border transition-all duration-300 hover:bg-gray-100 hover:border-blue-600 hover:shadow-md focus:bg-white focus:border-blue-600 focus:shadow-lg ${
                                   errors.departureCity ? 'border-red-300 bg-red-50' : 'border-gray-200'
                                 }`}
@@ -1231,31 +1319,23 @@ const ContactUsPage = () => {
                               {errors.departureCity && (
                                 <p className="mt-1 text-xs text-red-600">{errors.departureCity}</p>
                               )}
-                              {showDepartureSuggestions && departureSuggestions.length > 0 && (
-                                <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto">
-                                  {departureSuggestions.map((city) => (
-                                    <div
-                                      key={`${city.name}-${city.state}-${city.countryCode}`}
-                                      className="px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 cursor-pointer"
-                                      onClick={() => handleCitySelect(city, 'departure')}
-                                    >
-                                      {city.name}{city.state ? `, ${city.state}` : ''}, {city.countryName}
-                                    </div>
-                                  ))}
-                                </div>
-                              )}
                             </div>
 
-                            <div className="relative">
+                            <div>
                               <Label className="text-gray-600 mb-1 text-xs font-semibold uppercase block">
                                 Arrival City * <span className="text-gray-400 font-normal">(Max 100 chars)</span>
                               </Label>
                               <Input
                                 type="text"
+                                name="arrivalCity"
                                 value={arrivalCity}
-                                onChange={(e) => handleArrivalCityChange(e.target.value)}
-                                onFocus={() => arrivalCity && setShowArrivalSuggestions(true)}
-                                placeholder="Type arrival city (e.g., Dubai, Singapore)"
+                                onChange={(e) => {
+                                  setArrivalCity(e.target.value);
+                                  if (errors.arrivalCity) {
+                                    setErrors(prev => ({ ...prev, arrivalCity: '' }));
+                                  }
+                                }}
+                                placeholder="Enter arrival city (e.g., Dubai, Singapore)"
                                 className={`rounded-lg bg-gray-50 border transition-all duration-300 hover:bg-gray-100 hover:border-blue-600 hover:shadow-md focus:bg-white focus:border-blue-600 focus:shadow-lg ${
                                   errors.arrivalCity ? 'border-red-300 bg-red-50' : 'border-gray-200'
                                 }`}
@@ -1263,19 +1343,6 @@ const ContactUsPage = () => {
                               />
                               {errors.arrivalCity && (
                                 <p className="mt-1 text-xs text-red-600">{errors.arrivalCity}</p>
-                              )}
-                              {showArrivalSuggestions && arrivalSuggestions.length > 0 && (
-                                <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto">
-                                  {arrivalSuggestions.map((city) => (
-                                    <div
-                                      key={`${city.name}-${city.state}-${city.countryCode}`}
-                                      className="px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 cursor-pointer"
-                                      onClick={() => handleCitySelect(city, 'arrival')}
-                                    >
-                                      {city.name}{city.state ? `, ${city.state}` : ''}, {city.countryName}
-                                    </div>
-                                  ))}
-                                </div>
                               )}
                             </div>
 
@@ -1401,36 +1468,28 @@ const ContactUsPage = () => {
                           </h3>
                           
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            <div>
+                            <div className="sm:col-span-2">
                               <Label className="text-gray-600 mb-1 text-xs font-semibold uppercase block">
-                                Hotel Destination City *
+                                City *
                               </Label>
-                              <Select 
-                                value={hotelDestinationCity} 
-                                onValueChange={(value) => {
-                                  setHotelDestinationCity(value);
-                                  if (errors.hotelDestinationCity) {
-                                    setErrors(prev => ({ ...prev, hotelDestinationCity: '' }));
-                                  }
+                              <SearchableSelect
+                                value={selectedCity}
+                                onValueChange={handleCitySelection}
+                                placeholder={cities.length > 0 ? "Select a city" : "Select country and state first"}
+                                options={cities}
+                                renderOption={(city) => {
+                                  const stateName = getStates(destinationCountry).find(s => s.isoCode === city.stateCode)?.name || '';
+                                  return `${city.name}${stateName ? `, ${stateName}` : ''}`;
                                 }}
-                              >
-                                <SelectTrigger className={`rounded-lg bg-gray-50 border transition-all duration-300 hover:bg-gray-100 hover:border-blue-600 hover:shadow-md focus:bg-white focus:border-blue-600 focus:shadow-lg ${
-                                  errors.hotelDestinationCity ? 'border-red-300 bg-red-50' : 'border-gray-200'
-                                }`}>
-                                  <SelectValue placeholder="Select destination city" />
-                                </SelectTrigger>
-                                <SelectContent className="rounded-xl border border-gray-200 shadow-lg max-h-96 bg-white">
-                                  {popularCities.map((city) => (
-                                    <SelectItem 
-                                      key={city} 
-                                      value={city}
-                                      className="hover:bg-blue-50 text-black"
-                                    >
-                                      {city}
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
+                                renderSelected={(city) => {
+                                  if (!city) return '';
+                                  const stateName = getStates(destinationCountry).find(s => s.isoCode === city.stateCode)?.name || '';
+                                  return `${city.name}${stateName ? `, ${stateName}` : ''}`;
+                                }}
+                                emptyMessage={cities.length === 0 ? "Please select country and state first" : "No cities found"}
+                                error={errors.hotelDestinationCity}
+                                valueKey="name"
+                              />
                               {errors.hotelDestinationCity && (
                                 <p className="mt-1 text-xs text-red-600">{errors.hotelDestinationCity}</p>
                               )}
@@ -1743,6 +1802,7 @@ const ContactUsPage = () => {
                                 renderOption={(country) => `${country.flag} ${country.name} (${country.isoCode})`}
                                 emptyMessage="No countries found"
                                 error={errors.visaCountry}
+                                valueKey="isoCode"
                               />
                             </div>
                           </div>

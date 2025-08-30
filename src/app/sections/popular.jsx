@@ -140,19 +140,8 @@ const popular = () => {
   const formatPrice = (amount, currency) => {
     if (isNaN(amount)) return 'Price not available';
     
-    const formatter = new Intl.NumberFormat(undefined, {
-      style: 'currency',
-      currency: currency,
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-      currencyDisplay: 'symbol'
-    });
-    
-    // Replace the default symbol with our custom one for better control
-    return formatter.format(amount)
-      .replace(/[A-Z]{3}/, '')
-      .trim()
-      .replace(/^([^0-9]*)([0-9])/, `${currencySymbols[currency] || currency} $2`);
+    // Format number with commas and add AED prefix
+    return `AED ${Math.round(amount).toLocaleString()}`;
   };
 
   // Convert price to selected currency
