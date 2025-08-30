@@ -24,7 +24,8 @@ const Brands = () => {
           </p>
         </div>
         
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-12 items-center">
+        {/* Desktop Grid - Hidden on mobile */}
+        <div className="hidden sm:grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-12 items-center">
           {brands.map((brand) => (
             <div 
               key={brand.id} 
@@ -42,6 +43,42 @@ const Brands = () => {
             </div>
           ))}
         </div>
+
+        {/* Mobile Marquee - Only visible on mobile */}
+        <div className="sm:hidden overflow-hidden relative">
+          <div className="flex space-x-8 py-6 animate-marquee whitespace-nowrap">
+            {[...brands, ...brands].map((brand, index) => (
+              <div 
+                key={`${brand.id}-${index}`} 
+                className="inline-flex items-center justify-center px-6 py-4 transition-all duration-300 hover:scale-110"
+              >
+                <Image 
+                  src={brand.image} 
+                  alt={brand.name}
+                  width={160}
+                  height={90}
+                  className="object-contain h-20 w-auto"
+                  style={{ mixBlendMode: 'multiply' }}
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Marquee Animation */}
+        <style jsx global>{`
+          @keyframes marquee {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+          }
+          .animate-marquee {
+            display: inline-block;
+            animation: marquee 20s linear infinite;
+          }
+          .animate-marquee:hover {
+            animation-play-state: paused;
+          }
+        `}</style>
       </div>
     </section>
   );

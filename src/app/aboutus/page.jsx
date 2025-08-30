@@ -40,9 +40,12 @@ import {
   Zap,
   ArrowRight,
   ChevronDown,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import Navbar from "../reusable/navbar";
 import Footer from "../reusable/footer";
+import MobileOfficeCarousel from "../../components/MobileOfficeCarousel";
 
 const AboutUs = () => {
   const [isVisible, setIsVisible] = useState(false);
@@ -1237,7 +1240,17 @@ const AboutUs = () => {
                 <p className="text-gray-600 text-center mb-8">
                   Click on any location to view details
                 </p>
-                <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+                {/* Mobile Carousel - Only visible on mobile */}
+                <div className="md:hidden">
+                  <MobileOfficeCarousel 
+                    officeLocations={officeLocations}
+                    selectedLocation={selectedLocation}
+                    setSelectedLocation={setSelectedLocation}
+                  />
+                </div>
+
+                {/* Desktop Grid - Hidden on mobile */}
+                <div className="hidden md:grid grid-cols-2 lg:grid-cols-5 gap-4">
                   {Object.entries(officeLocations).map(([key, location]) => (
                     <div 
                       key={key} 
@@ -1271,8 +1284,8 @@ const AboutUs = () => {
 
             {/* Map and Details Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
-              {/* Google Maps */}
-              <div className="order-2 lg:order-1">
+              {/* Google Maps - First on mobile, order changes on desktop */}
+              <div className="lg:order-1">
                 <div className="bg-gray-100 rounded-2xl overflow-hidden shadow-xl h-96">
                   <iframe
                     src={currentLocation.mapUrl}
@@ -1282,15 +1295,13 @@ const AboutUs = () => {
                     allowFullScreen=""
                     loading="lazy"
                     referrerPolicy="no-referrer-when-downgrade"
-                    title={`Map of ${currentLocation.name}`}
-                    className="w-full h-full"
                   ></iframe>
                 </div>
               </div>
 
-              {/* Office Details */}
-              <div className="order-1 lg:order-2 space-y-8">
-                <div className="bg-gray-50 rounded-2xl p-8 border">
+              {/* Office Details - Second on mobile, order changes on desktop */}
+              <div className="lg:order-2">
+                <div className="bg-white p-6 lg:p-8 rounded-2xl shadow-xl">
                   <div className="flex items-center space-x-3 mb-6">
                     <div className="p-3 bg-gray-800 rounded-lg">
                       <Building className="h-6 w-6 text-white" />
