@@ -3,10 +3,12 @@ import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import Cookies from 'js-cookie';
+import { Eye, EyeOff } from 'lucide-react';
 
 export default function AdminLogin() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -61,11 +63,11 @@ export default function AdminLogin() {
         <div className="text-center">
           <div className="flex justify-center">
             <Image
-              src="https://images.pexels.com/photos/1592677/pexels-photo-1592677.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
-              alt="Wings Logo"
+              src="/assets/wings.png"
+              alt="Wings & Wheels Logo"
               width={120}
               height={120}
-              className="mx-auto h-32 w-32 rounded-full object-cover"
+              className="mx-auto h-32 w-auto object-contain"
               priority
             />
           </div>
@@ -115,50 +117,54 @@ export default function AdminLogin() {
               <label htmlFor="password" className="sr-only">
                 Password
               </label>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                autoComplete="current-password"
-                required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                disabled={loading}
-              />
+              <div className="relative">
+                <input
+                  id="password"
+                  name="password"
+                  type={showPassword ? "text" : "password"}
+                  autoComplete="current-password"
+                  required
+                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm pr-10"
+                  placeholder="Password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  disabled={loading}
+                />
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setShowPassword(!showPassword);
+                  }}
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center justify-center w-10 h-full text-gray-500 hover:text-gray-700 focus:outline-none z-20 cursor-pointer"
+                  disabled={loading}
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                >
+                  {showPassword ? (
+                    <EyeOff className="h-5 w-5" />
+                  ) : (
+                    <Eye className="h-5 w-5" />
+                  )}
+                </button>
+              </div>
             </div>
           </div>
 
-          <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              <input
-                id="remember-me"
-                name="remember-me"
-                type="checkbox"
-                className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                disabled={loading}
-              />
-              <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-900">
-                Remember me
-              </label>
-            </div>
-
-            <div className="text-sm">
-              <Link 
-                href="/" 
-                className="font-medium text-indigo-600 hover:text-indigo-500"
-              >
-                Back to Home
-              </Link>
-            </div>
+          <div className="flex justify-end">
+            <Link 
+              href="/" 
+              className="text-sm font-medium text-gray-600 hover:text-gray-900"
+            >
+              Back to Home
+            </Link>
           </div>
 
           <div>
             <button
               type="submit"
               disabled={loading}
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-black hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 cursor-pointer"
             >
               {loading ? (
                 <div className="flex items-center">

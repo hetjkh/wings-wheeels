@@ -1042,7 +1042,10 @@ const AboutUs = () => {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="text-center p-6 bg-gray-50 border rounded-xl hover:bg-gray-100 transition-colors duration-300">
+                <a 
+                  href="tel:00971547858338" 
+                  className="text-center p-6 bg-gray-50 border rounded-xl hover:bg-gray-100 transition-colors duration-300 cursor-pointer block"
+                >
                   <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
                     <Phone className="h-8 w-8 text-blue-600" />
                   </div>
@@ -1050,9 +1053,12 @@ const AboutUs = () => {
                   <p className="text-gray-600 text-sm">
                     Instant support via phone call for urgent matters
                   </p>
-                </div>
+                </a>
 
-                <div className="text-center p-6 bg-gray-50 border rounded-xl hover:bg-gray-100 transition-colors duration-300">
+                <a 
+                  href="mailto:reservation@wwtravels.net" 
+                  className="text-center p-6 bg-gray-50 border rounded-xl hover:bg-gray-100 transition-colors duration-300 cursor-pointer block"
+                >
                   <div className="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4">
                     <Mail className="h-8 w-8 text-yellow-600" />
                   </div>
@@ -1060,17 +1066,20 @@ const AboutUs = () => {
                   <p className="text-gray-600 text-sm">
                     Detailed support & documentation via email
                   </p>
-                </div>
+                </a>
 
-                <div className="text-center p-6 bg-gray-50 border rounded-xl hover:bg-gray-100 transition-colors duration-300">
+                <a 
+                  href="tel:00971522880935" 
+                  className="text-center p-6 bg-gray-50 border rounded-xl hover:bg-gray-100 transition-colors duration-300 cursor-pointer block"
+                >
                   <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
                     <AlertCircle className="h-8 w-8 text-red-600" />
                   </div>
                   <h4 className="font-bold text-gray-900 mb-2">EMERGENCY</h4>
                   <p className="text-gray-600 text-sm">
-                    24/7 emergency hotline for critical situations
+                    24/7 emergency hotline: 00971 52 288 0935
                   </p>
-                </div>
+                </a>
               </div>
             </div>
 
@@ -1088,7 +1097,7 @@ const AboutUs = () => {
                 <div className="flex justify-center items-center">
                   <button 
                   onClick={() => window.open("tel:00971547858338")}
-                  className="bg-white text-gray-800 px-8 py-4 rounded-lg font-bold hover:bg-gray-100 transition-colors duration-300 flex items-center">
+                  className="bg-white text-gray-800 px-8 py-4 rounded-lg font-bold hover:bg-gray-100 transition-colors duration-300 flex items-center cursor-pointer">
                     <PhoneCall className="h-5 w-5 mr-2" />
                     CALL NOW: 00971 54 7858338
                   </button>
