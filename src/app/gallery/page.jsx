@@ -1,67 +1,89 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
-import { Play, ChevronLeft, ChevronRight, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, ChevronDown, ChevronUp } from 'lucide-react';
 import Footer from "../reusable/footer";
 import Navbar from "../reusable/navbar";
 import Image from "next/image";
 import { Masonry } from "@/components/mansory";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { CarouselDemo } from "@/components/carosal";
 
 // Currency symbols mapping
 const currencySymbols = {
-  'USD': '$', 'EUR': '€', 'GBP': '£', 'AED': 'د.إ',
-  'SAR': 'ر.س', 'JPY': '¥', 'CAD': 'C$', 'AUD': 'A$',
-  'CHF': 'Fr', 'INR': '₹'
+  USD: "$",
+  EUR: "€",
+  GBP: "£",
+  AED: "د.إ",
+  SAR: "ر.س",
+  JPY: "¥",
+  CAD: "C$",
+  AUD: "A$",
+  CHF: "Fr",
+  INR: "₹",
 };
 
 // Carousel slides data
 const heroSlides = [
   {
     id: 1,
-    backgroundImage: "https://images.unsplash.com/photo-1469474968028-56623f02e42e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1920&q=80",
+    backgroundImage:
+      "https://images.unsplash.com/photo-1469474968028-56623f02e42e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1920&q=80",
     title: "EXCLUSIVE OFFERS",
-    subtitle: "Discover unbeatable deals on dream vacations. Limited-time offers on handpicked destinations worldwide.",
-    description: "Take advantage of our exclusive travel deals and special packages. From luxury getaways to budget-friendly adventures, we have the perfect offer for every traveler. Book now and create unforgettable memories."
+    subtitle:
+      "Discover unbeatable deals on dream vacations. Limited-time offers on handpicked destinations worldwide.",
+    description:
+      "Take advantage of our exclusive travel deals and special packages. From luxury getaways to budget-friendly adventures, we have the perfect offer for every traveler. Book now and create unforgettable memories.",
   },
   {
     id: 2,
-    backgroundImage: "/assets/offer.jpg"
+    backgroundImage: "/assets/offer.jpg",
   },
   {
     id: 3,
-    backgroundImage: "https://images.pexels.com/photos/1591375/pexels-photo-1591375.jpeg?auto=compress&cs=tinysrgb&w=1920",
+    backgroundImage:
+      "https://images.pexels.com/photos/1591375/pexels-photo-1591375.jpeg?auto=compress&cs=tinysrgb&w=1920",
     title: "EXCLUSIVE OFFERS",
-    subtitle: "Discover unbeatable deals on dream vacations. Limited-time offers on handpicked destinations worldwide.",
-    description: "Take advantage of our exclusive travel deals and special packages. From luxury getaways to budget-friendly adventures, we have the perfect offer for every traveler. Book now and create unforgettable memories."
+    subtitle:
+      "Discover unbeatable deals on dream vacations. Limited-time offers on handpicked destinations worldwide.",
+    description:
+      "Take advantage of our exclusive travel deals and special packages. From luxury getaways to budget-friendly adventures, we have the perfect offer for every traveler. Book now and create unforgettable memories.",
   },
   {
     id: 4,
-    backgroundImage: "https://images.pexels.com/photos/1591373/pexels-photo-1591373.jpeg?auto=compress&cs=tinysrgb&w=1920",
+    backgroundImage:
+      "https://images.pexels.com/photos/1591373/pexels-photo-1591373.jpeg?auto=compress&cs=tinysrgb&w=1920",
     title: "EXCLUSIVE OFFERS",
-    subtitle: "Discover unbeatable deals on dream vacations. Limited-time offers on handpicked destinations worldwide.",
-    description: "Take advantage of our exclusive travel deals and special packages. From luxury getaways to budget-friendly adventures, we have the perfect offer for every traveler. Book now and create unforgettable memories."
-  }
+    subtitle:
+      "Discover unbeatable deals on dream vacations. Limited-time offers on handpicked destinations worldwide.",
+    description:
+      "Take advantage of our exclusive travel deals and special packages. From luxury getaways to budget-friendly adventures, we have the perfect offer for every traveler. Book now and create unforgettable memories.",
+  },
 ];
 
 // Location data with all images for each location
 const locationData = {
   // Winter locations
   winter: {
-    'Norway': {
+    Norway: {
       title: "Northern Lights Adventure",
       images: [
         "/assets/gallery/winter/norway/1.png",
-          "/assets/gallery/winter/norway/11.jpg",
-          "/assets/gallery/winter/norway/2.jpg",
-          "/assets/gallery/winter/norway/4.jpg",
-          "/assets/gallery/winter/norway/5.jpg",
-          "/assets/gallery/winter/norway/6.jpg",
-      ]
+        "/assets/gallery/winter/norway/11.jpg",
+        "/assets/gallery/winter/norway/2.jpg",
+        "/assets/gallery/winter/norway/4.jpg",
+        "/assets/gallery/winter/norway/5.jpg",
+        "/assets/gallery/winter/norway/6.jpg",
+      ],
     },
-    'Czech Republic': {
+    "Czech Republic": {
       title: "Prague Winter Magic",
       images: [
         "/assets/gallery/winter/republic/1.png",
@@ -70,11 +92,9 @@ const locationData = {
         "/assets/gallery/winter/republic/4.jpg",
         "/assets/gallery/winter/republic/5.jpg",
         "/assets/gallery/winter/republic/6.jpg",
-
-
-      ]
+      ],
     },
-    'Switzerland': {
+    Switzerland: {
       title: "Swiss Alps Experience",
       images: [
         "/assets/gallery/winter/swiss/1.jpg",
@@ -83,11 +103,9 @@ const locationData = {
         "/assets/gallery/winter/swiss/4.jpg",
         "/assets/gallery/winter/swiss/5.jpg",
         "/assets/gallery/winter/swiss/6.jpg",
-
-
-      ]
+      ],
     },
-    'Finland': {
+    Finland: {
       title: "Lapland Wonderland",
       images: [
         "/assets/gallery/winter/finland/1.jpg",
@@ -96,11 +114,9 @@ const locationData = {
         "/assets/gallery/winter/finland/4.jpg",
         "/assets/gallery/winter/finland/5.jpg",
         "/assets/gallery/winter/finland/6.jpg",
-
-
-      ]
+      ],
     },
-    'Sweden': {
+    Sweden: {
       title: "Swedish Lapland Escape",
       images: [
         "/assets/gallery/winter/sweden/1.jpg",
@@ -109,11 +125,9 @@ const locationData = {
         "/assets/gallery/winter/sweden/4.jpg",
         "/assets/gallery/winter/sweden/5.jpg",
         "/assets/gallery/winter/sweden/6.jpg",
-
-
-      ]
+      ],
     },
-    'France': {
+    France: {
       title: "Alpine Charm in Chamonix",
       images: [
         "/assets/gallery/winter/france/1.jpg",
@@ -122,11 +136,9 @@ const locationData = {
         "/assets/gallery/winter/france/4.jpg",
         "/assets/gallery/winter/france/5.jpg",
         "/assets/gallery/winter/france/6.jpg",
-
-
-      ]
+      ],
     },
-    'Austria': {
+    Austria: {
       title: "Vienna Christmas Markets",
       images: [
         "/assets/gallery/winter/austria/1.jpg",
@@ -135,11 +147,9 @@ const locationData = {
         "/assets/gallery/winter/austria/4.jpg",
         "/assets/gallery/winter/austria/5.jpg",
         "/assets/gallery/winter/austria/6.jpg",
-
-
-      ]
+      ],
     },
-    'Canada': {
+    Canada: {
       title: "Banff Snowy Escape",
       images: [
         "/assets/gallery/winter/canada/1.jpg",
@@ -148,11 +158,9 @@ const locationData = {
         "/assets/gallery/winter/canada/4.jpg",
         "/assets/gallery/winter/canada/5.jpg",
         "/assets/gallery/winter/canada/6.png",
-
-
-      ]
+      ],
     },
-    'Iceland': {
+    Iceland: {
       title: "Ice Cave Adventure",
       images: [
         "/assets/gallery/winter/iceland/1.jpg",
@@ -161,11 +169,9 @@ const locationData = {
         "/assets/gallery/winter/iceland/4.jpg",
         "/assets/gallery/winter/iceland/5.jpg",
         "/assets/gallery/winter/iceland/6.jpg",
-
-
-      ]
+      ],
     },
-    'Japan': {
+    Japan: {
       title: "Snowy Hokkaido Experience",
       images: [
         "/assets/gallery/winter/japan/1.jpg",
@@ -174,14 +180,12 @@ const locationData = {
         "/assets/gallery/winter/japan/4.jpg",
         "/assets/gallery/winter/japan/5.jpg",
         "/assets/gallery/winter/japan/6.jpg",
-
-
-      ]
-    }
+      ],
+    },
   },
   // Summer locations
   summer: {
-    'Spain': {
+    Spain: {
       title: "Barcelona Cultural Journey",
       images: [
         "/assets/gallery/summer/spain/1.png",
@@ -190,10 +194,9 @@ const locationData = {
         "/assets/gallery/summer/spain/5.jpg",
         "/assets/gallery/summer/spain/6.jpg",
         "/assets/gallery/summer/spain/7.jpg",
-
-      ]
+      ],
     },
-    'Greece': {
+    Greece: {
       title: "Santorini Sunset Escape",
       images: [
         "/assets/gallery/summer/greece/1.jpg",
@@ -201,34 +204,32 @@ const locationData = {
         "/assets/gallery/summer/greece/3.JPG",
         "/assets/gallery/summer/greece/4.jpg",
         "/assets/gallery/summer/greece/5.jpg",
-        "/assets/gallery/summer/greece/6.jpg"
-      ]
+        "/assets/gallery/summer/greece/6.jpg",
+      ],
     },
-    'Italy': {
+    Italy: {
       title: "Amalfi Coast Adventure",
       images: [
         "/assets/gallery/summer/itlay/1.jpg",
-         "/assets/gallery/summer/itlay/2.jpg",
-         "/assets/gallery/summer/itlay/3.jpg",
-         "/assets/gallery/summer/itlay/4.jpg",
-         "/assets/gallery/summer/itlay/5.jpg",
-         "/assets/gallery/summer/itlay/6.jpg",
-
-      ]
+        "/assets/gallery/summer/itlay/2.jpg",
+        "/assets/gallery/summer/itlay/3.jpg",
+        "/assets/gallery/summer/itlay/4.jpg",
+        "/assets/gallery/summer/itlay/5.jpg",
+        "/assets/gallery/summer/itlay/6.jpg",
+      ],
     },
-    'Indonesia': {
+    Indonesia: {
       title: "Bali Island Paradise",
       images: [
         "/assets/gallery/summer/indonesia/1.jpg",
-         "/assets/gallery/summer/indonesia/11.jpg",
-          "/assets/gallery/summer/indonesia/2.jpg",
-           "/assets/gallery/summer/indonesia/3.jpg",
-            "/assets/gallery/summer/indonesia/4.jpg",
-            "/assets/gallery/summer/indonesia/5.jpg",
-      
-      ]
+        "/assets/gallery/summer/indonesia/11.jpg",
+        "/assets/gallery/summer/indonesia/2.jpg",
+        "/assets/gallery/summer/indonesia/3.jpg",
+        "/assets/gallery/summer/indonesia/4.jpg",
+        "/assets/gallery/summer/indonesia/5.jpg",
+      ],
     },
-    'Portugal': {
+    Portugal: {
       title: "Lisbon Coastal Charm",
       images: [
         "/assets/gallery/summer/portugal/1.jpg",
@@ -237,10 +238,9 @@ const locationData = {
         "/assets/gallery/summer/portugal/5.jpg",
         "/assets/gallery/summer/portugal/6.jpg",
         "/assets/gallery/summer/portugal/7.jpg",
-
-      ]
+      ],
     },
-    'Costa Rica': {
+    "Costa Rica": {
       title: "Costa Rican Rainforest Retreat",
       images: [
         "/assets/gallery/summer/consta-rica/1.jpg",
@@ -248,10 +248,10 @@ const locationData = {
         "/assets/gallery/summer/consta-rica/3.jpg",
         "/assets/gallery/summer/consta-rica/4.jpg",
         "/assets/gallery/summer/consta-rica/5.jpg",
-        "/assets/gallery/summer/consta-rica/6.jpg"
-      ]
+        "/assets/gallery/summer/consta-rica/6.jpg",
+      ],
     },
-    'South Africa': {
+    "South Africa": {
       title: "Cape Town Coastal Adventure",
       images: [
         "/assets/gallery/summer/south-africa/1.jpg",
@@ -260,20 +260,18 @@ const locationData = {
         "/assets/gallery/summer/south-africa/4.jpg",
         "/assets/gallery/summer/south-africa/5.jpg",
         "/assets/gallery/summer/south-africa/6.jpg",
-
-      ]
+      ],
     },
-    'New Zealand': {
+    "New Zealand": {
       title: "New Zealand Scenic Escape",
       images: [
         "/assets/gallery/summer/new-zeland/1.jpg",
         "/assets/gallery/summer/new-zeland/2.jpg",
         "/assets/gallery/summer/new-zeland/3.jpg",
         "/assets/gallery/summer/new-zeland/4.jpg",
-
-      ]
+      ],
     },
-    'Maldives': {
+    Maldives: {
       title: "Maldives Tropical Bliss",
       images: [
         "/assets/gallery/summer/maldives/1.jpg",
@@ -282,22 +280,21 @@ const locationData = {
         "/assets/gallery/summer/maldives/4.jpg",
         "/assets/gallery/summer/maldives/5.jpg",
         "/assets/gallery/summer/maldives/6.jpg",
-
-      ]
-    }
-  }
+      ],
+    },
+  },
 };
 
 // Create gallery data for the main grid view
 const createGalleryData = () => {
   const data = [];
-  
+
   // Add winter locations
   Object.entries(locationData.winter).forEach(([location, info]) => {
     // Special handling for Iceland, Canada, Czech Republic, and Finland locations
-    if (['Iceland', 'Canada', 'Czech Republic', 'Finland'].includes(location)) {
+    if (["Iceland", "Canada", "Czech Republic", "Finland"].includes(location)) {
       data.push({
-        id: `winter-${location.toLowerCase().replace(/\s+/g, '-')}`,
+        id: `winter-${location.toLowerCase().replace(/\s+/g, "-")}`,
         image: info.images[0], // Use first image as main image
         title: info.title,
         location,
@@ -307,7 +304,7 @@ const createGalleryData = () => {
       });
     } else {
       data.push({
-        id: `winter-${location.toLowerCase().replace(/\s+/g, '-')}`,
+        id: `winter-${location.toLowerCase().replace(/\s+/g, "-")}`,
         image: info.images[0],
         title: info.title,
         location,
@@ -317,13 +314,13 @@ const createGalleryData = () => {
       });
     }
   });
-  
+
   // Add summer locations
   Object.entries(locationData.summer).forEach(([location, info]) => {
     // Special handling for Greece, Spain, and Maldives locations
-    if (['Greece', 'Spain', 'Maldives'].includes(location)) {
+    if (["Greece", "Spain", "Maldives"].includes(location)) {
       data.push({
-        id: `summer-${location.toLowerCase().replace(/\s+/g, '-')}`,
+        id: `summer-${location.toLowerCase().replace(/\s+/g, "-")}`,
         image: info.images[0], // Use first image as main image
         title: info.title,
         location,
@@ -333,7 +330,7 @@ const createGalleryData = () => {
       });
     } else {
       data.push({
-        id: `summer-${location.toLowerCase().replace(/\s+/g, '-')}`,
+        id: `summer-${location.toLowerCase().replace(/\s+/g, "-")}`,
         image: info.images[0], // Use first image as thumbnail
         title: info.title,
         location,
@@ -343,18 +340,13 @@ const createGalleryData = () => {
       });
     }
   });
-  
+
   return data;
 };
 
 const galleryData = createGalleryData();
 
-const locations = [
-  "All",
-  "WINTER",
-  "SUMMER VACATION",
-  "EXCLUSIVE OFFERS",
-];
+const locations = ["All", "WINTER", "SUMMER VACATION", "EXCLUSIVE OFFERS"];
 
 const TravelGallery = () => {
   const [activeLocation, setActiveLocation] = useState("All");
@@ -364,15 +356,16 @@ const TravelGallery = () => {
   const [isOfferDialogOpen, setIsOfferDialogOpen] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [visibleSlides, setVisibleSlides] = useState(4); // Number of slides to show at once
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     phone: "",
     date: "",
-    message: ""
+    message: "",
   });
   // Removed currency conversion state as we're using static AED prices
-  
+
   // New states for API data
   const [apiOffers, setApiOffers] = useState([]);
   const [isLoadingOffers, setIsLoadingOffers] = useState(false);
@@ -387,14 +380,14 @@ const TravelGallery = () => {
       try {
         setIsLoadingOffers(true);
         setApiError(null);
-        
-        const response = await fetch('https://wwtravels.net/api/offers/all');
+
+        const response = await fetch("https://wwtravels.net/api/offers/all");
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
-        
+
         const data = await response.json();
-        
+
         if (data.success && data.offers) {
           // Transform API data to match our gallery structure
           const transformedOffers = data.offers.map((offer, index) => ({
@@ -406,15 +399,15 @@ const TravelGallery = () => {
             allImages: [offer.image], // API only provides one image per offer
             height: 380 + Math.floor(Math.random() * 50),
             price: offer.price,
-            apiData: offer // Store original API data for reference
+            apiData: offer, // Store original API data for reference
           }));
-          
+
           setApiOffers(transformedOffers);
         } else {
-          throw new Error('Invalid API response format');
+          throw new Error("Invalid API response format");
         }
       } catch (error) {
-        console.error('Error fetching offers:', error);
+        console.error("Error fetching offers:", error);
         setApiError(error.message);
       } finally {
         setIsLoadingOffers(false);
@@ -426,14 +419,14 @@ const TravelGallery = () => {
 
   // Format price in AED
   const formatPrice = (amount) => {
-    if (isNaN(amount)) return 'Price not available';
+    if (isNaN(amount)) return "Price not available";
     return `AED ${Math.round(amount).toLocaleString()}`;
   };
 
   // Listen for currency changes from navbar and localStorage
   useEffect(() => {
     // Load saved currency from localStorage on initial load
-    const savedCurrency = localStorage.getItem('selectedCurrency');
+    const savedCurrency = localStorage.getItem("selectedCurrency");
     if (savedCurrency) {
       setCurrentCurrency(savedCurrency);
     }
@@ -442,12 +435,12 @@ const TravelGallery = () => {
       const newCurrency = event.detail.currency;
       setCurrentCurrency(newCurrency);
       // Force re-render by updating the state
-      setExchangeRates(prev => ({ ...prev }));
+      setExchangeRates((prev) => ({ ...prev }));
     };
 
-    window.addEventListener('currencyChanged', handleCurrencyChange);
+    window.addEventListener("currencyChanged", handleCurrencyChange);
     return () => {
-      window.removeEventListener('currencyChanged', handleCurrencyChange);
+      window.removeEventListener("currencyChanged", handleCurrencyChange);
     };
   }, []);
 
@@ -465,14 +458,14 @@ const TravelGallery = () => {
   // Prevent body scroll when modal is open
   useEffect(() => {
     if (isOfferDialogOpen) {
-      document.body.style.overflow = 'hidden';
+      document.body.style.overflow = "hidden";
     } else {
-      document.body.style.overflow = 'unset';
+      document.body.style.overflow = "unset";
     }
 
     // Cleanup on unmount
     return () => {
-      document.body.style.overflow = 'unset';
+      document.body.style.overflow = "unset";
     };
   }, [isOfferDialogOpen]);
 
@@ -493,9 +486,9 @@ const TravelGallery = () => {
     setShowForm(true);
     // Smooth scroll to form when it slides in
     setTimeout(() => {
-      const formElement = document.getElementById('booking-form');
+      const formElement = document.getElementById("booking-form");
       if (formElement) {
-        formElement.scrollIntoView({ behavior: 'smooth' });
+        formElement.scrollIntoView({ behavior: "smooth" });
       }
     }, 100);
   };
@@ -514,7 +507,10 @@ const TravelGallery = () => {
 
   const handleFormSubmit = (e) => {
     e.preventDefault();
-    console.log("Form submitted:", { ...formData, destination: selectedOffer?.title });
+    console.log("Form submitted:", {
+      ...formData,
+      destination: selectedOffer?.title,
+    });
     setFormData({ name: "", email: "", phone: "", date: "", message: "" });
     setIsOfferDialogOpen(false);
     setSelectedOffer(null);
@@ -523,7 +519,7 @@ const TravelGallery = () => {
   const handleInputChange = (e) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
   };
 
@@ -532,7 +528,9 @@ const TravelGallery = () => {
   };
 
   const prevSlide = () => {
-    setCurrentSlide((prev) => (prev - 1 + heroSlides.length) % heroSlides.length);
+    setCurrentSlide(
+      (prev) => (prev - 1 + heroSlides.length) % heroSlides.length
+    );
   };
 
   const goToSlide = (index) => {
@@ -543,10 +541,10 @@ const TravelGallery = () => {
   const handleFormPanelScroll = (e) => {
     const target = e.currentTarget;
     const { scrollTop, scrollHeight, clientHeight } = target;
-    
+
     // Prevent scroll bubbling if we're at the bounds and trying to scroll further
     if (
-      (scrollTop === 0 && e.deltaY < 0) || 
+      (scrollTop === 0 && e.deltaY < 0) ||
       (scrollTop + clientHeight >= scrollHeight && e.deltaY > 0)
     ) {
       // Only prevent if we're actually at the scroll bounds
@@ -556,7 +554,7 @@ const TravelGallery = () => {
         e.preventDefault();
       }
     }
-    
+
     // Stop event propagation to prevent it from reaching parent elements
     e.stopPropagation();
   };
@@ -569,123 +567,146 @@ const TravelGallery = () => {
   return (
     <div className="relative w-full bg-white min-h-screen">
       {/* Hero Carousel Section */}
-      <div className="relative w-full min-h-screen overflow-hidden">
-        {/* Fixed Navbar - positioned absolutely over the carousel */}
-        <div className="absolute top-0 left-0 w-full z-30">
-          <Navbar />
-        </div>
+<div className="relative w-full min-h-screen overflow-hidden">
+  {/* Fixed Navbar */}
+  <div className="absolute top-0 left-0 w-full z-30">
+    <Navbar />
+  </div>
 
-        {/* Carousel Container */}
-        <div 
-          className="flex transition-transform duration-700 ease-in-out h-screen"
-          style={{ transform: `translateX(-${currentSlide * 100}%)` }}
-        >
-          {heroSlides.map((slide, index) => (
-            <div
-              key={slide.id}
-              className="relative w-full min-h-screen flex-shrink-0 bg-cover bg-center bg-no-repeat"
-              style={{
-                backgroundImage: `url(${slide.backgroundImage})`,
-                backgroundSize: "cover",
-                backgroundPosition: "center",
-                backgroundRepeat: "no-repeat",
-              }}
+  {/* Static Hero Background */}
+  <div
+    className="relative w-full min-h-screen bg-cover bg-center bg-no-repeat"
+    style={{
+      backgroundImage: `url(${heroSlides[0].backgroundImage})`,
+    }}
+  >
+    <div className="relative z-20 min-h-screen flex flex-col w-full">
+      {/* Main Content */}
+      <div className="flex-1 flex items-center justify-center py-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center px-4 sm:px-8">
+            {/* Main Heading */}
+            <h1
+              className={`mb-6 uppercase GeistBlack text-4xl md:text-7xl tracking-wider leading-tight text-white transition-all duration-1000 ${
+                isVisible
+                  ? "opacity-100 translate-y-0"
+                  : "opacity-0 translate-y-4"
+              }`}
             >
-              <div className="relative z-20 min-h-screen flex flex-col w-full">
-                {/* Main Content */}
-                <div className="flex-1 flex items-center justify-center py-8">
-                  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="text-center px-4 sm:px-8">
-                      {/* Main Heading */}
-                      <h1
-                        className={`mb-6 uppercase GeistBlack text-4xl md:text-7xl tracking-wider leading-tight text-white transition-all duration-1000 ${
-                          isVisible
-                            ? "opacity-100 translate-y-0"
-                            : "opacity-0 translate-y-4"
-                        }`}
-                      >
-                        {slide.title}
-                      </h1>
+              {heroSlides[0].title}
+            </h1>
 
-                      {/* Subtitle */}
-                      <div
-                        className={`mb-6 transition-all duration-1200 Poppins delay-300 ${
-                          isVisible
-                            ? "opacity-100 translate-y-0"
-                            : "opacity-0 translate-y-4"
-                        }`}
-                      >
-                        <h2 className="text-sm PoppinBold md:text-xl max-w-3xl text-gray-200 mb-4 tracking-wide">
-                          {slide.subtitle}
-                        </h2>
-                      </div>
+            {/* Subtitle */}
+            <div
+              className={`mb-6 transition-all duration-1200 Poppins delay-300 ${
+                isVisible
+                  ? "opacity-100 translate-y-0"
+                  : "opacity-0 translate-y-4"
+              }`}
+            >
+              <h2 className="text-sm PoppinBold md:text-xl max-w-3xl text-gray-200 mb-4 tracking-wide">
+                {heroSlides[0].subtitle}
+              </h2>
+            </div>
 
-                      {/* Description */}
-                      <p
-                        className={`Poppins text-sm md:text-lg leading-relaxed mb-8 max-w-3xl mx-auto text-gray-100 transition-all duration-1400 delay-500 ${
-                          isVisible
-                            ? "opacity-100 translate-y-0"
-                            : "opacity-0 translate-y-4"
-                        }`}
-                      >
-                        {slide.description}
-                      </p>
+            {/* Description */}
+            <p
+              className={`Poppins text-sm md:text-lg leading-relaxed mb-8 max-w-3xl mx-auto text-gray-100 transition-all duration-1400 delay-500 ${
+                isVisible
+                  ? "opacity-100 translate-y-0"
+                  : "opacity-0 translate-y-4"
+              }`}
+            >
+              {heroSlides[0].description}
+            </p>
 
-                      <div className="absolute z-0 top-0 left-0 w-[100vw] h-full bg-gradient-to-b from-white/80 via-transparent to-transparent"></div>
+            {/* Gradient Overlay */}
+            <div className="absolute z-0 top-0 left-0 w-[100vw] h-full bg-gradient-to-b from-white/80 via-transparent to-transparent"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+      {/* Gallery Section */}
+      <div className="flex justify-center items-center flex-col w-full bg-gradient-to-br from-gray-50 to-gray-100 py-5 md:py-10 lg:py20">
+        {/* ////////////////////////////////////////////// */}
+
+        <div className="w-full max-w-6xl mx-auto px-4">
+          <div className="relative overflow-hidden">
+            <div className="flex transition-transform duration-500 ease-in-out" 
+                 style={{ transform: `translateX(-${currentSlide * 100}%)` }}>
+              {apiOffers.slice(0, 4).map((offer) => (
+                <div key={offer.id} className="w-full flex-shrink-0 px-2">
+                  <div className="relative w-full h-[500px] md:h-[600px] rounded-xl overflow-hidden">
+                    <Image
+                      src={offer.image}
+                      alt={offer.title}
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 768px) 100vw, 90vw"
+                      priority
+                    />
+                    <div className="absolute bottom-4 right-4">
+                      <Button
+                        onClick={() => handleOfferClick(offer)}
+                        className="bg-black/80 hover:bg-black text-white text-sm px-5 py-2.5 rounded-full shadow-lg transition-colors duration-200"
+                      >
+                        View Deal
+                      </Button>
                     </div>
                   </div>
                 </div>
-              </div>
+              ))}
             </div>
-          ))}
-        </div>
-
-        {/* Navigation Arrows */}
-        <button
-          onClick={prevSlide}
-          className="absolute left-4 top-1/2 transform -translate-y-1/2 z-30 bg-black/30 hover:bg-black/50 text-white p-2 rounded-full transition-all duration-300 backdrop-blur-sm"
-        >
-          <ChevronLeft className="h-6 w-6" />
-        </button>
-
-        <button
-          onClick={nextSlide}
-          className="absolute right-4 top-1/2 transform -translate-y-1/2 z-30 bg-black/30 hover:bg-black/50 text-white p-2 rounded-full transition-all duration-300 backdrop-blur-sm"
-        >
-          <ChevronRight className="h-6 w-6" />
-        </button>
-
-        {/* Dot Indicators */}
-        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-30 flex space-x-2">
-          {heroSlides.map((_, index) => (
+            
+            {/* Navigation Arrows */}
             <button
-              key={index}
-              onClick={() => goToSlide(index)}
-              className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                index === currentSlide 
-                  ? 'bg-white scale-125' 
-                  : 'bg-white/50 hover:bg-white/75'
-              }`}
-            />
-          ))}
-        </div>
-      </div>
+              onClick={prevSlide}
+              className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white/90 hover:bg-white text-gray-800 p-2.5 rounded-full shadow-lg -ml-4 transition-all duration-200 hover:scale-110"
+              aria-label="Previous slide"
+            >
+              <ChevronLeft className="h-6 w-6" />
+            </button>
+            <button
+              onClick={nextSlide}
+              className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white/90 hover:bg-white text-gray-800 p-2.5 rounded-full shadow-lg -mr-4 transition-all duration-200 hover:scale-110"
+              aria-label="Next slide"
+            >
+              <ChevronRight className="h-6 w-6" />
+            </button>
 
-      {/* Gallery Section */}
-      <div className="w-full bg-gradient-to-br from-gray-50 to-gray-100 py-20">
+            {/* Dots indicator */}
+            <div className="flex justify-center mt-6 mb-10 space-x-2">
+              {apiOffers.slice(0, 4).map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => setCurrentSlide(index)}
+                  className={`w-2.5 h-2.5 rounded-full transition-all duration-200 ${
+                    currentSlide === index ? 'bg-black w-6' : 'bg-gray-300'
+                  }`}
+                  aria-label={`Go to slide ${index + 1}`}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+
         <div className="max-w-7xl mx-auto px-6 space-y-14">
           {/* Header */}
           <div className="text-center">
-            <h2 className="text-4xl md:text-5xl font-bold GeistBold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent mb-4">
+            <h2 className=" w-full text-3xl md:text-5xl font-bold GeistBold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent mb-4">
               Limited Time Travel Deals
             </h2>
-            <p className="text-lg text-gray-600 Poppins max-w-2xl mx-auto">
+            <p className="text-sm text-gray-600 Poppins max-w-2xl mx-auto">
               Explore our exclusive offers and save big on your next adventure
             </p>
           </div>
 
           {/* Filters */}
-          <div className="flex flex-wrap justify-center gap-3">
+          <div className="flex flex-wrap justify-center gap-1 md:gap-3 w-full">
             {locations.map((loc) => (
               <button
                 key={loc}
@@ -711,7 +732,7 @@ const TravelGallery = () => {
                 <p className="text-red-600 text-sm">
                   Failed to load exclusive offers: {apiError}
                 </p>
-                <button 
+                <button
                   onClick={() => window.location.reload()}
                   className="mt-2 text-red-700 hover:text-red-800 underline text-xs"
                 >
@@ -754,13 +775,17 @@ const TravelGallery = () => {
                     <h3 className="font-semibold text-gray-900 text-lg mb-1">
                       {item.title}
                     </h3>
-                    <p className="text-gray-600 text-sm mb-3">{item.location}</p>
+                    <p className="text-gray-600 text-sm mb-3">
+                      {item.location}
+                    </p>
                     {item.category === "EXCLUSIVE OFFERS" && item.price && (
                       <div className="mb-3">
                         <span className="text-lg font-bold text-green-600">
                           {formatPrice(item.price)}
                         </span>
-                        <span className="text-xs text-gray-500 block">Starting from</span>
+                        <span className="text-xs text-gray-500 block">
+                          Starting from
+                        </span>
                       </div>
                     )}
                     <Button
@@ -784,8 +809,8 @@ const TravelGallery = () => {
       </div>
 
       {/* Offers Dialog */}
-      <Dialog 
-        open={isOfferDialogOpen} 
+      <Dialog
+        open={isOfferDialogOpen}
         onOpenChange={(open) => {
           setIsOfferDialogOpen(open);
           if (!open) setShowForm(false);
@@ -807,7 +832,11 @@ const TravelGallery = () => {
 
               {/* Full Width Image with Overlay */}
               <div className="relative w-full flex-1 overflow-hidden">
-                <div className={`absolute inset-0 transition-all duration-500 ${showForm ? 'md:w-1/2 sm:w-full' : 'w-full'}`}>
+                <div
+                  className={`absolute inset-0 transition-all duration-500 ${
+                    showForm ? "md:w-1/2 sm:w-full" : "w-full"
+                  }`}
+                >
                   <Image
                     src={selectedOffer.allImages[currentImageIndex]}
                     alt={`${selectedOffer.title} - ${currentImageIndex + 1}`}
@@ -816,20 +845,29 @@ const TravelGallery = () => {
                     priority
                     sizes="(max-width: 768px) 100vw, 50vw"
                     style={{
-                      objectPosition: 'center center',
-                      width: '100%',
-                      height: '100%',
+                      objectPosition: "center center",
+                      width: "100%",
+                      height: "100%",
                     }}
                   />
                 </div>
-                
+
                 {/* Content Overlay */}
-                <div className={`absolute bottom-0 left-0 p-4 md:p-6 text-white transition-all duration-500 ${showForm ? 'md:w-1/2 sm:w-full' : 'w-full'}`}>
-                  <h3 className="text-lg sm:text-xl font-semibold">{selectedOffer.title}</h3>
-                  <p className="text-gray-200 text-xs">{selectedOffer.location}</p>
+                <div
+                  className={`absolute bottom-0 left-0 p-4 md:p-6 text-white transition-all duration-500 ${
+                    showForm ? "md:w-1/2 sm:w-full" : "w-full"
+                  }`}
+                >
+                  <h3 className="text-lg sm:text-xl font-semibold">
+                    {selectedOffer.title}
+                  </h3>
+                  <p className="text-gray-200 text-xs">
+                    {selectedOffer.location}
+                  </p>
                   <div className="mt-1">
                     <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
-                      {selectedOffer.category === "EXCLUSIVE OFFERS" && selectedOffer.price ? (
+                      {selectedOffer.category === "EXCLUSIVE OFFERS" &&
+                      selectedOffer.price ? (
                         <>
                           <span className="text-lg sm:text-xl font-bold text-white">
                             {formatPrice(selectedOffer.price)}
@@ -856,49 +894,69 @@ const TravelGallery = () => {
                       * Prices can vary based on season and availability.
                     </p>
                   </div>
-                  
-                  <div className={`${showForm ? 'sm:relative sm:bottom-0 sm:right-0' : 'absolute bottom-4 sm:bottom-8 right-4 sm:right-8'}`}>
+
+                  <div
+                    className={`${
+                      showForm
+                        ? "sm:relative sm:bottom-0 sm:right-0"
+                        : "absolute bottom-4 sm:bottom-8 right-4 sm:right-8"
+                    }`}
+                  >
                     {!showForm && (
                       <button
                         onClick={handleBookNow}
                         className="bg-white text-black hover:bg-gray-100 font-semibold py-2 sm:py-3 px-6 sm:px-8 rounded-full shadow-lg transition-all duration-300 transform hover:scale-105 flex items-center gap-2 text-sm sm:text-base cursor-pointer"
                       >
                         <span>Book Now</span>
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 sm:h-5 sm:w-5" viewBox="0 0 20 20" fill="currentColor">
-                          <path fillRule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="h-4 w-4 sm:h-5 sm:w-5"
+                          viewBox="0 0 20 20"
+                          fill="currentColor"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z"
+                            clipRule="evenodd"
+                          />
                         </svg>
                       </button>
                     )}
                   </div>
                 </div>
               </div>
-              
+
               {/* Bottom Carousel - Only show for locations with multiple images */}
               {selectedOffer?.allImages?.length > 1 && (
                 <div className="w-full h-24 sm:h-36 bg-gray-100 border-t border-gray-200 relative z-10">
                   <div className="h-full w-full flex items-center">
                     <div className="w-full px-2 sm:px-4">
                       <div className="flex justify-between w-full">
-                        {selectedOffer?.allImages?.slice(0, 5).map((image, index) => (
-                          <div 
-                            key={`${selectedOffer.id}-${index}`}
-                            className={`relative h-16 w-16 sm:h-28 sm:w-full rounded-lg overflow-hidden border-2 transition-all cursor-pointer flex-shrink-0 mx-1 ${
-                              index === currentImageIndex 
-                                ? 'border-blue-500 scale-105' 
-                                : 'border-transparent hover:border-blue-500'
-                            }`}
-                            style={{ flex: '1 0 auto', maxWidth: 'calc(20% - 8px)' }}
-                            onClick={() => handleCarouselImageClick(index)}
-                          >
-                            <Image
-                              src={image}
-                              alt={`${selectedOffer.title} - ${index + 1}`}
-                              fill
-                              sizes="(max-width: 768px) 64px, 112px"
-                              className="object-cover"
-                            />
-                          </div>
-                        ))}
+                        {selectedOffer?.allImages
+                          ?.slice(0, 5)
+                          .map((image, index) => (
+                            <div
+                              key={`${selectedOffer.id}-${index}`}
+                              className={`relative h-16 w-16 sm:h-28 sm:w-full rounded-lg overflow-hidden border-2 transition-all cursor-pointer flex-shrink-0 mx-1 ${
+                                index === currentImageIndex
+                                  ? "border-blue-500 scale-105"
+                                  : "border-transparent hover:border-blue-500"
+                              }`}
+                              style={{
+                                flex: "1 0 auto",
+                                maxWidth: "calc(20% - 8px)",
+                              }}
+                              onClick={() => handleCarouselImageClick(index)}
+                            >
+                              <Image
+                                src={image}
+                                alt={`${selectedOffer.title} - ${index + 1}`}
+                                fill
+                                sizes="(max-width: 768px) 64px, 112px"
+                                className="object-cover"
+                              />
+                            </div>
+                          ))}
                       </div>
                     </div>
                   </div>
@@ -921,43 +979,66 @@ const TravelGallery = () => {
                   `}</style>
                 </div>
               )}
-              
+
               {/* Sliding Form Panel */}
-              <div 
+              <div
                 id="booking-form"
                 className={`absolute top-0 right-0 h-full w-full sm:w-full md:w-1/2 bg-white shadow-xl transition-all duration-500 ease-in-out ${
-                  showForm ? 'translate-x-0' : 'translate-x-full'
+                  showForm ? "translate-x-0" : "translate-x-full"
                 }`}
               >
-                <div 
+                <div
                   ref={formPanelRef}
                   className="p-4 sm:p-6 md:p-8 h-full overflow-y-auto pb-20 sm:pb-24 md:pb-28 scroll-smooth"
                   onWheel={handleFormPanelScroll}
                   onTouchMove={handleFormPanelTouch}
                   onTouchStart={handleFormPanelTouch}
                   style={{
-                    overscrollBehavior: 'contain',
-                    WebkitOverflowScrolling: 'touch'
+                    overscrollBehavior: "contain",
+                    WebkitOverflowScrolling: "touch",
                   }}
                 >
                   <button
                     onClick={() => setShowForm(false)}
                     className="absolute top-3 sm:top-4 left-3 sm:left-4 text-gray-500 hover:text-gray-700 p-1 z-10"
                   >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5 sm:h-6 sm:w-6"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M15 19l-7-7 7-7"
+                      />
                     </svg>
                   </button>
-                  
+
                   <div className="text-center mb-6 sm:mb-8 mt-8 sm:mt-4">
-                    <h2 className="text-xl sm:text-2xl font-bold text-gray-800">Book Your Adventure</h2>
-                    <p className="text-gray-500 mt-1 text-sm sm:text-base">Fill in your details to secure your booking</p>
+                    <h2 className="text-xl sm:text-2xl font-bold text-gray-800">
+                      Book Your Adventure
+                    </h2>
+                    <p className="text-gray-500 mt-1 text-sm sm:text-base">
+                      Fill in your details to secure your booking
+                    </p>
                   </div>
-                  
-                  <form onSubmit={handleFormSubmit} className="space-y-3 sm:space-y-4">
+
+                  <form
+                    onSubmit={handleFormSubmit}
+                    className="space-y-3 sm:space-y-4"
+                  >
                     <div className="grid grid-cols-1 gap-3 sm:gap-4">
                       <div className="space-y-2">
-                        <Label htmlFor="name" className="text-sm font-medium text-gray-700">Full Name</Label>
+                        <Label
+                          htmlFor="name"
+                          className="text-sm font-medium text-gray-700"
+                        >
+                          Full Name
+                        </Label>
                         <Input
                           id="name"
                           name="name"
@@ -969,9 +1050,14 @@ const TravelGallery = () => {
                           placeholder="John Doe"
                         />
                       </div>
-                      
+
                       <div className="space-y-2">
-                        <Label htmlFor="email" className="text-sm font-medium text-gray-700">Email</Label>
+                        <Label
+                          htmlFor="email"
+                          className="text-sm font-medium text-gray-700"
+                        >
+                          Email
+                        </Label>
                         <Input
                           id="email"
                           name="email"
@@ -983,9 +1069,14 @@ const TravelGallery = () => {
                           placeholder="johndoe@example.com"
                         />
                       </div>
-                      
+
                       <div className="space-y-2">
-                        <Label htmlFor="phone" className="text-sm font-medium text-gray-700">Phone Number</Label>
+                        <Label
+                          htmlFor="phone"
+                          className="text-sm font-medium text-gray-700"
+                        >
+                          Phone Number
+                        </Label>
                         <Input
                           id="phone"
                           name="phone"
@@ -997,9 +1088,14 @@ const TravelGallery = () => {
                           placeholder="+1 234 567 8900"
                         />
                       </div>
-                      
+
                       <div className="space-y-2">
-                        <Label htmlFor="date" className="text-sm font-medium text-gray-700">Travel Date</Label>
+                        <Label
+                          htmlFor="date"
+                          className="text-sm font-medium text-gray-700"
+                        >
+                          Travel Date
+                        </Label>
                         <Input
                           id="date"
                           name="date"
@@ -1011,9 +1107,14 @@ const TravelGallery = () => {
                         />
                       </div>
                     </div>
-                    
+
                     <div className="space-y-2">
-                      <Label htmlFor="message" className="text-sm font-medium text-gray-700">Special Requests</Label>
+                      <Label
+                        htmlFor="message"
+                        className="text-sm font-medium text-gray-700"
+                      >
+                        Special Requests
+                      </Label>
                       <textarea
                         id="message"
                         name="message"
@@ -1024,18 +1125,19 @@ const TravelGallery = () => {
                         placeholder="Any special requirements or requests..."
                       ></textarea>
                     </div>
-                    
+
                     <div className="pt-3 sm:pt-4">
-                      <Button 
-                        type="submit" 
+                      <Button
+                        type="submit"
                         className="w-full bg-black hover:bg-gray-800 text-white py-2.5 sm:py-3 text-sm sm:text-base font-medium rounded-md shadow-md transform transition-all duration-300 hover:scale-[1.02] cursor-pointer"
                       >
                         Confirm Booking
                       </Button>
                     </div>
-                    
+
                     <p className="text-xs text-gray-500 text-center mt-3 sm:mt-4">
-                      Your personal information is safe with us. We'll only use it to process your booking.
+                      Your personal information is safe with us. We'll only use
+                      it to process your booking.
                     </p>
                   </form>
                 </div>
@@ -1050,4 +1152,4 @@ const TravelGallery = () => {
   );
 };
 
-export default TravelGallery; 
+export default TravelGallery;

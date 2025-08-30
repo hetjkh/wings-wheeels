@@ -341,7 +341,7 @@ const popular = () => {
                 <div>
                   <div className="text-sm text-gray-500">Starting</div>
                   <div className="font-semibold text-gray-900">
-                    {convertPrice(currentDestination.price)}
+                    {currentDestination.price}
                   </div>
                 </div>
               </div>
@@ -393,7 +393,7 @@ const popular = () => {
                   {currentDestination.country}
                 </div>
                 <div className="mt-2 text-xl font-bold">
-                  {convertPrice(currentDestination.price)}
+                  {currentDestination.price}
                 </div>
               </div>
             </div>

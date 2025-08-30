@@ -4,14 +4,14 @@ const reviews = [
   {
     id: 1,
     name: "Usmaan",
-    location: "Dubai",
+    location: "",
     review:
       "Booking with Wings & Wheels was the best decision I made for my Dubai trip. From the moment I contacted them, their team was super helpful and friendly. They handled my flight bookings, visa, hotel stay, and even airport transfers so smoothly. I didn't have to worry about anything. They also customized the package to fit my budget without compromising on quality. I loved how responsive they were—even at odd hours. This wasn't just a trip, it was a truly relaxing experience thanks to their planning. I'll definitely recommend them to my friends and family.",
   },
   {
     id: 2,
     name: "Himanshu",
-    location: "Europe Tour",
+    location: "",
     review:
       "A well-planned tour from start to finish. I didn't have to worry about a thing. Great support even during the trip!",
   },

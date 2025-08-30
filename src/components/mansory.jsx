@@ -6,7 +6,7 @@ const Masonry = ({ children, className = "" }) => {
   return (
     <div
       className={`
-        columns-1 
+        columns-2 
         sm:columns-2 
         md:columns-3 
         lg:columns-4 
@@ -17,7 +17,7 @@ const Masonry = ({ children, className = "" }) => {
       `}
     >
       {React.Children.map(children, (child, index) => (
-        <div key={index} className="break-inside-avoid mb-4">
+        <div key={index} className="break-inside-avoid gap-0 mb-4">
           {child}
         </div>
       ))}

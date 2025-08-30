@@ -35,7 +35,7 @@ const Footer = () => {
             </Button>
             <Button
               onClick={() => window.open("tel:00971547858338")}
-              className="bg-transparent border-2 border-white text-white hover:bg-white/10 px-8 py-3 rounded-full text-sm font-medium transition-all duration-300 cursor-pointer"
+              className="bg-black border-2 border-white text-white  px-8 py-3 rounded-full text-sm font-medium transition-all duration-300 cursor-pointer"
             >
               GET A FREE QUOTE
             </Button>
