@@ -294,28 +294,54 @@ const createGalleryData = () => {
   
   // Add winter locations
   Object.entries(locationData.winter).forEach(([location, info]) => {
-    data.push({
-      id: `winter-${location.toLowerCase().replace(/\s+/g, '-')}`,
-      image: info.images[0], // Use first image as thumbnail
-      title: info.title,
-      location,
-      category: "WINTER",
-      allImages: info.images,
-      height: 380 + Math.floor(Math.random() * 50),
-    });
+    // Special handling for Iceland, Canada, Czech Republic, and Finland locations
+    if (['Iceland', 'Canada', 'Czech Republic', 'Finland'].includes(location)) {
+      data.push({
+        id: `winter-${location.toLowerCase().replace(/\s+/g, '-')}`,
+        image: info.images[0], // Use first image as main image
+        title: info.title,
+        location,
+        category: "WINTER",
+        allImages: info.images.slice(1), // Exclude first image from carousel
+        height: 380 + Math.floor(Math.random() * 50),
+      });
+    } else {
+      data.push({
+        id: `winter-${location.toLowerCase().replace(/\s+/g, '-')}`,
+        image: info.images[0],
+        title: info.title,
+        location,
+        category: "WINTER",
+        allImages: info.images,
+        height: 380 + Math.floor(Math.random() * 50),
+      });
+    }
   });
   
   // Add summer locations
   Object.entries(locationData.summer).forEach(([location, info]) => {
-    data.push({
-      id: `summer-${location.toLowerCase().replace(/\s+/g, '-')}`,
-      image: info.images[0], // Use first image as thumbnail
-      title: info.title,
-      location,
-      category: "SUMMER VACATION",
-      allImages: info.images,
-      height: 380 + Math.floor(Math.random() * 50),
-    });
+    // Special handling for Greece, Spain, and Maldives locations
+    if (['Greece', 'Spain', 'Maldives'].includes(location)) {
+      data.push({
+        id: `summer-${location.toLowerCase().replace(/\s+/g, '-')}`,
+        image: info.images[0], // Use first image as main image
+        title: info.title,
+        location,
+        category: "SUMMER VACATION",
+        allImages: info.images.slice(1), // Exclude first image from carousel
+        height: 380 + Math.floor(Math.random() * 50),
+      });
+    } else {
+      data.push({
+        id: `summer-${location.toLowerCase().replace(/\s+/g, '-')}`,
+        image: info.images[0], // Use first image as thumbnail
+        title: info.title,
+        location,
+        category: "SUMMER VACATION",
+        allImages: info.images,
+        height: 380 + Math.floor(Math.random() * 50),
+      });
+    }
   });
   
   return data;
