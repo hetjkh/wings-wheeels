@@ -2040,7 +2040,7 @@ const ContactUsPage = () => {
                       ) : (
                         <Button
                           type="submit"
-                          className={`py-2 px-6 rounded-full bg-black text-white text-lg font-semibold uppercase shadow-lg transition-all duration-300 hover:bg-gray-800 hover:-translate-y-0.5 hover:shadow-xl ${isLoading ? 'opacity-75 cursor-not-allowed' : ''}`}
+                          className={`py-2 px-6 rounded-full bg-black text-white text-lg font-semibold uppercase shadow-lg transition-all duration-300 hover:bg-gray-800 hover:-translate-y-0.5 hover:shadow-xl ${isLoading ? 'opacity-75 cursor-not-allowed' : 'cursor-pointer'}`}
                           disabled={isLoading}
                         >
                           {isLoading ? (
@@ -2080,8 +2080,8 @@ const ContactUsPage = () => {
                       Select Office Location
                     </Label>
                     <Select value={selectedCountry} onValueChange={setSelectedCountry}>
-                      <SelectTrigger className="rounded-lg bg-gray-50 border border-gray-200 transition-all duration-300 hover:bg-gray-100 hover:border-blue-600 hover:shadow-md focus:bg-white focus:border-blue-600 focus:shadow-lg">
-                        <SelectValue />
+                      <SelectTrigger className="rounded-lg bg-gray-50 border border-gray-200 transition-all duration-300 hover:bg-gray-100 hover:border-blue-600 hover:shadow-md focus:bg-white focus:border-blue-600 focus:shadow-lg cursor-pointer">
+                        <SelectValue className="cursor-pointer" />
                       </SelectTrigger>
                       <SelectContent className="rounded-xl border border-gray-200 shadow-lg bg-white">
                         <SelectItem value="juba" className="hover:bg-blue-50 text-black">

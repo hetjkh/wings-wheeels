@@ -765,7 +765,7 @@ const TravelGallery = () => {
                     )}
                     <Button
                       onClick={() => handleSeeOffers(item)}
-                      className="w-full bg-black hover:bg-gray-800 text-white transition-all duration-300 font-medium py-2"
+                      className="w-full bg-black hover:bg-gray-800 text-white transition-all duration-300 font-medium py-2 cursor-pointer"
                     >
                       See Offers
                     </Button>
@@ -861,7 +861,7 @@ const TravelGallery = () => {
                     {!showForm && (
                       <button
                         onClick={handleBookNow}
-                        className="bg-white text-black hover:bg-gray-100 font-semibold py-2 sm:py-3 px-6 sm:px-8 rounded-full shadow-lg transition-all duration-300 transform hover:scale-105 flex items-center gap-2 text-sm sm:text-base"
+                        className="bg-white text-black hover:bg-gray-100 font-semibold py-2 sm:py-3 px-6 sm:px-8 rounded-full shadow-lg transition-all duration-300 transform hover:scale-105 flex items-center gap-2 text-sm sm:text-base cursor-pointer"
                       >
                         <span>Book Now</span>
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 sm:h-5 sm:w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -1028,7 +1028,7 @@ const TravelGallery = () => {
                     <div className="pt-3 sm:pt-4">
                       <Button 
                         type="submit" 
-                        className="w-full bg-black hover:bg-gray-800 text-white py-2.5 sm:py-3 text-sm sm:text-base font-medium rounded-md shadow-md transform transition-all duration-300 hover:scale-[1.02]"
+                        className="w-full bg-black hover:bg-gray-800 text-white py-2.5 sm:py-3 text-sm sm:text-base font-medium rounded-md shadow-md transform transition-all duration-300 hover:scale-[1.02] cursor-pointer"
                       >
                         Confirm Booking
                       </Button>
@@ -1050,4 +1050,4 @@ const TravelGallery = () => {
   );
 };
 
-export default TravelGallery;
+export default TravelGallery; 
