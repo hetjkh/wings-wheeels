@@ -158,7 +158,7 @@ import Navbar from '../reusable/navbar';
 const ContactUsPage = () => {
   const [serviceType, setServiceType] = useState('');
   const [gender, setGender] = useState('male');
-  const [selectedCountry, setSelectedCountry] = useState('juba');
+  const [selectedCountry, setSelectedCountry] = useState('dubai');
   const [destinationCountry, setDestinationCountry] = useState('');
   const [selectedCountryObj, setSelectedCountryObj] = useState(null);
   const [destinationState, setDestinationState] = useState('');
@@ -191,12 +191,26 @@ const ContactUsPage = () => {
     setDestinationState('');
     setSelectedCity('');
     setSelectedCityObj(null);
-    setCities([]);
     
-    // Update selected country object
+    // Find the selected country object
     const country = countries.find(c => c.isoCode === countryCode);
-    if (country) {
-      setSelectedCountryObj(country);
+    setSelectedCountryObj(country || null);
+    
+    // If service type is visa, update visa country
+    if (serviceType === 'visa' && country) {
+      setVisaCountry(country.name);
+      setFormData(prev => ({
+        ...prev,
+        visaDetails: {
+          ...prev.visaDetails,
+          visaCountry: country.name
+        }
+      }));
+    }
+    
+    // Reset errors
+    if (errors.destinationCountry) {
+      setErrors(prev => ({ ...prev, destinationCountry: '' }));
     }
   };
 
@@ -650,7 +664,7 @@ const ContactUsPage = () => {
       setFlightAdults(1);
       setFlightChildren(0);
       setFlightInfants(0);
-      
+
       // Reset hotel states
       setHotelDestinationCity('');
       setCheckInDate('');
@@ -867,6 +881,13 @@ const ContactUsPage = () => {
 
   // Office locations data
   const officeLocations = {
+    dubai: {
+      name: 'Dubai, UAE',
+      company: 'Holiday Dreamz Travel Management',
+      phone: '+971 54 785 8338, +971 52 288 0935',
+      email: 'reservation@wwtravels.net',
+      address: 'Office no-3, Al Khaimah building, Port Saeed, Deira, Dubai, UAE'
+    },
     juba: {
       name: 'Juba, Republic of South Sudan',
       company: 'Holiday Dreamz Travel Management Co. Ltd',
@@ -910,15 +931,15 @@ const ContactUsPage = () => {
       name: 'Facebook',
       icon: Facebook,
       color: '#1877F2',
-      url: 'https://facebook.com/holidaydreamztravel',
+      url: 'https://www.facebook.com/profile.php?id=61579252472959',
       username: '@holidaydreamztravel'
     },
     {
       name: 'Instagram',
       icon: Instagram,
       color: '#E4405F',
-      url: 'https://instagram.com/holidaydreamztravel',
-      username: '@holidaydreamztravel'
+      url: 'https://www.instagram.com/wingsandwheels.travel/#',
+      username: '@wingsandwheelstours'
     },
     {
       name: 'LinkedIn',
@@ -931,7 +952,7 @@ const ContactUsPage = () => {
       name: 'WhatsApp',
       icon: MessageCircle,
       color: '#25D366',
-      url: 'https://wa.me/211911544294',
+      url: 'https://wa.me/971547858338?text=Hello%20Wings%20and%20Wheels%20Travel,%20I%20have%20a%20question%20about%20your%20services',
       username: '+211 911544294'
     }
   ];
@@ -1006,7 +1027,7 @@ const ContactUsPage = () => {
       </div>
 
       {/* Contact Information Section */}
-      <div className="bg-gray-50 py-8">
+      <div id="get-in-touch" className="bg-gray-50 py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
             {/* Contact Form */}
@@ -1829,28 +1850,41 @@ const ContactUsPage = () => {
                               <Label className="text-gray-600 mb-1 text-xs font-semibold uppercase block">
                                 Which Country's Visa Do You Want? *
                               </Label>
-                              <SearchableSelect
-                                value={visaCountry}
-                                onValueChange={(value) => {
-                                  setVisaCountry(value);
-                                  setFormData(prev => ({
-                                    ...prev,
-                                    visaDetails: {
-                                      ...prev.visaDetails,
-                                      visaCountry: value
+                              {destinationCountry ? (
+                                <div>
+                                  <Input
+                                    value={countries.find(c => c.isoCode === destinationCountry)?.name || ''}
+                                    readOnly
+                                    className="rounded-lg bg-gray-100 border-gray-200 cursor-not-allowed"
+                                  />
+                                  <p className="mt-1 text-xs text-gray-500">
+                                    Visa country is synced with your destination
+                                  </p>
+                                </div>
+                              ) : (
+                                <SearchableSelect
+                                  value={visaCountry}
+                                  onValueChange={(value) => {
+                                    setVisaCountry(value);
+                                    setFormData(prev => ({
+                                      ...prev,
+                                      visaDetails: {
+                                        ...prev.visaDetails,
+                                        visaCountry: value
+                                      }
+                                    }));
+                                    if (errors.visaCountry) {
+                                      setErrors(prev => ({ ...prev, visaCountry: '' }));
                                     }
-                                  }));
-                                  if (errors.visaCountry) {
-                                    setErrors(prev => ({ ...prev, visaCountry: '' }));
-                                  }
-                                }}
-                                placeholder="Search for a country..."
-                                options={countries}
-                                renderOption={(country) => `${country.flag} ${country.name} (${country.isoCode})`}
-                                emptyMessage="No countries found"
-                                error={errors.visaCountry}
-                                valueKey="isoCode"
-                              />
+                                  }}
+                                  placeholder="Select a destination country first"
+                                  options={countries}
+                                  renderOption={(country) => `${country.flag} ${country.name} (${country.isoCode})`}
+                                  emptyMessage="No countries found"
+                                  error={errors.visaCountry}
+                                  valueKey="isoCode"
+                                />
+                              )}
                             </div>
                           </div>
                         </CardContent>
@@ -2015,7 +2049,7 @@ const ContactUsPage = () => {
                         </h3>
                         
                         <Label className="text-gray-600 mb-1 text-xs font-semibold uppercase block">
-                          Tell us about your requirements * <span className="text-gray-400 font-normal">(10-1000 characters)</span>
+                          Tell us about your requirements  <span className="text-gray-400 font-normal">(10-1000 characters)</span>
                         </Label>
                         <div className="relative">
                           <textarea
@@ -2130,7 +2164,10 @@ const ContactUsPage = () => {
                       <SelectTrigger className="rounded-lg bg-gray-50 border border-gray-200 transition-all duration-300 hover:bg-gray-100 hover:border-blue-600 hover:shadow-md focus:bg-white focus:border-blue-600 focus:shadow-lg cursor-pointer">
                         <SelectValue className="cursor-pointer" />
                       </SelectTrigger>
-                      <SelectContent className="rounded-xl border border-gray-200 shadow-lg bg-white">
+                      <SelectContent className="rounded-xl border border-gray-200 shadow-lg bg-white max-h-60 overflow-y-auto">
+                        <SelectItem value="dubai" className="hover:bg-blue-50 text-black">
+                          🇦🇪 Dubai, UAE
+                        </SelectItem>
                         <SelectItem value="juba" className="hover:bg-blue-50 text-black">
                           🇸🇸 Juba, Republic of South Sudan
                         </SelectItem>

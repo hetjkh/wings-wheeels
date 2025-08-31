@@ -82,35 +82,38 @@ export default function WelcomeModal() {
       )}
 
       {/* Cookie Consent Banner with Animation */}
-      <div className={`fixed left-0 right-0 bg-white shadow-lg border-t border-gray-200 z-50 p-4 transition-all duration-500 ease-in-out transform ${
+      <div className={`fixed inset-0 flex items-center justify-center z-50 p-4 transition-all duration-500 ease-in-out ${
         showCookieBanner 
-          ? 'translate-y-0 opacity-100 bottom-0' 
-          : 'translate-y-full opacity-0 -bottom-20'
+          ? 'opacity-100 visible' 
+          : 'opacity-0 invisible'
       }`}>
-        <div className="max-w-6xl mx-auto">
-          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-            <div className="flex items-start gap-3">
+        <div className="absolute inset-0 bg-black/30" onClick={() => setShowCookieBanner(false)} />
+        <div className={`bg-white shadow-lg rounded-xl z-10 w-full max-w-3xl p-8 transform transition-transform duration-500 ${
+          showCookieBanner ? 'scale-100' : 'scale-95'
+        }`} style={{ minHeight: '320px' }}>
+          <div className="flex flex-col items-center text-center w-full">
+            <div className="flex flex-col items-center gap-4 w-full">
               <div className="mt-1">
-                <Cookie className="h-6 w-6 text-gray-500" />
+                <Cookie className="h-8 w-8 text-gray-500" />
               </div>
               <div>
-                <h3 className="font-medium text-gray-900">We value your privacy</h3>
-                <p className="text-sm text-gray-600 mt-1">
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">We value your privacy</h3>
+                <p className="text-base text-gray-600 leading-relaxed">
                   We use cookies to enhance your browsing experience, serve personalized content, and analyze our traffic. 
                   By clicking "Accept All", you consent to our use of cookies.
                 </p>
               </div>
             </div>
-            <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+            <div className="flex flex-col sm:flex-row gap-4 w-full justify-center mt-6">
               <button
                 onClick={handleRejectCookies}
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black"
+                className="px-8 py-3 text-base font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black transition-colors min-w-[160px]"
               >
                 Reject All
               </button>
               <button
                 onClick={handleAcceptCookies}
-                className="px-4 py-2 text-sm font-medium text-white bg-black rounded-md hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black"
+                className="px-8 py-3 text-base font-medium text-white bg-black rounded-lg hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black transition-colors min-w-[160px]"
               >
                 Accept All
               </button>

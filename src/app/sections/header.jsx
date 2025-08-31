@@ -11,7 +11,7 @@ const header = () => {
           {/* Left Content */}
           <div className="flex-1 space-y-6 max-w-2xl">
             <h1 className="text-2xl lg:text-5xl font-bold text-black leading-tight GeistBlack">
-              WE PROVIDE SEAMLESS SECURE EXPERIENCES
+              WE PROVIDE SEAMLESS EXPERIENCES
               TAILORED JUST FOR YOU.
             </h1>
 

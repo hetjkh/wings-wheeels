@@ -19,7 +19,7 @@ const destinations = [
       "A dazzling metropolis where modern luxury meets traditional Arabian culture",
     image:
       "https://images.pexels.com/photos/2044434/pexels-photo-2044434.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
-    price: "From AED 1,299",
+    timeZone: "GST (UTC+4)",
     duration: "3-7 days",
     bestTime: "Oct - Mar",
     experienceLevel: "All Travelers",
@@ -38,7 +38,7 @@ const destinations = [
       "The City of Light beckons with romance, art, and timeless elegance",
     image:
       "https://images.pexels.com/photos/338515/pexels-photo-338515.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
-    price: "From AED 2,499",
+    timeZone: "CET (UTC+1/+2 DST)",
     duration: "4-8 days",
     bestTime: "Apr - Jun, Sep - Nov",
     experienceLevel: "Romantic Getaway",
@@ -57,7 +57,7 @@ const destinations = [
       "Paradise islands with crystal-clear waters and pristine beaches",
     image:
       "https://images.pexels.com/photos/1450360/pexels-photo-1450360.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
-    price: "From AED 3,999",
+    timeZone: "MVT (UTC+5)",
     duration: "5-10 days",
     bestTime: "Nov - Apr",
     experienceLevel: "Luxury Seekers",
@@ -76,7 +76,7 @@ const destinations = [
       "Where ancient traditions seamlessly blend with cutting-edge technology",
     image:
       "https://images.pexels.com/photos/2614818/pexels-photo-2614818.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
-    price: "From AED 2,799",
+    timeZone: "JST (UTC+9)",
     duration: "5-9 days",
     bestTime: "Mar - May, Sep - Nov",
     experienceLevel: "Adventure & Culture",
@@ -95,7 +95,7 @@ const destinations = [
       "Historic charm meets modern sophistication in this iconic capital",
     image:
       "https://images.pexels.com/photos/460672/pexels-photo-460672.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
-    price: "From AED 2,199",
+    timeZone: "GMT/BST (UTC+0/+1 DST)",
     duration: "4-7 days",
     bestTime: "Jun - Aug",
     experienceLevel: "First-time Visitors",
@@ -109,7 +109,7 @@ const destinations = [
       "Tropical paradise with stunning beaches, temples, and rich culture",
     image:
       "https://images.pexels.com/photos/2166553/pexels-photo-2166553.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
-    price: "From AED 1,899",
+    timeZone: "WITA (UTC+8)",
     duration: "5-8 days",
     bestTime: "Apr - Oct",
     experienceLevel: "Wellness & Nature",
@@ -335,13 +335,15 @@ const popular = () => {
               </div>
 
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-gray-100 rounded-lg">
-                  <ArrowRight className="h-5 w-5 text-black" />
+                <div className="p-2 bg-blue-100 rounded-lg">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-blue-600" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
+                  </svg>
                 </div>
                 <div>
-                  <div className="text-sm text-gray-500">Starting</div>
+                  <div className="text-sm text-gray-500">Time Zone</div>
                   <div className="font-semibold text-gray-900">
-                    {currentDestination.price}
+                    {currentDestination.timeZone}
                   </div>
                 </div>
               </div>
@@ -392,8 +394,8 @@ const popular = () => {
                 <div className="text-lg opacity-90">
                   {currentDestination.country}
                 </div>
-                <div className="mt-2 text-xl font-bold">
-                  {currentDestination.price}
+                <div className="mt-2 text-sm font-medium">
+                  {currentDestination.timeZone}
                 </div>
               </div>
             </div>

@@ -51,16 +51,16 @@ const translations = {
     companyName: "WINGS & WHEELS",
     companySubtitle: "TRAVEL AND TOURISM",
     getInTouch: "GET IN TOUCH",
-    dubaiPhone: "Dubai: 00971 54 785 8338",
+    dubaiPhone: "00971 54 785 8338",
     anotherPhone: "00971 52 288 0935",
     email: "reservation@wwtravels.net",
     chatWhatsApp: "Chat on WhatsApp",
     whatsAppSupport: "WhatsApp Support",
-    dubaiOffice: "Dubai: +971 4 556 1050",
-    abuDhabiOffice: "Dubai: +971 2 639 4277",
+    dubaiOffice: "00971 54 785 8338",
+    abuDhabiOffice: "00971 52 288 0935",
     currency: "Currency",
     mobileMenu: {
-      phone: "+971 4 556 1050",
+      phone: "00971 54 785 8338",
       email: "reservation@wwtravels.net",
       whatsapp: "WhatsApp Support"
     },
@@ -80,16 +80,16 @@ const translations = {
     companyName: "وينغز آند ويلز",
     companySubtitle: "السفر والسياحة",
     getInTouch: "تواصل معنا",
-    dubaiPhone: "دبي: ٩٧١ ٥٤ ٧٨م ٨٣٣٨",
+    dubaiPhone: "٩٧١ ٥٤ ٧٨٥ ٨٣٣٨",
     anotherPhone: "٩٧١ ٥٢ ٢٨٨ ٠٩٣٥",
     email: "reservation@wwtravels.net",
     chatWhatsApp: "محادثة واتساب",
     whatsAppSupport: "دعم واتساب",
-    dubaiOffice: "دبي: ٩٧١ ٤ ٥٥٦ ١٠٥٠",
-    abuDhabiOffice: "أبوظبي: ٩٧١ ٢ ٦٣٩ ٤٢٧٧",
+    dubaiOffice: "٩٧١ ٥٤ ٧٨٥ ٨٣٣٨",
+    abuDhabiOffice: "٩٧١ ٥٢ ٢٨٨ ٠٩٣٥",
     currency: "العملة",
     mobileMenu: {
-      phone: "٩٧١ ٤ ٥٥٦ ١٠٥٠",
+      phone: "٩٧١ ٥٤ ٧٨٥ ٨٣٣٨",
       email: "reservation@wwtravels.net",
       whatsapp: "دعم واتساب"
     },
@@ -322,7 +322,7 @@ const Navbar = ({ showContactButton = true }) => {
               className="w-4 h-4 cursor-pointer hover:text-green-400 transition-colors"
               icon={WhatsappIcon}
               onClick={() =>
-                window.open("https://wa.me/00971547858338", "_blank")
+                window.open("https://wa.me/971547858338", "_blank")
               }
             />
           </div>
@@ -352,11 +352,13 @@ const Navbar = ({ showContactButton = true }) => {
 
           {/* Right Section - Converter Icon and Email */}
           <div className="flex items-center space-x-3">
-            {/* Currency Converter Icon */}
-            <DollarSign
-              className="w-4 h-4 cursor-pointer hover:text-yellow-400 transition-colors"
+            {/* Currency Converter Text */}
+            <span 
+              className="text-sm cursor-pointer hover:text-yellow-400 transition-colors Poppins"
               onClick={() => setIsConverterOpen(true)}
-            />
+            >
+              {currentTranslation.currencyConverter}
+            </span>
             {/* Email */}
             <div
               className="flex items-center space-x-2 cursor-pointer hover:opacity-80 transition-opacity"

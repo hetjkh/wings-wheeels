@@ -11,7 +11,7 @@ const beforego = () => {
             <div className="lg:w-1/2">
               <div className="mb-10 lg:mb-12">
                 <h2 className="text-2xl lg:text-3xl font-bold mb-4 GeistBold">
-                  BEFORE YOU GO
+                  THINGS TO REMEMBER BEFORE YOUR TRAVEL
                 </h2>
                 <p className="text-sm lg:text-base text-gray-700 max-w-2xl leading-relaxed Poppins">
                   Essential things to review before heading to the

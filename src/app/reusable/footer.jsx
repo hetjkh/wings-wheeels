@@ -26,18 +26,12 @@ const Footer = () => {
             and hotels to visas and tours. Talk to our experts today and start
             planning a trip of a lifetime.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <div className="flex justify-center">
             <Button
               onClick={() => window.open("tel:00971547858338")}
-              className="bg-white text-black hover:bg-gray-100 px-8 py-3 rounded-full text-sm font-medium transition-all duration-300 cursor-pointer"
+              className="bg-white text-black hover:bg-gray-100 px-10 py-4 rounded-full text-base font-semibold transition-all duration-300 cursor-pointer transform hover:scale-105"
             >
               CONTACT AGENT
-            </Button>
-            <Button
-              onClick={() => window.open("tel:00971547858338")}
-              className="bg-black border-2 border-white text-white  px-8 py-3 rounded-full text-sm font-medium transition-all duration-300 cursor-pointer"
-            >
-              GET A FREE QUOTE
             </Button>
           </div>
         </div>

@@ -59,9 +59,17 @@ const AboutUs = () => {
   const [isSupportVisible, setIsSupportVisible] = useState(false);
   const [isValuesVisible, setIsValuesVisible] = useState(false);
   const [isLocationsVisible, setIsLocationsVisible] = useState(false);
-  const [selectedLocation, setSelectedLocation] = useState('juba');
+  const [selectedLocation, setSelectedLocation] = useState('dubai');
 
   const officeLocations = {
+    dubai: {
+      name: 'Dubai, UAE',
+      company: 'Holiday Dreamz Travel Management',
+      phone: '+971 54 785 8338, +971 52 288 0935',
+      email: 'reservation@wwtravels.net',
+      address: 'Office no-3, Al Khaimah building, Port Saeed, Deira, Dubai, UAE',
+      mapUrl: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3609.144845705496!2d55.29683841501026!3d25.25484398388285!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3e5f5d8b5b5b5b5b%3A0x9b1e8b0e8b7d7a7c!2sAl%20Khaimah%20Building%2C%20Port%20Saeed%2C%20Deira%2C%20Dubai%2C%20UAE!5e0!3m2!1sen!2s!4v1679489234567!5m2!1sen!2s'
+    },
     juba: {
       name: 'Juba, Republic of South Sudan',
       company: 'Holiday Dreamz Travel Management Co. Ltd',
@@ -892,28 +900,29 @@ const AboutUs = () => {
                 </div>
 
                 {/* Desktop Grid - Hidden on mobile */}
-                <div className="hidden md:grid grid-cols-2 lg:grid-cols-5 gap-4">
-                  {Object.entries(officeLocations).map(([key, location]) => (
+                <div className="hidden md:flex flex-nowrap overflow-x-auto pb-4 px-2">
+                  {Object.entries(officeLocations).map(([key, location], index) => (
                     <div 
                       key={key} 
-                      className={`text-center p-4 rounded-xl transition-all duration-300 cursor-pointer ${
+                      className={`text-center p-4 rounded-xl transition-all duration-300 cursor-pointer flex-shrink-0 ${
                         selectedLocation === key 
                           ? 'bg-gray-800 text-white' 
                           : 'bg-white text-gray-800 hover:bg-gray-100 shadow-md'
-                      }`}
+                      } ${index < Object.keys(officeLocations).length - 1 ? 'mr-6' : ''}`}
+                      style={{ minWidth: '160px' }}
                       onClick={() => setSelectedLocation(key)}
                     >
-                      <div className={`w-10 h-10 rounded-full flex items-center justify-center mx-auto mb-2 ${
+                      <div className={`w-9 h-9 rounded-full flex items-center justify-center mx-auto mb-2 ${
                         selectedLocation === key ? 'bg-white/20' : 'bg-gray-100'
                       }`}>
                         <MapPin className={`h-5 w-5 ${
                           selectedLocation === key ? 'text-white' : 'text-gray-800'
                         }`} />
                       </div>
-                      <h4 className="font-semibold text-sm">
+                      <h4 className="font-semibold text-base">
                         {location.name.split(',')[0]}
                       </h4>
-                      <p className={`text-xs mt-1 ${
+                      <p className={`text-sm mt-1.5 ${
                         selectedLocation === key ? 'text-gray-300' : 'text-gray-600'
                       }`}>
                         {location.name.split(',')[1]?.trim() || location.name.split('-')[1]?.trim()}

@@ -269,6 +269,8 @@ const locationData = {
         "/assets/gallery/summer/new-zeland/2.jpg",
         "/assets/gallery/summer/new-zeland/3.jpg",
         "/assets/gallery/summer/new-zeland/4.jpg",
+        "/assets/gallery/summer/new-zeland/6.jpg",
+        
       ],
     },
     Maldives: {
