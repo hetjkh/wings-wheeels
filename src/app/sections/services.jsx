@@ -70,7 +70,7 @@ const services = [
 ];
 
 const ServiceCard = memo(({ service }) => (
-  <div className="group relative overflow-hidden rounded-2xl bg-black/30 hover:bg-black/50 transition-all duration-300 cursor-pointer h-[350px] lg:h-[500px] w-full max-w-[400px] mx-auto will-change-transform">
+  <div className="group relative overflow-hidden rounded-2xl bg-black/30 hover:bg-black/50 transition-all duration-300  h-[350px] lg:h-[500px] w-full max-w-[400px] mx-auto will-change-transform">
     {/* Background Image */}
     <div className="absolute inset-0 group-hover:bg-black/40 transition-all duration-300">
       <Image

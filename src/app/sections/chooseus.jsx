@@ -41,7 +41,7 @@ const whyChooseReasons = [
 ];
 
 const ReasonCard = memo(({ reason }) => (
-  <div className="group bg-gray-100 hover:bg-gray-200 p-2 lg:p-8 rounded-lg transition-all duration-300 cursor-pointer shadow-sm hover:shadow-xl border-gray-100 flex flex-col h-full min-h-[320px] w-full will-change-transform">
+  <div className="group bg-gray-100 hover:bg-gray-200 p-2 lg:p-8 rounded-lg transition-all duration-300  shadow-sm hover:shadow-xl border-gray-100 flex flex-col h-full min-h-[320px] w-full will-change-transform">
     <div className="flex-grow space-y-5">
       <h3 className="text-sm md:text-lg font-bold text-gray-900 group-hover:text-black transition-colors duration-300 Geist">
         {reason.title}

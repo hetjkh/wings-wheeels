@@ -345,7 +345,6 @@ const createGalleryData = () => {
 };
 
 const galleryData = createGalleryData();
-
 const locations = ["All", "WINTER", "SUMMER VACATION", "EXCLUSIVE OFFERS"];
 
 const TravelGallery = () => {
@@ -355,16 +354,22 @@ const TravelGallery = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isOfferDialogOpen, setIsOfferDialogOpen] = useState(false);
   const [showForm, setShowForm] = useState(false);
+  const [currentCurrency, setCurrentCurrency] = useState('AED'); // Default to AED
   const [currentSlide, setCurrentSlide] = useState(0);
   const [visibleSlides, setVisibleSlides] = useState(4); // Number of slides to show at once
   const [formData, setFormData] = useState({
-    name: "",
+    fullName: "",
     email: "",
     phone: "",
-    date: "",
+    whatsappNumber: "",
+    departureDate: "",
     message: "",
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState({ success: null, message: '' });
   // Removed currency conversion state as we're using static AED prices
+
+
 
   // New states for API data
   const [apiOffers, setApiOffers] = useState([]);
@@ -505,22 +510,78 @@ const TravelGallery = () => {
     setIsOfferDialogOpen(true);
   };
 
-  const handleFormSubmit = (e) => {
+  const handleFormSubmit = async (e) => {
     e.preventDefault();
-    console.log("Form submitted:", {
-      ...formData,
-      destination: selectedOffer?.title,
-    });
-    setFormData({ name: "", email: "", phone: "", date: "", message: "" });
-    setIsOfferDialogOpen(false);
-    setSelectedOffer(null);
+    setIsSubmitting(true);
+    
+    try {
+      // Format the date to YYYY-MM-DD if it exists
+      let formattedDepartureDate = '';
+      if (formData.departureDate) {
+        // Parse the date string to handle timezone correctly
+        const date = new Date(formData.departureDate);
+        // Get the date in local timezone and format as YYYY-MM-DD
+        formattedDepartureDate = date.toISOString().split('T')[0];
+      }
+      
+      const payload = {
+        fullName: formData.fullName.trim(),
+        email: formData.email.trim(),
+        phone: formData.phone.trim(),
+        whatsappNumber: formData.whatsappNumber ? formData.whatsappNumber.trim() : formData.phone.trim(),
+        serviceType: 'tours',
+        destinationCountry: selectedOffer?.location || '',
+        destinationState: selectedOffer?.title || '',
+        toursDetails: {
+          departureDate: formattedDepartureDate
+        },
+        message: formData.message ? formData.message.trim() : ''
+      };
+
+      console.log('Submitting form with data:', payload);
+      
+      const response = await fetch('https://wwtravels.net/api/bookings/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload)
+      });
+
+      const data = await response.json();
+      
+      if (data.success) {
+        // Reset form and close dialog on success
+        setFormData({
+          fullName: "",
+          email: "",
+          phone: "",
+          whatsappNumber: "",
+          departureDate: "",
+          message: "",
+        });
+        setIsOfferDialogOpen(false);
+        setSelectedOffer(null);
+        
+        // Show success message
+        alert('Booking request submitted successfully! We will contact you soon.');
+      } else {
+        throw new Error(data.message || 'Failed to submit booking');
+      }
+    } catch (error) {
+      console.error('Error submitting booking:', error);
+      alert('Failed to submit booking. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleInputChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
   };
 
   const nextSlide = () => {
@@ -1034,16 +1095,16 @@ const TravelGallery = () => {
                     <div className="grid grid-cols-1 gap-3 sm:gap-4">
                       <div className="space-y-2">
                         <Label
-                          htmlFor="name"
+                          htmlFor="fullName"
                           className="text-sm font-medium text-gray-700"
                         >
-                          Full Name
+                          Full Name *
                         </Label>
                         <Input
-                          id="name"
-                          name="name"
+                          id="fullName"
+                          name="fullName"
                           type="text"
-                          value={formData.name}
+                          value={formData.fullName}
                           onChange={handleInputChange}
                           required
                           className="bg-white h-10 sm:h-11"
@@ -1056,7 +1117,7 @@ const TravelGallery = () => {
                           htmlFor="email"
                           className="text-sm font-medium text-gray-700"
                         >
-                          Email
+                          Email *
                         </Label>
                         <Input
                           id="email"
@@ -1075,7 +1136,7 @@ const TravelGallery = () => {
                           htmlFor="phone"
                           className="text-sm font-medium text-gray-700"
                         >
-                          Phone Number
+                          Phone Number *
                         </Label>
                         <Input
                           id="phone"
@@ -1091,53 +1152,82 @@ const TravelGallery = () => {
 
                       <div className="space-y-2">
                         <Label
-                          htmlFor="date"
+                          htmlFor="whatsappNumber"
                           className="text-sm font-medium text-gray-700"
                         >
-                          Travel Date
+                          WhatsApp Number
                         </Label>
                         <Input
-                          id="date"
-                          name="date"
+                          id="whatsappNumber"
+                          name="whatsappNumber"
+                          type="tel"
+                          value={formData.whatsappNumber}
+                          onChange={handleInputChange}
+                          className="bg-white h-10 sm:h-11"
+                          placeholder="+1 234 567 8900 (optional)"
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label
+                          htmlFor="departureDate"
+                          className="text-sm font-medium text-gray-700"
+                        >
+                          Departure Date *
+                        </Label>
+                        <Input
+                          id="departureDate"
+                          name="departureDate"
                           type="date"
-                          value={formData.date}
+                          value={formData.departureDate}
                           onChange={handleInputChange}
                           required
                           className="bg-white h-10 sm:h-11"
+                          min={new Date().toISOString().split('T')[0]}
                         />
                       </div>
-                    </div>
 
-                    <div className="space-y-2">
-                      <Label
-                        htmlFor="message"
-                        className="text-sm font-medium text-gray-700"
-                      >
-                        Special Requests
-                      </Label>
-                      <textarea
-                        id="message"
-                        name="message"
-                        value={formData.message}
-                        onChange={handleInputChange}
-                        rows="3"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-black focus:border-black sm:text-sm text-sm resize-none"
-                        placeholder="Any special requirements or requests..."
-                      ></textarea>
+<div className="space-y-2">
+                        <Label
+                          htmlFor="message"
+                          className="text-sm font-medium text-gray-700"
+                        >
+                          Special Requests
+                        </Label>
+                        <textarea
+                          id="message"
+                          name="message"
+                          value={formData.message}
+                          onChange={handleInputChange}
+                          rows="3"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-black focus:border-black sm:text-sm text-sm resize-none"
+                          placeholder="Any special requirements or requests..."
+                        ></textarea>
+                      </div>
                     </div>
 
                     <div className="pt-3 sm:pt-4">
                       <Button
                         type="submit"
-                        className="w-full bg-black hover:bg-gray-800 text-white py-2.5 sm:py-3 text-sm sm:text-base font-medium rounded-md shadow-md transform transition-all duration-300 hover:scale-[1.02] cursor-pointer"
+                        disabled={isSubmitting}
+                        className={`w-full bg-black hover:bg-gray-800 text-white py-2.5 sm:py-3 text-sm sm:text-base font-medium rounded-md shadow-md transform transition-all duration-300 hover:scale-[1.02] cursor-pointer ${isSubmitting ? 'opacity-70 cursor-not-allowed' : ''}`}
                       >
-                        Confirm Booking
+                        {isSubmitting ? 'Submitting...' : 'Confirm Booking'}
                       </Button>
                     </div>
 
+                    {submitStatus.message && (
+                      <div className={`p-3 rounded-md text-sm text-center ${
+                        submitStatus.success 
+                          ? 'bg-green-100 text-green-700' 
+                          : 'bg-red-100 text-red-700'
+                      }`}>
+                        {submitStatus.message}
+                      </div>
+                    )}
                     <p className="text-xs text-gray-500 text-center mt-3 sm:mt-4">
                       Your personal information is safe with us. We'll only use
-                      it to process your booking.
+                      it to process your booking. By submitting this form, you agree to our privacy policy.
                     </p>
                   </form>
                 </div>

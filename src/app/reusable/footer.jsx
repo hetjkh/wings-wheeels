@@ -52,7 +52,7 @@ const Footer = () => {
               <div className="flex items-center space-x-4 mb-8">
                 <div className="relative h-16 w-16 sm:h-20 sm:w-20">
                   <Image
-                    src="/assets/Wings & Wheels logo.png"
+                    src="https://res.cloudinary.com/dxufyumvy/image/upload/v1756560921/offers/mmwfeuqnf6kwkw69qebi.png"
                     alt="Wings & Wheels logo"
                     fill
                     className="object-contain transition-all duration-300"
