@@ -1947,17 +1947,17 @@ const ContactUsPage = () => {
                                   <SelectValue placeholder="Select budget range" />
                                 </SelectTrigger>
                                 <SelectContent className="rounded-xl border border-gray-200 shadow-lg bg-white">
-                                  <SelectItem value="budget" className="hover:bg-blue-50 text-black">
-                                    Budget ($500-$1,000)
+                                  <SelectItem value="budget AED 500-1000" className="hover:bg-blue-50 text-black">
+                                    Budget (AED 500-1000)
                                   </SelectItem>
-                                  <SelectItem value="mid-range" className="hover:bg-blue-50 text-black">
-                                    Mid-range ($1,000-$2,500)
+                                  <SelectItem value="mid-range AED 1000-2500" className="hover:bg-blue-50 text-black">
+                                    Mid-range (AED 1000-2500)
                                   </SelectItem>
-                                  <SelectItem value="premium" className="hover:bg-blue-50 text-black">
-                                    Premium ($2,500-$5,000)
+                                  <SelectItem value="premium AED 2500-5000" className="hover:bg-blue-50 text-black">
+                                    Premium (AED 2500-5000)
                                   </SelectItem>
-                                  <SelectItem value="luxury" className="hover:bg-blue-50 text-black">
-                                    Luxury ($5,000+)
+                                  <SelectItem value="luxury AED 5000+" className="hover:bg-blue-50 text-black">
+                                    Luxury (AED 5000+)
                                   </SelectItem>
                                 </SelectContent>
                               </Select>
