@@ -5,9 +5,9 @@ import Image from "next/image";
 
 const header = () => {
   return (
-    <div>
-      <section className="w-full max-w-7xl h-[80vh] mx-auto px-4 py-8 lg:py-12">
-        <div className="flex flex-col lg:flex-row items-start justify-between gap-8 lg:gap-12">
+    <div className="w-full">
+      <section className="w-full max-w-7xl mx-auto px-4 py-8 lg:py-12">
+        <div className="flex flex-col lg:flex-row items-start justify-between gap-8 lg:gap-12 min-h-[70vh]">
           {/* Left Content */}
           <div className="flex-1 space-y-6 max-w-2xl">
             <h1 className="text-2xl lg:text-5xl font-bold text-black leading-tight GeistBlack">

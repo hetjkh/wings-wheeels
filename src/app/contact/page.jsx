@@ -960,7 +960,7 @@ const ContactUsPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="w-full bg-gray-50">
       {/* Hero Section with Background Image */}
       <div 
         className="relative w-full min-h-screen bg-cover bg-center bg-no-repeat"
@@ -968,10 +968,11 @@ const ContactUsPage = () => {
           backgroundImage: 'url(https://images.pexels.com/photos/1008155/pexels-photo-1008155.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop)',          
           backgroundSize: 'cover',
           backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat'
+          backgroundRepeat: 'no-repeat',
+          backgroundAttachment: 'fixed'
         }}
       >
-        <div className="relative min-h-screen flex flex-col w-full">
+        <div className="relative min-h-screen flex flex-col w-full overflow-x-hidden">
           {/* Navigation Bar */}
           <Navbar />
 

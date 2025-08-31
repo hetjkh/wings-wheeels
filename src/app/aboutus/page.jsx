@@ -161,19 +161,20 @@ const AboutUs = () => {
   const currentLocation = officeLocations[selectedLocation];
 
   return (
-    <div className="flex justify-center items-center flex-col w-[100vw] h-auto bg-white">
+    <div className="w-full bg-white">
       {/* Hero Section with Background Image */}
       <div
-        className="relative w-full min-h-screen bg-cover bg-center bg-no-repeat overflow-hidden"
+        className="relative w-full min-h-screen bg-cover bg-center bg-no-repeat"
         style={{
           backgroundImage:
             "url(https://images.pexels.com/photos/1271619/pexels-photo-1271619.jpeg?auto=compress&cs=tinysrgb&w=1920)",
           backgroundSize: "cover",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
+          backgroundAttachment: "fixed"
         }}
       >
-        <div className="relative z-20 min-h-screen flex flex-col w-full">
+        <div className="relative z-20 min-h-screen flex flex-col w-full overflow-x-hidden">
           {/* Navigation Bar */}
           <Navbar />
 
