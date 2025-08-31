@@ -12,7 +12,7 @@ import { Country, State, City } from 'country-state-city';
 import Footer from "../reusable/footer";
 
 // Reusable Searchable Select Component
-const SearchableSelect = ({ 
+  const SearchableSelect = ({ 
   value, 
   onValueChange, 
   placeholder, 
@@ -21,16 +21,19 @@ const SearchableSelect = ({
   renderSelected,
   emptyMessage = "No options found",
   error = "",
-  valueKey = null // Add valueKey prop to specify which property to use for matching
+  valueKey = null, // Add valueKey prop to specify which property to use for matching
+  showSearch = true // Add showSearch prop to control search visibility
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const selectRef = React.createRef(null);
 
-  // Filter options based on search term
-  const filteredOptions = options.filter(option => 
-    renderOption(option).toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // Filter options based on search term if search is enabled
+  const filteredOptions = showSearch 
+    ? options.filter(option => 
+        renderOption(option).toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    : options;
 
   // Handle click outside
   useEffect(() => {
@@ -90,16 +93,18 @@ const SearchableSelect = ({
       
       {isOpen && (
         <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden">
-          <div className="p-2 border-b">
-            <input
-              type="text"
-              placeholder="Search..."
-              className="w-full px-3 py-2 text-sm border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              autoFocus
-            />
-          </div>
+          {showSearch && (
+            <div className="p-2 border-b">
+              <input
+                type="text"
+                placeholder="Search..."
+                className="w-full px-3 py-2 text-sm border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                autoFocus
+              />
+            </div>
+          )}
           <div className="max-h-60 overflow-y-auto">
             {filteredOptions.length > 0 ? (
               filteredOptions.map((option, index) => {
@@ -1089,6 +1094,7 @@ const ContactUsPage = () => {
                                     renderSelected={(country) => country?.selectedText || ''}
                                     emptyMessage="No country found"
                                     valueKey="phoneCode"
+                                    showSearch={false}
                                   />
                                 </div>
                                 <Input
@@ -1134,6 +1140,7 @@ const ContactUsPage = () => {
                                     renderSelected={(country) => country?.selectedText || ''}
                                     emptyMessage="No country found"
                                     valueKey="phoneCode"
+                                    showSearch={false}
                                   />
                                 </div>
                                 <Input
