@@ -42,14 +42,15 @@ const header = () => {
           </div>
 
           {/* Right Image */}
-          <div className="flex-1 max-w-xl">
-            <div className="relative w-full h-[500px] rounded-lg overflow-hidden shadow-xl">
+          <div className="flex-1 w-full max-w-xl">
+            <div className="relative w-full h-[300px] sm:h-[400px] md:h-[500px] rounded-lg overflow-hidden shadow-xl">
               <Image
                 src="https://res.cloudinary.com/dvrko1y0a/image/upload/v1756620061/het_lhki1n.jpg"
                 alt="Travel experience"
                 fill
                 className="object-cover rounded-lg"
                 priority
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               />
             </div>
           </div>
