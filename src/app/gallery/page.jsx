@@ -455,12 +455,18 @@ const TravelGallery = () => {
 
   // Auto-slide carousel
   useEffect(() => {
+    // Only start auto-slide if we have API offers
+    if (apiOffers.length === 0) return;
+    
+    const availableSlides = Math.min(apiOffers.length, 4);
+    if (availableSlides === 0) return;
+    
     const interval = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
+      setCurrentSlide((prev) => (prev + 1) % availableSlides);
     }, 5000); // Change slide every 5 seconds
 
     return () => clearInterval(interval);
-  }, []);
+  }, [apiOffers.length]);
 
   // Prevent body scroll when modal is open
   useEffect(() => {
@@ -587,17 +593,26 @@ const TravelGallery = () => {
   };
 
   const nextSlide = () => {
-    setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
+    const availableSlides = Math.min(apiOffers.length, 4);
+    if (availableSlides > 0) {
+      setCurrentSlide((prev) => (prev + 1) % availableSlides);
+    }
   };
 
   const prevSlide = () => {
-    setCurrentSlide(
-      (prev) => (prev - 1 + heroSlides.length) % heroSlides.length
-    );
+    const availableSlides = Math.min(apiOffers.length, 4);
+    if (availableSlides > 0) {
+      setCurrentSlide(
+        (prev) => (prev - 1 + availableSlides) % availableSlides
+      );
+    }
   };
 
   const goToSlide = (index) => {
-    setCurrentSlide(index);
+    const availableSlides = Math.min(apiOffers.length, 4);
+    if (index < availableSlides) {
+      setCurrentSlide(index);
+    }
   };
 
   // Handle wheel events to prevent scroll bubbling from form panel
@@ -699,9 +714,11 @@ const TravelGallery = () => {
 
         <div className="w-full max-w-6xl mx-auto px-4">
           <div className="relative overflow-hidden">
+            {/* Only show carousel if we have API offers */}
+            {apiOffers.length > 0 && (
             <div className="flex transition-transform duration-500 ease-in-out" 
                  style={{ transform: `translateX(-${currentSlide * 100}%)` }}>
-              {apiOffers.slice(0, 4).map((offer) => (
+              {apiOffers.slice(0, Math.min(apiOffers.length, 4)).map((offer) => (
                 <div key={offer.id} className="w-full flex-shrink-0 px-2">
                   <div className="relative w-full h-[500px] md:h-[600px] rounded-xl overflow-hidden">
                     <Image
@@ -724,8 +741,11 @@ const TravelGallery = () => {
                 </div>
               ))}
             </div>
+            )}
             
-            {/* Navigation Arrows */}
+            {/* Navigation Arrows - Only show if we have more than 1 slide */}
+            {apiOffers.length > 1 && (
+            <>
             <button
               onClick={prevSlide}
               className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white/90 hover:bg-white text-gray-800 p-2.5 rounded-full shadow-lg -ml-4 transition-all duration-200 hover:scale-110"
@@ -740,13 +760,16 @@ const TravelGallery = () => {
             >
               <ChevronRight className="h-6 w-6" />
             </button>
+            </>
+            )}
 
-            {/* Dots indicator */}
+            {/* Dots indicator - Only show if we have slides */}
+            {apiOffers.length > 0 && (
             <div className="flex justify-center mt-6 mb-10 space-x-2">
-              {apiOffers.slice(0, 4).map((_, index) => (
+              {apiOffers.slice(0, Math.min(apiOffers.length, 4)).map((_, index) => (
                 <button
                   key={index}
-                  onClick={() => setCurrentSlide(index)}
+                  onClick={() => goToSlide(index)}
                   className={`w-2.5 h-2.5 rounded-full transition-all duration-200 ${
                     currentSlide === index ? 'bg-black w-6' : 'bg-gray-300'
                   }`}
@@ -754,6 +777,7 @@ const TravelGallery = () => {
                 />
               ))}
             </div>
+            )}
           </div>
         </div>
 
