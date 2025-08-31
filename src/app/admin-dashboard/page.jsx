@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
-import { RefreshCw, Smartphone, User, Calendar, AlertCircle, LogOut, QrCode, X, Settings, Menu, Building2, Phone, Mail, Globe, CheckCircle, Clock, Shield, Tag } from 'lucide-react';
+import { RefreshCw, Smartphone, User, Calendar, AlertCircle, LogOut, QrCode, X, Settings, Menu, Building2, Phone, Mail, Globe, CheckCircle, Clock, Shield, Tag, Eye, EyeOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -71,6 +71,9 @@ export default function AdminDashboard() {
   const [offersLoading, setOffersLoading] = useState(false);
   const [offersError, setOffersError] = useState('');
   
+  // State for password visibility
+  const [showEmailPassword, setShowEmailPassword] = useState(false);
+
   // State for new offer form
   const [newOffer, setNewOffer] = useState({
     name: '',
@@ -1662,7 +1665,7 @@ export default function AdminDashboard() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
                   <div>
                     <Label className="text-sm font-medium text-gray-700">WhatsApp Number</Label>
                     <Input 
@@ -1674,71 +1677,6 @@ export default function AdminDashboard() {
                       className={`mt-2 ${isEditing ? 'bg-white border-gray-300' : 'bg-gray-50 border-gray-200'}`}
                     />
                   </div>
-                  <div>
-                    <Label className="text-sm font-medium text-gray-700">Instance ID</Label>
-                    <Input 
-                      name="whatsappInstanceId"
-                      value={formData.whatsappInstanceId}
-                      onChange={handleInputChange}
-                      readOnly={!isEditing}
-                      placeholder="Enter instance ID"
-                      className={`mt-2 font-mono text-sm ${isEditing ? 'bg-white border-gray-300' : 'bg-gray-50 border-gray-200'}`}
-                    />
-                  </div>
-                </div>
-
-                <Separator className="my-6" />
-
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between p-4 border rounded-lg">
-                    <div className="space-y-1">
-                      <Label className="text-sm font-medium text-gray-700">
-                        New Booking Notifications
-                      </Label>
-                      <p className="text-xs text-gray-500">
-                        Get WhatsApp notifications when new bookings are made
-                      </p>
-                    </div>
-                    <Switch 
-                      checked={formData.notifyOnNewBooking}
-                      onCheckedChange={(checked) => 
-                        setFormData(prev => ({ ...prev, notifyOnNewBooking: checked }))
-                      }
-                      disabled={!isEditing}
-                    />
-                  </div>
-
-                  <div className="flex items-center justify-between p-4 border rounded-lg">
-                    <div className="space-y-1">
-                      <Label className="text-sm font-medium text-gray-700">
-                        Auto Reply
-                      </Label>
-                      <p className="text-xs text-gray-500">
-                        Automatically reply to WhatsApp messages
-                      </p>
-                    </div>
-                    <Switch 
-                      checked={formData.autoReplyEnabled}
-                      onCheckedChange={(checked) => 
-                        setFormData(prev => ({ ...prev, autoReplyEnabled: checked }))
-                      }
-                      disabled={!isEditing}
-                    />
-                  </div>
-
-                  {formData.autoReplyEnabled && (
-                    <div>
-                      <Label className="text-sm font-medium text-gray-700">Auto Reply Message</Label>
-                      <Textarea 
-                        name="autoReplyMessage"
-                        value={formData.autoReplyMessage}
-                        onChange={handleInputChange}
-                        readOnly={!isEditing}
-                        placeholder="Enter auto reply message"
-                        className={`mt-2 min-h-[80px] ${isEditing ? 'bg-white border-gray-300' : 'bg-gray-50 border-gray-200'}`}
-                      />
-                    </div>
-                  )}
                 </div>
               </CardContent>
             </Card>
@@ -1792,15 +1730,31 @@ export default function AdminDashboard() {
                   </div>
                   <div>
                     <Label className="text-sm font-medium text-gray-700">Email Password</Label>
-                    <Input 
-                      name="emailPassword"
-                      type={isEditing ? 'password' : 'password'}
-                      value={formData.emailPassword}
-                      onChange={handleInputChange}
-                      readOnly={!isEditing}
-                      placeholder="Your app password"
-                      className={`mt-2 ${isEditing ? 'bg-white border-gray-300' : 'bg-gray-50 border-gray-200'}`}
-                    />
+                    <div className="relative">
+                      <Input 
+                        name="emailPassword"
+                        type={!isEditing ? 'password' : (showEmailPassword ? 'text' : 'password')}
+                        value={formData.emailPassword}
+                        onChange={handleInputChange}
+                        readOnly={!isEditing}
+                        placeholder="Your app password"
+                        className={`mt-2 pr-10 ${isEditing ? 'bg-white border-gray-300' : 'bg-gray-50 border-gray-200'}`}
+                      />
+                      {isEditing && (
+                        <button
+                          type="button"
+                          onClick={() => setShowEmailPassword(!showEmailPassword)}
+                          className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none"
+                          tabIndex="-1"
+                        >
+                          {showEmailPassword ? (
+                            <EyeOff className="h-4 w-4" />
+                          ) : (
+                            <Eye className="h-4 w-4" />
+                          )}
+                        </button>
+                      )}
+                    </div>
                   </div>
                   <div className="md:col-span-2">
                     <Label className="text-sm font-medium text-gray-700">From Email Address</Label>
