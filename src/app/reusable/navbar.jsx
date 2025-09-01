@@ -630,7 +630,7 @@ const Navbar = ({ showContactButton = true }) => {
                         onMouseLeave={() => setOpen(false)}
                       >
                         <a
-                          href="tel:+97145561050"
+                          href="tel:+971547858338"
                           className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-100"
                           style={{
                             fontFamily: isRTL ? "Arial, sans-serif" : "inherit",
@@ -644,7 +644,7 @@ const Navbar = ({ showContactButton = true }) => {
                           {currentTranslation.dubaiOffice}
                         </a>
                         <a
-                          href="tel:+97126394277"
+                          href="tel:+971522880935"
                           className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-100"
                           style={{
                             fontFamily: isRTL ? "Arial, sans-serif" : "inherit",

@@ -107,13 +107,13 @@ const FAQ = () => {
           </p>
           <div className="flex flex-col sm:flex-row gap-3">
             <button
-              onClick={() => window.open("tel:00971547858338")}
+              onClick={() => window.open("tel:+971547858338")}
               className="bg-black text-white hover:bg-gray-800 px-6 py-3 rounded-full text-sm font-medium transition-all duration-300 Poppins cursor-pointer"
             >
               Contact Agent
             </button>
             <button
-              onClick={() => window.open("https://wa.me/00971547858338")}
+              onClick={() => window.open("https://wa.me/+971547858338")}
               className="bg-transparent border-2 border-black text-black hover:bg-black hover:text-white px-6 py-3 rounded-full text-sm font-medium transition-all duration-300 Poppins cursor-pointer"
             >
               WhatsApp
