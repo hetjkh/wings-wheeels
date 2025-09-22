@@ -64,10 +64,10 @@ const AboutUs = () => {
   const officeLocations = {
     dubai: {
       name: 'Dubai, UAE',
-      company: 'Holiday Dreamz Travel Management',
+      company: 'Wings and Wheels travel and Tourism  LLC',
       phone: '+971 54 785 8338, +971 52 288 0935',
       email: 'reservation@wwtravels.net',
-      address: 'Office no-3, Al Khaimah building, Port Saeed, Deira, Dubai, UAE',
+      address: 'Office no-27, Al Khaimah building, Port Saeed, Deira, Dubai, UAE',
       mapUrl: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3609.144845705496!2d55.29683841501026!3d25.25484398388285!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3e5f5d8b5b5b5b5b%3A0x9b1e8b0e8b7d7a7c!2sAl%20Khaimah%20Building%2C%20Port%20Saeed%2C%20Deira%2C%20Dubai%2C%20UAE!5e0!3m2!1sen!2s!4v1679489234567!5m2!1sen!2s'
     },
     juba: {
