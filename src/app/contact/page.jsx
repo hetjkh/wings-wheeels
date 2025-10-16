@@ -156,6 +156,11 @@ import {
 import Navbar from '../reusable/navbar';
 
 const ContactUsPage = () => {
+  // Google Sheets Configuration
+  // TODO: Replace with your Google Apps Script Web App URL (see GOOGLE_SHEETS_SETUP.md)
+  // You can also use environment variable: process.env.NEXT_PUBLIC_GOOGLE_SHEETS_URL
+  const GOOGLE_SHEETS_URL = process.env.NEXT_PUBLIC_GOOGLE_SHEETS_URL || 'https://script.google.com/macros/s/AKfycbyzx4B9QIGUO_d7jBfvsDU5SkvdZPPFvzx8WC0WF7AHDoKbeamwtevJdyr3lYdSA6L2/exec';
+  
   const [serviceType, setServiceType] = useState('');
   const [gender, setGender] = useState('male');
   const [selectedCountry, setSelectedCountry] = useState('dubai');
@@ -609,6 +614,7 @@ const ContactUsPage = () => {
           break;
       }
 
+      // Submit to backend API
       const response = await fetch('https://wwtravels.net/api/bookings/create', {
         method: 'POST',
         headers: {
@@ -621,6 +627,24 @@ const ContactUsPage = () => {
 
       if (!response.ok) {
         throw new Error(data.message || 'Failed to submit booking');
+      }
+
+      // Submit to Google Sheets (non-blocking - won't fail the form submission)
+      try {
+        if (GOOGLE_SHEETS_URL && GOOGLE_SHEETS_URL !== 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE') {
+          await fetch(GOOGLE_SHEETS_URL, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(bookingData),
+            mode: 'no-cors' // Google Apps Script requires no-cors mode
+          });
+          console.log('✅ Data sent to Google Sheets successfully');
+        }
+      } catch (sheetsError) {
+        // Don't fail the form submission if Google Sheets fails
+        console.warn('⚠️ Failed to send data to Google Sheets:', sheetsError);
       }
 
       setIsSubmitted(true);
@@ -883,7 +907,11 @@ const ContactUsPage = () => {
   const officeLocations = {
     dubai: {
       name: 'Dubai, UAE',
+<<<<<<< HEAD
       company: 'Wings and Wheels travel and Tourism  LLC',
+=======
+      company: 'Wings and Wheels travel and Tourism  LLC ',
+>>>>>>> 205407f (sheets)
       phone: '+971 54 785 8338, +971 52 288 0935',
       email: 'reservation@wwtravels.net',
       address: 'Office no-27, Al Khaimah building, Port Saeed, Deira, Dubai, UAE'
