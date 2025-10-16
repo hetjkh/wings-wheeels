@@ -907,11 +907,7 @@ const ContactUsPage = () => {
   const officeLocations = {
     dubai: {
       name: 'Dubai, UAE',
-<<<<<<< HEAD
-      company: 'Wings and Wheels travel and Tourism  LLC',
-=======
-      company: 'Wings and Wheels travel and Tourism  LLC ',
->>>>>>> 205407f (sheets)
+      company: 'Wings and Wheels travel and Tourism LLC',
       phone: '+971 54 785 8338, +971 52 288 0935',
       email: 'reservation@wwtravels.net',
       address: 'Office no-27, Al Khaimah building, Port Saeed, Deira, Dubai, UAE'
