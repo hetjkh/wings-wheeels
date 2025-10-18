@@ -1,0 +1,11 @@
+ENVIRONMENT VARIABLE SETUP
+===========================
+
+Create a file named .env.local in the root of your project with this content:
+
+NEXT_PUBLIC_GOOGLE_SHEETS_URL=https://script.google.com/macros/s/YOUR_SCRIPT_ID_HERE/exec
+
+Replace YOUR_SCRIPT_ID_HERE with your actual Google Apps Script Web App URL.
+
+See LEAD_FORM_SETUP.md for detailed instructions on getting this URL.
+
