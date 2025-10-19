@@ -24,15 +24,10 @@ export default function QuickInquiryPage() {
   const [submitSuccess, setSubmitSuccess] = useState(false);
 
   const serviceOptions = [
-    { value: 'domestic-tour', label: 'Domestic Tour Package' },
-    { value: 'international-tour', label: 'International Tour Package' },
-    { value: 'air-ticket', label: 'Air Ticket Booking' },
-    { value: 'visa', label: 'Visa Services' },
-    { value: 'hotel-booking', label: 'Hotel Booking' },
-    { value: 'honeymoon', label: 'Honeymoon Package' },
-    { value: 'group-tour', label: 'Group Tour' },
-    { value: 'customized', label: 'Customized Package' },
-    { value: 'other', label: 'Other' }
+    { value: 'tours-packages', label: 'Tours and Packages' },
+    { value: 'visa-assistance', label: 'Visa Assistance' },
+    { value: 'flight-booking', label: 'Flight Booking' },
+    { value: 'hotel-reservation', label: 'Hotel Reservation' }
   ];
 
   const handleChange = (name, value) => {
