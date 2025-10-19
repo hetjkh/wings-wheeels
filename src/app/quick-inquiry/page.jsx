@@ -24,10 +24,10 @@ export default function QuickInquiryPage() {
   const [submitSuccess, setSubmitSuccess] = useState(false);
 
   const serviceOptions = [
-    { value: 'tours-packages', label: 'Tours and Packages' },
-    { value: 'visa-assistance', label: 'Visa Assistance' },
-    { value: 'flight-booking', label: 'Flight Booking' },
-    { value: 'hotel-reservation', label: 'Hotel Reservation' }
+    { value: 'tours', label: 'Tours and Packages' },
+    { value: 'visa', label: 'Visa Assistance' },
+    { value: 'flights', label: 'Flight Booking' },
+    { value: 'hotels', label: 'Hotel Reservation' }
   ];
 
   const handleChange = (name, value) => {
@@ -68,19 +68,58 @@ export default function QuickInquiryPage() {
       const GOOGLE_SHEETS_URL = process.env.NEXT_PUBLIC_GOOGLE_SHEETS_URL || 
         'https://script.google.com/macros/s/AKfycbyzx4B9QIGUO_d7jBfvsDU5SkvdZPPFvzx8WC0WF7AHDoKbeamwtevJdyr3lYdSA6L2/exec';
       
-      const submissionData = {
-        ...formData,
+      // Prepare data for backend API
+      const payload = {
+        fullName: formData.name.trim(),
+        email: formData.email.trim(),
+        phone: formData.phone.trim(),
+        whatsappNumber: formData.whatsapp ? formData.whatsapp.trim() : formData.phone.trim(),
+        serviceType: formData.serviceType,
+        destinationCountry: 'Not specified',
+        destinationState: 'Not specified',
+        nationality: 'Not specified',
+        message: formData.specialRequest ? formData.specialRequest.trim() : '',
         timestamp: new Date().toISOString(),
         source: 'Quick Lead Form',
         formType: 'Quick Inquiry'
       };
       
-      await fetch(GOOGLE_SHEETS_URL, {
+      // Submit to backend API (handles WhatsApp and Email notifications)
+      console.log('Submitting payload:', payload);
+      
+      const response = await fetch('https://wwtravels.net/api/bookings/create', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(submissionData),
-        mode: 'no-cors'
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload)
       });
+
+      const data = await response.json();
+      console.log('Backend response:', data);
+
+      if (!response.ok || !data.success) {
+        console.error('Backend error:', data);
+        throw new Error(data.message || 'Failed to submit booking request');
+      }
+
+      // Submit to Google Sheets (non-blocking - won't fail the form submission)
+      try {
+        if (GOOGLE_SHEETS_URL && GOOGLE_SHEETS_URL !== 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE') {
+          await fetch(GOOGLE_SHEETS_URL, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(payload),
+            mode: 'no-cors' // Google Apps Script requires no-cors mode
+          });
+          console.log('✅ Data sent to Google Sheets successfully');
+        }
+      } catch (sheetsError) {
+        // Don't fail the form submission if Google Sheets fails
+        console.warn('⚠️ Failed to send data to Google Sheets:', sheetsError);
+      }
       
       setSubmitSuccess(true);
       
