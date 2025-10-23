@@ -76,6 +76,9 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
       <head>
+        {/* Facebook Domain Verification */}
+        <meta name="facebook-domain-verification" content="e62q9undb0swxzo77yppxzybvllqdc" />
+        
         {/* Meta Pixel Code - No Script Fallback */}
         <noscript>
           <img 
