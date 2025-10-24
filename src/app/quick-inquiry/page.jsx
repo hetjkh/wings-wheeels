@@ -143,12 +143,12 @@ export default function QuickInquiryPage() {
       <Navbar />
       
       {/* Single Screen Split Layout */}
-      <section className="w-full min-h-screen flex items-center py-8 px-4">
+      <section className="w-full min-h-screen flex items-center py-4 lg:py-8 px-4">
         <div className="max-w-7xl mx-auto w-full">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             
-            {/* Left Side - Text Content */}
-            <div className="space-y-8">
+            {/* Left Side - Text Content - Hidden on mobile, visible on desktop */}
+            <div className="hidden lg:block space-y-8">
               <div>
                 <h1 className="text-3xl md:text-4xl lg:text-5xl GeistBlack text-black mb-6 leading-tight">
                   WE PROVIDE SEAMLESS<br />
@@ -191,7 +191,12 @@ export default function QuickInquiryPage() {
             </div>
 
             {/* Right Side - Compact Form */}
-            <div className="bg-white border-2 border-black rounded-2xl p-6 shadow-xl">
+            <div className="bg-white border-0 lg:border-2 border-black rounded-none lg:rounded-2xl p-6 shadow-none lg:shadow-xl w-full lg:w-auto">
+              {/* Mobile-specific header - only visible on mobile */}
+              <div className="lg:hidden text-center mb-8">
+                <h2 className="text-2xl font-bold text-black mb-2">Hello 👋</h2>
+                <p className="text-base text-gray-600">Please share details</p>
+              </div>
               {submitSuccess ? (
                 <div className="text-center py-12">
                   <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -202,29 +207,40 @@ export default function QuickInquiryPage() {
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-4">
-                  <div className="text-center mb-6">
+                  {/* Desktop-only header */}
+                  <div className="hidden lg:block text-center mb-6">
                     <h2 className="text-2xl GeistBlack text-black">QUICK INQUIRY</h2>
                     <p className="text-sm Poppins text-gray-600">Just 6 fields • 2 minutes</p>
                   </div>
 
-                  {/* Compact 2-column grid */}
-                  <div className="grid grid-cols-2 gap-3">
+                  {/* Mobile: Single column, Desktop: 2-column grid */}
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 lg:gap-3">
                     {/* Name */}
                     <div>
-                      <Label className="text-xs GeistBold text-black mb-1 flex items-center gap-1">
+                      {/* Mobile labels */}
+                      <Label className="lg:hidden text-sm font-medium text-black mb-2 block">
+                        please enter full name
+                      </Label>
+                      {/* Desktop labels */}
+                      <Label className="hidden lg:flex text-xs GeistBold text-black mb-1 items-center gap-1">
                         <Users className="w-3 h-3" /> NAME <span className="text-red-500">*</span>
                       </Label>
                       <Input
                         placeholder="Full name"
                         value={formData.name}
                         onChange={(e) => handleChange('name', e.target.value)}
-                        className={`Poppins text-sm py-2 border-2 border-black rounded-full ${errors.name ? 'border-red-500' : ''}`}
+                        className={`Poppins text-base lg:text-sm py-3 lg:py-2 border-0 lg:border-2 border-b-2 lg:border-black border-gray-300 lg:border-black rounded-none lg:rounded-full bg-transparent lg:bg-white focus:border-black ${errors.name ? 'border-red-500' : ''}`}
                       />
                     </div>
 
                     {/* Email */}
                     <div>
-                      <Label className="text-xs GeistBold text-black mb-1 flex items-center gap-1">
+                      {/* Mobile labels */}
+                      <Label className="lg:hidden text-sm font-medium text-black mb-2 block">
+                        please enter email
+                      </Label>
+                      {/* Desktop labels */}
+                      <Label className="hidden lg:flex text-xs GeistBold text-black mb-1 items-center gap-1">
                         <Mail className="w-3 h-3" /> EMAIL <span className="text-red-500">*</span>
                       </Label>
                       <Input
@@ -232,13 +248,18 @@ export default function QuickInquiryPage() {
                         placeholder="Email address"
                         value={formData.email}
                         onChange={(e) => handleChange('email', e.target.value)}
-                        className={`Poppins text-sm py-2 border-2 border-black rounded-full ${errors.email ? 'border-red-500' : ''}`}
+                        className={`Poppins text-base lg:text-sm py-3 lg:py-2 border-0 lg:border-2 border-b-2 lg:border-black border-gray-300 lg:border-black rounded-none lg:rounded-full bg-transparent lg:bg-white focus:border-black ${errors.email ? 'border-red-500' : ''}`}
                       />
                     </div>
 
                     {/* Phone */}
                     <div>
-                      <Label className="text-xs GeistBold text-black mb-1 flex items-center gap-1">
+                      {/* Mobile labels */}
+                      <Label className="lg:hidden text-sm font-medium text-black mb-2 block">
+                        please enter phone
+                      </Label>
+                      {/* Desktop labels */}
+                      <Label className="hidden lg:flex text-xs GeistBold text-black mb-1 items-center gap-1">
                         <Phone className="w-3 h-3" /> PHONE <span className="text-red-500">*</span>
                       </Label>
                       <Input
@@ -246,13 +267,18 @@ export default function QuickInquiryPage() {
                         placeholder="Phone number"
                         value={formData.phone}
                         onChange={(e) => handleChange('phone', e.target.value)}
-                        className={`Poppins text-sm py-2 border-2 border-black rounded-full ${errors.phone ? 'border-red-500' : ''}`}
+                        className={`Poppins text-base lg:text-sm py-3 lg:py-2 border-0 lg:border-2 border-b-2 lg:border-black border-gray-300 lg:border-black rounded-none lg:rounded-full bg-transparent lg:bg-white focus:border-black ${errors.phone ? 'border-red-500' : ''}`}
                       />
                     </div>
 
                     {/* WhatsApp */}
                     <div>
-                      <Label className="text-xs GeistBold text-black mb-1 flex items-center gap-1">
+                      {/* Mobile labels */}
+                      <Label className="lg:hidden text-sm font-medium text-black mb-2 block">
+                        please enter whatsapp
+                      </Label>
+                      {/* Desktop labels */}
+                      <Label className="hidden lg:flex text-xs GeistBold text-black mb-1 items-center gap-1">
                         <MessageCircle className="w-3 h-3" /> WHATSAPP
                       </Label>
                       <Input
@@ -260,38 +286,68 @@ export default function QuickInquiryPage() {
                         placeholder="WhatsApp"
                         value={formData.whatsapp}
                         onChange={(e) => handleChange('whatsapp', e.target.value)}
-                        className="Poppins text-sm py-2 border-2 border-black rounded-full"
+                        className="Poppins text-base lg:text-sm py-3 lg:py-2 border-0 lg:border-2 border-b-2 lg:border-black border-gray-300 lg:border-black rounded-none lg:rounded-full bg-transparent lg:bg-white focus:border-black"
                       />
                     </div>
                   </div>
 
                   {/* Service Type - Full Width */}
                   <div>
-                    <Label className="text-xs GeistBold text-black mb-1 flex items-center gap-1">
+                    {/* Mobile labels */}
+                    <Label className="lg:hidden text-sm font-medium text-black mb-4 block">
+                      select your interested service
+                    </Label>
+                    {/* Desktop labels */}
+                    <Label className="hidden lg:flex text-xs GeistBold text-black mb-1 items-center gap-1">
                       <Plane className="w-3 h-3" /> SERVICE <span className="text-red-500">*</span>
                     </Label>
-                    <Select value={formData.serviceType} onValueChange={(value) => handleChange('serviceType', value)}>
-                      <SelectTrigger className={`Poppins text-sm py-2 border-2 border-black rounded-full ${errors.serviceType ? 'border-red-500' : ''}`}>
-                        <SelectValue placeholder="Select a service" />
-                      </SelectTrigger>
-                      <SelectContent className="Poppins">
-                        {serviceOptions.map((option) => (
-                          <SelectItem key={option.value} value={option.value} className="text-sm">
-                            {option.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    
+                    {/* Mobile: Button selection */}
+                    <div className="lg:hidden grid grid-cols-1 gap-3">
+                      {serviceOptions.map((option) => (
+                        <button
+                          key={option.value}
+                          type="button"
+                          onClick={() => handleChange('serviceType', option.value)}
+                          className={`p-4 text-left rounded-lg border-2 transition-all ${
+                            formData.serviceType === option.value
+                              ? 'border-black bg-black text-white'
+                              : 'border-gray-300 bg-gray-100 text-black hover:border-gray-400'
+                          }`}
+                        >
+                          <span className="text-base font-medium">{option.label}</span>
+                        </button>
+                      ))}
+                    </div>
+                    
+                    {/* Desktop: Original dropdown */}
+                    <div className="hidden lg:block">
+                      <Select value={formData.serviceType} onValueChange={(value) => handleChange('serviceType', value)}>
+                        <SelectTrigger className={`Poppins text-sm py-2 border-2 border-black rounded-full ${errors.serviceType ? 'border-red-500' : ''}`}>
+                          <SelectValue placeholder="Select a service" />
+                        </SelectTrigger>
+                        <SelectContent className="Poppins">
+                          {serviceOptions.map((option) => (
+                            <SelectItem key={option.value} value={option.value} className="text-sm">
+                              {option.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
                   </div>
 
                   {/* Special Request */}
                   <div>
-                    <Label className="text-xs GeistBold text-black mb-1">SPECIAL REQUEST (Optional)</Label>
+                    {/* Mobile labels */}
+                    <Label className="lg:hidden text-sm font-medium text-black mb-2 block">special request (optional)</Label>
+                    {/* Desktop labels */}
+                    <Label className="hidden lg:block text-xs GeistBold text-black mb-1">SPECIAL REQUEST (Optional)</Label>
                     <Textarea
                       placeholder="Travel plans, dates, budget..."
                       value={formData.specialRequest}
                       onChange={(e) => handleChange('specialRequest', e.target.value)}
-                      className="Poppins text-sm border-2 border-black rounded-xl resize-none"
+                      className="Poppins text-base lg:text-sm border-0 lg:border-2 border-b-2 lg:border-black border-gray-300 lg:border-black rounded-none lg:rounded-xl bg-transparent lg:bg-white focus:border-black resize-none"
                       rows={3}
                     />
                   </div>
@@ -299,19 +355,21 @@ export default function QuickInquiryPage() {
                   {/* Submit Button */}
                   <Button
                     type="submit"
-                    className="Poppins w-full bg-black text-white hover:bg-gray-800 py-5 text-sm font-semibold rounded-full"
+                    className="Poppins w-full bg-black text-white hover:bg-gray-800 py-4 lg:py-5 text-base lg:text-sm font-semibold rounded-lg lg:rounded-full flex items-center justify-between lg:justify-center gap-2"
                     disabled={isSubmitting}
                   >
                     {isSubmitting ? (
                       'SUBMITTING...'
                     ) : (
-                      <span className="flex items-center justify-center gap-2">
-                        GET FREE QUOTE NOW <ArrowRight className="w-4 h-4" />
-                      </span>
+                      <>
+                        <span className="lg:hidden">CONTINUE</span>
+                        <span className="hidden lg:inline">GET FREE QUOTE NOW</span>
+                        <ArrowRight className="w-5 h-5 lg:w-4 lg:h-4" />
+                      </>
                     )}
                   </Button>
 
-                  <p className="text-xs Poppins text-gray-600 text-center flex items-center justify-center gap-1">
+                  <p className="hidden lg:flex text-xs Poppins text-gray-600 text-center items-center justify-center gap-1">
                     <CheckCircle2 className="w-3 h-3 text-green-600" />
                     24-hour response • Secure & confidential
                   </p>

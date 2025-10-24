@@ -8,14 +8,19 @@ function isAdminPath(pathname) {
   return pathname.startsWith('/admin-dashboard') || pathname.startsWith('/admin-login');
 }
 
+function isQuickInquiryPath(pathname) {
+  return pathname === '/quick-inquiry';
+}
+
 export default function ClientLayout({ children }) {
   const pathname = usePathname();
   const showComponents = !isAdminPath(pathname);
+  const isQuickInquiry = isQuickInquiryPath(pathname);
 
   return (
     <>
       {children}
-      {showComponents && (
+      {showComponents && !isQuickInquiry && (
         <>
           <WhatsAppWidget />
           <WelcomeModal />
