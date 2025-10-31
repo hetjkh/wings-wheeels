@@ -1,5 +1,5 @@
-"use client"
-import React, { useState } from 'react';
+"use client";
+import React, { useMemo, useState, useEffect, useRef } from 'react';
 import Navbar from '../reusable/navbar';
 import Footer from '../reusable/footer';
 import { Button } from '@/components/ui/button';
@@ -7,7 +7,8 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
-import { X, Send, CheckCircle2, Plane, Mail, Phone, MessageCircle, Clock, Users, Star, ArrowRight } from 'lucide-react';
+import { X, Send, CheckCircle2, Plane, Mail, Phone, MessageCircle, Clock, Users, Star, ArrowRight, Shield, Sparkles } from 'lucide-react';
+import { Carousel, CarouselContent, CarouselItem } from '@/components/ui/carousel';
 
 export default function QuickInquiryPage() {
   const [formData, setFormData] = useState({
@@ -18,16 +19,60 @@ export default function QuickInquiryPage() {
     serviceType: '',
     specialRequest: ''
   });
-  
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [step, setStep] = useState(1);
+  const [api, setApi] = useState(null);
 
   const serviceOptions = [
     { value: 'tours', label: 'Tours and Packages' },
     { value: 'visa', label: 'Visa Assistance' },
     { value: 'flights', label: 'Flight Booking' },
     { value: 'hotels', label: 'Hotel Reservation' }
+  ];
+
+  const testimonials = [
+    {
+      place: 'Bali, Indonesia',
+      photo: 'https://images.unsplash.com/photo-1483683804023-6ccdb62f86ef?q=80&w=800&auto=format&fit=crop',
+      reviewer: 'Sarah & Michael Chen',
+      trip: '5-Day Honeymoon Package',
+      review: 'Wings & Wheels made our honeymoon absolutely magical! Every detail was perfect—from the beautiful resort to the private tours. The team was responsive and truly cared about making our trip special. Couldn\'t have asked for better service!',
+      rating: 5
+    },
+    {
+      place: 'Paris, France',
+      photo: 'https://images.unsplash.com/photo-1526772662000-3f88f10405ff?q=80&w=800&auto=format&fit=crop',
+      reviewer: 'James Rodriguez',
+      trip: '7-Day European Tour',
+      review: 'As a solo traveler, I was nervous, but they put together an amazing Paris itinerary. Everything was seamless—flights, hotels, and even restaurant recommendations. I felt safe and had the time of my life. Highly recommend!',
+      rating: 5
+    },
+    {
+      place: 'Dubai, UAE',
+      photo: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=800&auto=format&fit=crop',
+      reviewer: 'Priya & Raj Patel',
+      trip: '4-Day Family Adventure',
+      review: 'Took our family of 4 to Dubai. The kids loved every moment! The desert safari, Burj Khalifa tickets, and hotel were all perfectly arranged. Great value for money and zero stress. Will definitely use them again!',
+      rating: 5
+    },
+    {
+      place: 'Maldives',
+      photo: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=800&auto=format&fit=crop',
+      reviewer: 'Emma Thompson',
+      trip: '6-Day Beach Paradise',
+      review: 'Dream vacation come true! The overwater villa was stunning, and the snorkeling trips they arranged were incredible. Customer service was top-notch—answered all my questions promptly. Worth every penny!',
+      rating: 5
+    },
+    {
+      place: 'Tokyo, Japan',
+      photo: 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?q=80&w=800&auto=format&fit=crop',
+      reviewer: 'David Kim',
+      trip: '8-Day Cultural Experience',
+      review: 'Best travel planning experience ever! They understood my interest in Japanese culture and curated activities perfectly. The JR Pass arrangement was smooth, and the ryokan stay was authentic. Exceptional service!',
+      rating: 5
+    }
   ];
 
   const handleChange = (name, value) => {
@@ -37,31 +82,61 @@ export default function QuickInquiryPage() {
     }
   };
 
-  const validateForm = () => {
+  const validateCurrentStep = () => {
     const newErrors = {};
-    
+    if (step === 1) {
+      if (!formData.serviceType) newErrors.serviceType = 'Please select a service';
+    }
+    if (step === 2) {
     if (!formData.name.trim()) newErrors.name = 'Name is required';
     if (!formData.email.trim()) {
       newErrors.email = 'Email is required';
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
       newErrors.email = 'Invalid email format';
     }
+    }
+    if (step === 3) {
     if (!formData.phone.trim()) {
       newErrors.phone = 'Phone number is required';
-    } else if (!/^\d{10,}$/.test(formData.phone.replace(/[\s\-\+]/g, ''))) {
+      } else if (!/^\d{7,}$/.test(formData.phone.replace(/[\s\-\+]/g, ''))) {
       newErrors.phone = 'Invalid phone number';
     }
-    if (!formData.serviceType) newErrors.serviceType = 'Please select a service type';
-    
+    }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
+  const steps = useMemo(() => ([
+    { id: 1, title: 'Your Plan', subtitle: 'What would you like help with?' },
+    { id: 2, title: 'About You', subtitle: 'Basic details to reach you' },
+    { id: 3, title: 'Contact', subtitle: 'Best number to assist you' },
+    { id: 4, title: 'Finalize', subtitle: "Anything we should know?" }
+  ]), []);
+
+  const goNext = () => {
+    if (!validateCurrentStep()) return;
+    setStep(prev => Math.min(prev + 1, steps.length));
+  };
+
+  const goBack = () => {
+    setStep(prev => Math.max(prev - 1, 1));
+  };
+
+  // Auto-scroll carousel every 5 seconds
+  useEffect(() => {
+    if (!api) return;
+
+    const interval = setInterval(() => {
+      api.scrollNext();
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [api]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    if (!validateForm()) return;
-    
+    // validate last step fields if any
+    if (!validateCurrentStep()) return;
     setIsSubmitting(true);
     
     try {
@@ -122,12 +197,10 @@ export default function QuickInquiryPage() {
       }
       
       setSubmitSuccess(true);
-      
       setTimeout(() => {
-        setFormData({
-          name: '', email: '', phone: '', whatsapp: '', serviceType: '', specialRequest: ''
-        });
+        setFormData({ name: '', email: '', phone: '', whatsapp: '', serviceType: '', specialRequest: '' });
         setSubmitSuccess(false);
+        setStep(1);
       }, 3000);
       
     } catch (error) {
@@ -139,249 +212,398 @@ export default function QuickInquiryPage() {
   };
 
   return (
-    <div className="bg-white">
+    <div className="w-full bg-white">
+      {/* HERO with persuasive copy and background imagery */}
+      <div 
+        className="relative w-full min-h-screen bg-cover bg-center bg-no-repeat"
+        style={{
+          backgroundImage: "url(/assets/274791-3840x2160-desktop-4k-dubai-background-photo.jpg)",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat"
+        }}
+      >
+        {/* Fallback image */}
+        <img
+          src="/assets/274791-3840x2160-desktop-4k-dubai-background-photo.jpg"
+          alt=""
+          className="absolute inset-0 w-full h-full object-cover opacity-0 pointer-events-none"
+          onError={(e) => {
+            e.target.onerror = null;
+            const section = e.target.closest('section');
+            if (section) {
+              section.style.backgroundImage = "url(/assets/europe.jpg)";
+            }
+          }}
+        />
+        
+        <div className="relative z-20 min-h-screen flex flex-col w-full">
+          {/* Navigation Bar - inside the hero image */}
       <Navbar />
       
-      {/* Single Screen Split Layout */}
-      <section className="w-full min-h-screen flex items-center py-4 lg:py-8 px-4">
-        <div className="max-w-7xl mx-auto w-full">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            
-            {/* Left Side - Text Content - Hidden on mobile, visible on desktop */}
-            <div className="hidden lg:block space-y-8">
+          {/* Main Content */}
+          <div className="flex-1 flex justify-center py-4 lg:items-center lg:py-8">
+            <div className="relative max-w-7xl mx-auto px-4 pt-4 pb-4 lg:pt-16 lg:pb-14">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
+                <div className="text-black">
+                  <div className="inline-flex items-center gap-2 bg-white/80 border border-black px-4 py-2 rounded-full mb-5">
+                    <Sparkles className="w-4 h-4" />
+                    <span className="text-xs Poppins">Personal trip design in under 24 hours</span>
+                  </div>
+                  <h1 
+                    className="text-3xl md:text-5xl GeistBlack leading-tight text-white"
+                    style={{
+                      textShadow: '0 0 10px rgba(0,0,0,0.8), 0 0 20px rgba(0,0,0,0.6), 0 0 30px rgba(0,0,0,0.4), 2px 2px 4px rgba(0,0,0,0.9)'
+                    }}
+                  >
+                    Your next great trip starts with a quick, friendly chat.
+                  </h1>
+                  <p 
+                    className="text-base md:text-lg Poppins mt-4 max-w-xl text-white"
+                    style={{
+                      textShadow: '0 0 8px rgba(0,0,0,0.8), 0 0 16px rgba(0,0,0,0.6), 2px 2px 4px rgba(0,0,0,0.9)'
+                    }}
+                  >
+                    Share a few details and our expert will craft a free, custom plan—no spam, no pushy sales, just helpful guidance and the best deals.
+                  </p>
+                  <div className="hidden lg:flex flex-wrap items-center gap-3 mt-6">
+                    <div className="flex items-center gap-2 bg-white/90 border border-black px-4 py-2 rounded-full">
+                      <Clock className="w-4 h-4" />
+                      <span className="text-xs Poppins">Avg. response in 1–3 hrs</span>
+                    </div>
+                    <div className="flex items-center gap-2 bg-white/90 border border-black px-4 py-2 rounded-full">
+                      <Users className="w-4 h-4" />
+                      <span className="text-xs Poppins">10k+ happy travelers</span>
+                    </div>
+                    <div className="flex items-center gap-2 bg-white/90 border border-black px-4 py-2 rounded-full">
+                      <Star className="w-4 h-4" />
+                      <span className="text-xs Poppins">4.9/5 rated support</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="hidden lg:block">
+                  <img
+                    src="https://images.unsplash.com/photo-1488646953014-85cb44e25828?q=80&w=1600&auto=format&fit=crop"
+                    alt="Traveler looking at map"
+                    className="rounded-2xl border-2 border-black shadow-[8px_8px_0_0_rgba(0,0,0,1)]"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          {/* Mobile-only badges at bottom of hero */}
+          <div className="lg:hidden absolute bottom-4 left-0 right-0 z-20">
+            <div className="max-w-7xl mx-auto px-4">
+              <div className="flex flex-wrap items-center gap-3 justify-center">
+                <div className="flex items-center gap-2 bg-white/90 border border-black px-4 py-2 rounded-full">
+                  <Clock className="w-4 h-4" />
+                  <span className="text-xs Poppins">Avg. response in 1–3 hrs</span>
+                </div>
+                <div className="flex items-center gap-2 bg-white/90 border border-black px-4 py-2 rounded-full">
+                  <Users className="w-4 h-4" />
+                  <span className="text-xs Poppins">10k+ happy travelers</span>
+                </div>
+                <div className="flex items-center gap-2 bg-white/90 border border-black px-4 py-2 rounded-full">
+                  <Star className="w-4 h-4" />
+                  <span className="text-xs Poppins">4.9/5 rated support</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* MULTI-STEP FORM */}
+      <div className="w-full">
+        <section className="flex items-start lg:items-center py-6 lg:py-12 px-4 overflow-x-hidden">
+          <div className="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-10">
+          {/* Left: Testimonials Carousel */}
+          <div className="space-y-6 order-2 lg:order-1">
+            <div className="bg-white border-2 border-black rounded-2xl p-6">
+              <h3 className="GeistBlack text-xl mb-5">Real experiences from real travelers</h3>
+              
+              <Carousel 
+                opts={{ 
+                  align: "start", 
+                  loop: true,
+                  duration: 20
+                }} 
+                setApi={setApi}
+                className="w-full"
+              >
+                <CarouselContent className="-ml-2 md:-ml-4">
+                  {testimonials.map((testimonial, index) => (
+                    <CarouselItem key={index} className="pl-2 md:pl-4 basis-full">
+                      <div className="space-y-4 animate-fade-in">
+                        {/* Destination Photo */}
+                        <div className="relative w-full h-48 rounded-xl overflow-hidden border-2 border-black">
+                          <img 
+                            src={testimonial.photo} 
+                            alt={testimonial.place}
+                            className="w-full h-full object-cover"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                          <div className="absolute bottom-4 left-4 right-4">
+                            <div className="flex items-center gap-2 mb-1">
+                              <h4 className="GeistBlack text-lg text-white">{testimonial.place}</h4>
+                              <div className="flex items-center gap-0.5">
+                                {[...Array(testimonial.rating)].map((_, i) => (
+                                  <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                                ))}
+                              </div>
+                            </div>
+                            <p className="text-xs Poppins text-white/90">{testimonial.trip}</p>
+                          </div>
+                        </div>
+
+                        {/* Reviewer Info & Review */}
+                        <div className="space-y-3">
+                          <div className="flex items-center justify-between">
               <div>
-                <h1 className="text-3xl md:text-4xl lg:text-5xl GeistBlack text-black mb-6 leading-tight">
-                  WE PROVIDE SEAMLESS<br />
-                  TRAVEL EXPERIENCES<br />
-                  TAILORED JUST FOR YOU.
-                </h1>
-                
-                <p className="text-base md:text-lg Poppins text-black mb-8">
-                  Fill out our quick form and let our travel experts create the perfect package for you. Your next adventure starts here.
+                              <p className="GeistMedium text-sm text-black">{testimonial.reviewer}</p>
+                              <p className="text-xs Poppins text-gray-600">{testimonial.trip}</p>
+                            </div>
+                            <div className="flex items-center gap-0.5">
+                              {[...Array(testimonial.rating)].map((_, i) => (
+                                <Star key={i} className="w-3 h-3 fill-yellow-400 text-yellow-400" />
+                              ))}
+                            </div>
+                          </div>
+                          
+                          <p className="text-sm Poppins text-gray-700 leading-relaxed">
+                            "{testimonial.review}"
                 </p>
               </div>
+                      </div>
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+              </Carousel>
 
-              {/* Trust Indicators */}
-              <div className="space-y-4">
-                <div className="flex items-center gap-3 border-2 border-black px-6 py-3 rounded-full w-fit">
-                  <Clock className="w-5 h-5 text-black" />
-                  <span className="text-sm Poppins font-medium text-black">24hr Response</span>
-                </div>
-                <div className="flex items-center gap-3 border-2 border-black px-6 py-3 rounded-full w-fit">
-                  <Users className="w-5 h-5 text-black" />
-                  <span className="text-sm Poppins font-medium text-black">10K+ Happy Travelers</span>
-                </div>
-                <div className="flex items-center gap-3 border-2 border-black px-6 py-3 rounded-full w-fit">
-                  <Star className="w-5 h-5 text-black" />
-                  <span className="text-sm Poppins font-medium text-black">4.9/5 Rating</span>
+              {/* Privacy Note */}
+              <div className="mt-6 flex items-center gap-2 text-xs text-gray-700 pt-4 border-t border-gray-200">
+                <Shield className="w-4 h-4" />
+                <span>We respect your privacy. No spam. Opt-out anytime.</span>
                 </div>
               </div>
 
-              {/* Quick Contact */}
-              <div className="flex gap-4 pt-4">
+            {/* Quick Contact Buttons */}
+            <div className="hidden lg:flex gap-4">
                 <a href="tel:+971547858338" className="flex items-center gap-2 border-2 border-black px-6 py-3 rounded-full hover:bg-black hover:text-white transition-all Poppins font-medium">
                   <Phone className="w-4 h-4" />
-                  <span className="text-sm">Call Us</span>
+                <span className="text-sm">Prefer a quick call?</span>
                 </a>
                 <a href="https://wa.me/971547858338" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 border-2 border-black px-6 py-3 rounded-full hover:bg-black hover:text-white transition-all Poppins font-medium">
                   <MessageCircle className="w-4 h-4" />
-                  <span className="text-sm">WhatsApp</span>
+                <span className="text-sm">Chat on WhatsApp</span>
                 </a>
               </div>
             </div>
 
-            {/* Right Side - Compact Form */}
-            <div className="bg-white border-0 lg:border-2 border-black rounded-none lg:rounded-2xl p-0 md:p-6  shadow-none lg:shadow-xl w-full lg:w-auto">
-              {/* Mobile-specific header - only visible on mobile */}
-              <div className="lg:hidden GeistMedium text-left mb-8 w-full py-10">
-                <h2 className="text-5xl text-black">Hello 👋</h2>
-                <p className="text-2xl text-black">Please share your details</p>
-              </div>
-              {submitSuccess ? (
-                <div className="text-center py-12">
-                  <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <CheckCircle2 className="w-10 h-10 text-green-600" />
-                  </div>
-                  <h3 className="text-2xl GeistBlack text-black mb-2">THANK YOU!</h3>
-                  <p className="text-sm Poppins text-gray-700">We'll get back to you within 24 hours.</p>
+          {/* Right: form card (make prominent) */}
+          <div className="relative order-1 lg:order-2">
+            {/* spotlight background to draw attention to the form */}
+            <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
+              <div className="absolute right-[-10%] top-[-10%] w-[420px] h-[420px] rounded-full opacity-40 blur-3xl"
+                   style={{ background: 'radial-gradient(closest-side, #ffe08a, transparent 70%)' }} />
+              <div className="absolute right-[5%] bottom-[-10%] w-[320px] h-[320px] rounded-full opacity-30 blur-3xl"
+                   style={{ background: 'radial-gradient(closest-side, #ffd1dc, transparent 70%)' }} />
+            </div>
+            <div className="lg:sticky lg:top-6">
+              <div className="bg-white border-2 border-black ring-2 ring-black rounded-2xl p-5 lg:p-6 shadow-[14px_14px_0_0_rgba(0,0,0,1)] animate-card-pop">
+                {/* High visibility badge */}
+                <div className="mb-4 flex items-center gap-2">
+                  <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full border-2 border-black bg-yellow-300 text-black text-[11px] Poppins font-medium">
+                    <Sparkles className="w-3 h-3" /> Start here — free custom plan
+                  </span>
                 </div>
-              ) : (
-                <form onSubmit={handleSubmit} className="space-y-4">
-                  {/* Desktop-only header */}
-                  <div className="hidden lg:block text-center mb-6">
-                    <h2 className="text-2xl GeistBlack text-black">QUICK INQUIRY</h2>
-                    <p className="text-sm Poppins text-gray-600">Just 6 fields • 2 minutes</p>
-                  </div>
-
-                  {/* Mobile: Single column, Desktop: 2-column grid */}
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 lg:gap-3 space-y-5">
-                    {/* Name */}
-                    <div>
-                      {/* Mobile labels */}
-                      <Label className="lg:hidden text-sm font-medium text-black mb-2 block">
-                        Please enter full name
-                      </Label>
-                      {/* Desktop labels */}
-                      <Label className="hidden lg:flex text-xs GeistBold text-black mb-1 items-center gap-1">
-                        <Users className="w-3 h-3" /> NAME <span className="text-red-500">*</span>
-                      </Label>
-                      <Input
-                        placeholder="Full name"
-                        value={formData.name}
-                        onChange={(e) => handleChange('name', e.target.value)}
-                        className={`GeistMedium text-2xl text-black lg:text-sm px-4 py-3 lg:py-2 border-0 lg:border-2 border-b-1 border-black/25 lg:border-black rounded-none lg:rounded-full bg-transparent lg:bg-white focus:border-black ${errors.name ? 'border-red-500' : ''}`}
-                      />
-                    </div>
-
-                    {/* Email */}
-                    <div>
-                      {/* Mobile labels */}
-                      <Label className="lg:hidden text-sm font-medium text-black mb-2 block">
-                        Please enter email
-                      </Label>
-                      {/* Desktop labels */}
-                      <Label className="hidden lg:flex text-xs GeistBold text-black mb-1 items-center gap-1">
-                        <Mail className="w-3 h-3" /> EMAIL <span className="text-red-500">*</span>
-                      </Label>
-                      <Input
-                        type="email"
-                        placeholder="Email address"
-                        value={formData.email}
-                        onChange={(e) => handleChange('email', e.target.value)}
-                        className={`GeistMedium text-2xl text-black lg:text-sm px-4 py-3 lg:py-2 border-0 lg:border-2 border-b-1 border-black/25 lg:border-black rounded-none lg:rounded-full bg-transparent lg:bg-white focus:border-black ${errors.email ? 'border-red-500' : ''}`}
-                      />
-                    </div>
-
-                    {/* Phone */}
-                    <div>
-                      {/* Mobile labels */}
-                      <Label className="lg:hidden text-sm font-medium text-black mb-2 block">
-                        Please enter phone number
-                      </Label>
-                      {/* Desktop labels */}
-                      <Label className="hidden lg:flex text-xs GeistBold text-black mb-1 items-center gap-1">
-                        <Phone className="w-3 h-3" /> PHONE <span className="text-red-500">*</span>
-                      </Label>
-                      <Input
-                        type="tel"
-                        placeholder="Phone number"
-                        value={formData.phone}
-                        onChange={(e) => handleChange('phone', e.target.value)}
-                        className={`GeistMedium text-2xl text-black lg:text-sm px-4 py-3 lg:py-2 border-0 lg:border-2 border-b-1 border-black/25 lg:border-black rounded-none lg:rounded-full bg-transparent lg:bg-white focus:border-black ${errors.phone ? 'border-red-500' : ''}`}
-                      />
-                    </div>
-
-                    {/* WhatsApp */}
-                    <div>
-                      {/* Mobile labels */}
-                      <Label className="lg:hidden text-sm font-medium text-black mb-2 block">
-                        Please enter whatsapp number
-                      </Label>
-                      {/* Desktop labels */}
-                      <Label className="hidden lg:flex text-xs GeistBold text-black mb-1 items-center gap-1">
-                        <MessageCircle className="w-3 h-3" /> WHATSAPP
-                      </Label>
-                      <Input
-                        type="tel"
-                        placeholder="WhatsApp"
-                        value={formData.whatsapp}
-                        onChange={(e) => handleChange('whatsapp', e.target.value)}
-                        className="GeistMedium text-2xl text-black lg:text-sm px-4 py-3 lg:py-2 border-0 lg:border-2 border-b-1 border-black/25 lg:border-black rounded-none lg:rounded-full bg-transparent lg:bg-white focus:border-black"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Service Type - Full Width */}
+              {/* Step header */}
+              <div className="mb-5">
+                <div className="flex items-center justify-between mb-2">
                   <div>
-                    {/* Mobile labels */}
-                    <Label className="lg:hidden text-sm font-medium text-black mt-10 mb-5 block">
-                      select your interested service
+                    <h2 className="GeistBlack text-xl">{steps[step-1].title}</h2>
+                    <p className="text-xs Poppins text-gray-600">{steps[step-1].subtitle}</p>
+              </div>
+                  <span className="text-xs Poppins">Step {step} of {steps.length}</span>
+                  </div>
+                <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
+                  <div className="h-full bg-black" style={{ width: `${(step/steps.length)*100}%`, transition: 'width 300ms ease' }} />
+                </div>
+                  </div>
+
+              {/* Form body */}
+              <form onSubmit={handleSubmit}>
+                {/* STEP 1: Service selection */}
+                {step === 1 && (
+                  <div className="animate-fade-in space-y-4">
+                    <Label className="text-xs GeistBold text-black mt-1 flex items-center gap-1">
+                      <Plane className="w-3 h-3" /> What do you need help with? <span className="text-red-500">*</span>
                     </Label>
-                    {/* Desktop labels */}
-                    <Label className="hidden lg:flex text-xs GeistBold text-black mt-1 items-center gap-1">
-                      <Plane className="w-3 h-3" /> SERVICE <span className="text-red-500">*</span>
-                    </Label>
-                    
-                    {/* Mobile: Button selection */}
-                    <div className="lg:hidden grid grid-cols-1 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       {serviceOptions.map((option) => (
                         <button
                           key={option.value}
                           type="button"
                           onClick={() => handleChange('serviceType', option.value)}
-                          className={`p-4 text-center PoppinMedium text-2xl rounded-full border transition-all ${
+                          className={`group p-4 rounded-xl border-2 transition-all text-left relative ${
                             formData.serviceType === option.value
                               ? 'border-black bg-black text-white'
-                              : 'border-black-25 bg-gray-100 text-black hover:border-gray-400'
+                              : 'border-black hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] bg-white'
                           }`}
                         >
-                          <span className="GeistMedium text-2xl">{option.label}</span>
+                          {formData.serviceType === option.value && (
+                            <div className="absolute top-2 right-2 w-6 h-6 bg-white rounded-full flex items-center justify-center shadow-md">
+                              <CheckCircle2 className="w-5 h-5 text-green-500" />
+                            </div>
+                          )}
+                          <span className="GeistMedium">{option.label}</span>
+                          <div className="text-[11px] mt-1 opacity-80 Poppins">Best fares + expert guidance</div>
                         </button>
                       ))}
                     </div>
-                    
-                    {/* Desktop: Original dropdown */}
-                    <div className="hidden lg:block ">
-                      <Select value={formData.serviceType} onValueChange={(value) => handleChange('serviceType', value)}>
-                        <SelectTrigger className={`Poppins text-sm py-2 border-2 border-black rounded-full ${errors.serviceType ? 'border-red-500' : ''}`}>
-                          <SelectValue placeholder="Select a service" />
-                        </SelectTrigger>
-                        <SelectContent className="Poppins">
-                          {serviceOptions.map((option) => (
-                            <SelectItem key={option.value} value={option.value} className="text-sm">
-                              {option.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                    {errors.serviceType && <p className="text-red-600 text-xs Poppins">{errors.serviceType}</p>}
+                  </div>
+                )}
+
+                {/* STEP 2: Name + Email */}
+                {step === 2 && (
+                  <div className="animate-slide-up space-y-4">
+                    <div>
+                      <Label className="text-xs GeistBold text-black mb-1 flex items-center gap-1">
+                        <Users className="w-3 h-3" /> Full name <span className="text-red-500">*</span>
+                      </Label>
+                      <Input
+                        placeholder="Jane Doe"
+                        value={formData.name}
+                        onChange={(e) => handleChange('name', e.target.value)}
+                        className={`Poppins text-sm px-4 py-3 border-2 border-black rounded-xl focus:ring-2 focus:ring-black/30 ${errors.name ? 'border-red-500' : ''}`}
+                      />
+                      {errors.name && <p className="text-red-600 text-xs mt-1 Poppins">{errors.name}</p>}
+                    </div>
+                    <div>
+                      <Label className="text-xs GeistBold text-black mb-1 flex items-center gap-1">
+                        <Mail className="w-3 h-3" /> Email <span className="text-red-500">*</span>
+                      </Label>
+                      <Input
+                        type="email"
+                        placeholder="you@example.com"
+                        value={formData.email}
+                        onChange={(e) => handleChange('email', e.target.value)}
+                        className={`Poppins text-sm px-4 py-3 border-2 border-black rounded-xl focus:ring-2 focus:ring-black/30 ${errors.email ? 'border-red-500' : ''}`}
+                      />
+                      {errors.email && <p className="text-red-600 text-xs mt-1 Poppins">{errors.email}</p>}
+                    </div>
+                    </div>
+                )}
+
+                {/* STEP 3: Phone + WhatsApp */}
+                {step === 3 && (
+                  <div className="animate-slide-up space-y-4">
+                    <div>
+                      <Label className="text-xs GeistBold text-black mb-1 flex items-center gap-1">
+                        <Phone className="w-3 h-3" /> Phone <span className="text-red-500">*</span>
+                      </Label>
+                      <Input
+                        type="tel"
+                        placeholder="Your number"
+                        value={formData.phone}
+                        onChange={(e) => handleChange('phone', e.target.value)}
+                        className={`Poppins text-sm px-4 py-3 border-2 border-black rounded-xl focus:ring-2 focus:ring-black/30 ${errors.phone ? 'border-red-500' : ''}`}
+                      />
+                      {errors.phone && <p className="text-red-600 text-xs mt-1 Poppins">{errors.phone}</p>}
+                    </div>
+                    <div>
+                      <Label className="text-xs GeistBold text-black mb-1 flex items-center gap-1">
+                        <MessageCircle className="w-3 h-3" /> WhatsApp (optional)
+                      </Label>
+                      <Input
+                        type="tel"
+                        placeholder="WhatsApp number"
+                        value={formData.whatsapp}
+                        onChange={(e) => handleChange('whatsapp', e.target.value)}
+                        className="Poppins text-sm px-4 py-3 border-2 border-black rounded-xl focus:ring-2 focus:ring-black/30"
+                      />
+                      <p className="text-[11px] text-gray-600 mt-1 Poppins">We’ll send a quick confirmation and your free quote.</p>
                     </div>
                   </div>
+                )}
 
-                  {/* Special Request */}
-                  <div className='mt-10 mb-5'>
-                    {/* Mobile labels */}
-                    <Label className="lg:hidden text-sm font-medium text-black mb-2 block">special request (optional)</Label>
-                    {/* Desktop labels */}
-                    <Label className="hidden lg:block text-xs GeistBold text-black mb-1">SPECIAL REQUEST (Optional)</Label>
+                {/* STEP 4: Special request + review */}
+                {step === 4 && (
+                  <div className="animate-slide-up space-y-4">
+                  <div>
+                      <Label className="text-xs GeistBold text-black mb-1">Tell us anything that helps (dates, budget, travelers)</Label>
                     <Textarea
-                      placeholder="Message about Travel plans, dates, budget..."
+                        placeholder="e.g., 5 nights in Bali in Feb, 2 adults, ~$1200 budget"
                       value={formData.specialRequest}
                       onChange={(e) => handleChange('specialRequest', e.target.value)}
-                      className="GeistMedium text-2xl text-black px-4 py-3 lg:text-sm border-0 lg:border-2 border-b-2 border-gray-300 lg:border-black rounded-none lg:rounded-xl bg-transparent lg:bg-white focus:border-black"
-                      rows={1}
+                        className="Poppins text-sm px-4 py-3 border-2 border-black rounded-xl min-h-24"
+                        rows={3}
                     />
                   </div>
+                    <div className="bg-gray-50 border border-black rounded-xl p-4 text-xs Poppins">
+                      <div className="flex items-center gap-2 mb-2"><CheckCircle2 className="w-3 h-3 text-green-600" /><span>Quick review</span></div>
+                      <div className="grid grid-cols-2 gap-2">
+                        <div><span className="text-gray-600">Service:</span> <span className="font-medium">{serviceOptions.find(o=>o.value===formData.serviceType)?.label || '-'}</span></div>
+                        <div><span className="text-gray-600">Name:</span> <span className="font-medium">{formData.name || '-'}</span></div>
+                        <div><span className="text-gray-600">Email:</span> <span className="font-medium">{formData.email || '-'}</span></div>
+                        <div><span className="text-gray-600">Phone:</span> <span className="font-medium">{formData.phone || '-'}</span></div>
+                      </div>
+                    </div>
+                  </div>
+                )}
 
-                  {/* Submit Button */}
-                  <Button
-                    type="submit"
-                    className="w-full bg-black text-white hover:bg-gray-800 py-4 lg:py-5 text-base lg:text-sm font-semibold rounded-lg lg:rounded-full flex items-center justify-center gap-2"
-                    disabled={isSubmitting}
-                  >
-                    {isSubmitting ? (
-                      'SUBMITTING...'
-                    ) : (
-                      <>
-                        <span className="lg:hidden">CONTINUE</span>
-                        <span className="hidden lg:inline">GET FREE QUOTE NOW</span>
-                        <ArrowRight className="w-5 h-5 lg:w-4 lg:h-4" />
-                      </>
-                    )}
+                {/* Footer controls */}
+                <div className="mt-6 flex items-center gap-3">
+                  {step > 1 && (
+                    <Button type="button" onClick={goBack} variant="outline" className="border-2 border-black rounded-full px-6">
+                      Back
+                    </Button>
+                  )}
+                  {step < steps.length && (
+                    <Button type="button" onClick={goNext} className="bg-black text-white hover:bg-gray-800 rounded-full px-6">
+                      Continue <ArrowRight className="w-4 h-4 ml-2" />
+                    </Button>
+                  )}
+                  {step === steps.length && (
+                    <Button type="submit" disabled={isSubmitting} className="bg-black text-white hover:bg-gray-800 rounded-full px-6">
+                      {isSubmitting ? 'Submitting...' : 'Get my free quote'}
                   </Button>
+                  )}
+                </div>
 
-                  <p className="hidden lg:flex text-xs Poppins text-gray-600 text-center items-center justify-center gap-1">
-                    <CheckCircle2 className="w-3 h-3 text-green-600" />
-                    24-hour response • Secure & confidential
+                <p className="mt-3 text-[11px] Poppins text-gray-600 flex items-center gap-1">
+                  <CheckCircle2 className="w-3 h-3 text-green-600" /> 24-hour response • Secure & confidential
                   </p>
                 </form>
+
+              {submitSuccess && (
+                <div className="text-center py-10">
+                  <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <CheckCircle2 className="w-10 h-10 text-green-600" />
+                  </div>
+                  <h3 className="text-2xl GeistBlack text-black mb-2">Thank you!</h3>
+                  <p className="text-sm Poppins text-gray-700">We’ll get back to you within a few hours.</p>
+                </div>
               )}
             </div>
-
+            </div>
           </div>
         </div>
-      </section>
+        </section>
+      </div>
 
       <Footer />
+      {/* micro animations */}
+      <style jsx>{`
+        .animate-fade-in { animation: fadeIn 300ms ease; }
+        .animate-slide-up { animation: slideUp 300ms ease; }
+        .animate-card-pop { animation: cardPop 320ms cubic-bezier(0.2, 0.9, 0.2, 1); }
+        @keyframes fadeIn { from { opacity: 0 } to { opacity: 1 } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(8px) } to { opacity: 1; transform: translateY(0) } }
+        @keyframes cardPop { from { transform: translateY(8px) scale(0.98); box-shadow: 0 0 0 0 rgba(0,0,0,1) } to { transform: translateY(0) scale(1); } }
+      `}</style>
     </div>
   );
 }
