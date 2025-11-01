@@ -12,15 +12,20 @@ function isQuickInquiryPath(pathname) {
   return pathname === '/quick-inquiry';
 }
 
+function isPrivacyPolicyPath(pathname) {
+  return pathname === '/privacy-policy';
+}
+
 export default function ClientLayout({ children }) {
   const pathname = usePathname();
   const showComponents = !isAdminPath(pathname);
   const isQuickInquiry = isQuickInquiryPath(pathname);
+  const isPrivacyPolicy = isPrivacyPolicyPath(pathname);
 
   return (
     <>
       {children}
-      {showComponents && !isQuickInquiry && (
+      {showComponents && !isQuickInquiry && !isPrivacyPolicy && (
         <>
           <WhatsAppWidget />
           <WelcomeModal />

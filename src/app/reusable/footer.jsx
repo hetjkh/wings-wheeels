@@ -98,10 +98,26 @@ const Footer = () => {
                   </li>
                   <li>
                     <a
+                      href="/quick-inquiry"
+                      className="text-gray-400 hover:text-white transition-colors"
+                    >
+                      Quick Inquiry
+                    </a>
+                  </li>
+                  <li>
+                    <a
                       href="/contact"
                       className="text-gray-400 hover:text-white transition-colors"
                     >
                       Contact
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="/privacy-policy"
+                      className="text-gray-400 hover:text-white transition-colors"
+                    >
+                      Privacy Policy
                     </a>
                   </li>
                 </ul>

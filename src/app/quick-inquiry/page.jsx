@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
-import { X, Send, CheckCircle2, Plane, Mail, Phone, MessageCircle, Clock, Users, Star, ArrowRight, Shield, Sparkles } from 'lucide-react';
+import { X, Send, CheckCircle2, Plane, Mail, Phone, MessageCircle, Users, Star, ArrowRight, Shield, Sparkles } from 'lucide-react';
 import { Carousel, CarouselContent, CarouselItem } from '@/components/ui/carousel';
 
 export default function QuickInquiryPage() {
@@ -16,7 +16,7 @@ export default function QuickInquiryPage() {
     email: '',
     phone: '',
     whatsapp: '',
-    serviceType: '',
+    serviceType: [],
     specialRequest: ''
   });
   const [errors, setErrors] = useState({});
@@ -85,7 +85,7 @@ export default function QuickInquiryPage() {
   const validateCurrentStep = () => {
     const newErrors = {};
     if (step === 1) {
-      if (!formData.serviceType) newErrors.serviceType = 'Please select a service';
+      if (!formData.serviceType || formData.serviceType.length === 0) newErrors.serviceType = 'Please select at least one service';
     }
     if (step === 2) {
     if (!formData.name.trim()) newErrors.name = 'Name is required';
@@ -149,7 +149,7 @@ export default function QuickInquiryPage() {
         email: formData.email.trim(),
         phone: formData.phone.trim(),
         whatsappNumber: formData.whatsapp ? formData.whatsapp.trim() : formData.phone.trim(),
-        serviceType: formData.serviceType,
+        serviceType: Array.isArray(formData.serviceType) ? formData.serviceType.join(', ') : formData.serviceType,
         destinationCountry: 'Not specified',
         destinationState: 'Not specified',
         nationality: 'Not specified',
@@ -198,7 +198,7 @@ export default function QuickInquiryPage() {
       
       setSubmitSuccess(true);
       setTimeout(() => {
-        setFormData({ name: '', email: '', phone: '', whatsapp: '', serviceType: '', specialRequest: '' });
+        setFormData({ name: '', email: '', phone: '', whatsapp: '', serviceType: [], specialRequest: '' });
         setSubmitSuccess(false);
         setStep(1);
       }, 3000);
@@ -237,6 +237,9 @@ export default function QuickInquiryPage() {
           }}
         />
         
+        {/* Overlay gradient for text visibility */}
+        <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/40 to-transparent z-10" />
+        
         <div className="relative z-20 min-h-screen flex flex-col w-full">
           {/* Navigation Bar - inside the hero image */}
       <Navbar />
@@ -266,19 +269,18 @@ export default function QuickInquiryPage() {
                   >
                     Share a few details and our expert will craft a free, custom plan—no spam, no pushy sales, just helpful guidance and the best deals.
                   </p>
-                  <div className="hidden lg:flex flex-wrap items-center gap-3 mt-6">
-                    <div className="flex items-center gap-2 bg-white/90 border border-black px-4 py-2 rounded-full">
-                      <Clock className="w-4 h-4" />
-                      <span className="text-xs Poppins">Avg. response in 1–3 hrs</span>
-                    </div>
-                    <div className="flex items-center gap-2 bg-white/90 border border-black px-4 py-2 rounded-full">
-                      <Users className="w-4 h-4" />
-                      <span className="text-xs Poppins">10k+ happy travelers</span>
-                    </div>
-                    <div className="flex items-center gap-2 bg-white/90 border border-black px-4 py-2 rounded-full">
-                      <Star className="w-4 h-4" />
-                      <span className="text-xs Poppins">4.9/5 rated support</span>
-                    </div>
+                  <div className="mt-8">
+                    <button
+                      onClick={() => {
+                        const formSection = document.getElementById('quick-inquiry-form');
+                        if (formSection) {
+                          formSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        }
+                      }}
+                      className="bg-white text-black hover:bg-gray-100 px-10 py-4 rounded-full text-base font-semibold transition-all duration-300 cursor-pointer transform hover:scale-105 shadow-lg"
+                    >
+                      Get a Free Quote
+                    </button>
                   </div>
                 </div>
                 <div className="hidden lg:block">
@@ -292,30 +294,11 @@ export default function QuickInquiryPage() {
             </div>
           </div>
           
-          {/* Mobile-only badges at bottom of hero */}
-          <div className="lg:hidden absolute bottom-4 left-0 right-0 z-20">
-            <div className="max-w-7xl mx-auto px-4">
-              <div className="flex flex-wrap items-center gap-3 justify-center">
-                <div className="flex items-center gap-2 bg-white/90 border border-black px-4 py-2 rounded-full">
-                  <Clock className="w-4 h-4" />
-                  <span className="text-xs Poppins">Avg. response in 1–3 hrs</span>
-                </div>
-                <div className="flex items-center gap-2 bg-white/90 border border-black px-4 py-2 rounded-full">
-                  <Users className="w-4 h-4" />
-                  <span className="text-xs Poppins">10k+ happy travelers</span>
-                </div>
-                <div className="flex items-center gap-2 bg-white/90 border border-black px-4 py-2 rounded-full">
-                  <Star className="w-4 h-4" />
-                  <span className="text-xs Poppins">4.9/5 rated support</span>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
 
       {/* MULTI-STEP FORM */}
-      <div className="w-full">
+      <div id="quick-inquiry-form" className="w-full">
         <section className="flex items-start lg:items-center py-6 lg:py-12 px-4 overflow-x-hidden">
           <div className="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-10">
           {/* Left: Testimonials Carousel */}
@@ -445,14 +428,21 @@ export default function QuickInquiryPage() {
                         <button
                           key={option.value}
                           type="button"
-                          onClick={() => handleChange('serviceType', option.value)}
+                          onClick={() => {
+                            const currentServices = formData.serviceType || [];
+                            const isSelected = currentServices.includes(option.value);
+                            const newServices = isSelected
+                              ? currentServices.filter(s => s !== option.value)
+                              : [...currentServices, option.value];
+                            handleChange('serviceType', newServices);
+                          }}
                           className={`group p-4 rounded-xl border-2 transition-all text-left relative ${
-                            formData.serviceType === option.value
+                            formData.serviceType && formData.serviceType.includes(option.value)
                               ? 'border-black bg-black text-white'
                               : 'border-black hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] bg-white'
                           }`}
                         >
-                          {formData.serviceType === option.value && (
+                          {formData.serviceType && formData.serviceType.includes(option.value) && (
                             <div className="absolute top-2 right-2 w-6 h-6 bg-white rounded-full flex items-center justify-center shadow-md">
                               <CheckCircle2 className="w-5 h-5 text-green-500" />
                             </div>
@@ -545,7 +535,9 @@ export default function QuickInquiryPage() {
                     <div className="bg-gray-50 border border-black rounded-xl p-4 text-xs Poppins">
                       <div className="flex items-center gap-2 mb-2"><CheckCircle2 className="w-3 h-3 text-green-600" /><span>Quick review</span></div>
                       <div className="grid grid-cols-2 gap-2">
-                        <div><span className="text-gray-600">Service:</span> <span className="font-medium">{serviceOptions.find(o=>o.value===formData.serviceType)?.label || '-'}</span></div>
+                        <div className="col-span-2"><span className="text-gray-600">Service:</span> <span className="font-medium">{Array.isArray(formData.serviceType) && formData.serviceType.length > 0 
+                          ? formData.serviceType.map(val => serviceOptions.find(o=>o.value===val)?.label).filter(Boolean).join(', ')
+                          : '-'}</span></div>
                         <div><span className="text-gray-600">Name:</span> <span className="font-medium">{formData.name || '-'}</span></div>
                         <div><span className="text-gray-600">Email:</span> <span className="font-medium">{formData.email || '-'}</span></div>
                         <div><span className="text-gray-600">Phone:</span> <span className="font-medium">{formData.phone || '-'}</span></div>
