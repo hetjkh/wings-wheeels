@@ -144,12 +144,17 @@ export default function QuickInquiryPage() {
         'https://script.google.com/macros/s/AKfycbyzx4B9QIGUO_d7jBfvsDU5SkvdZPPFvzx8WC0WF7AHDoKbeamwtevJdyr3lYdSA6L2/exec';
       
       // Prepare data for backend API
+      // Send first selected service type to API (API only accepts single value)
+      const apiServiceType = Array.isArray(formData.serviceType) && formData.serviceType.length > 0 
+        ? formData.serviceType[0] 
+        : (formData.serviceType || '');
+      
       const payload = {
         fullName: formData.name.trim(),
         email: formData.email.trim(),
         phone: formData.phone.trim(),
         whatsappNumber: formData.whatsapp ? formData.whatsapp.trim() : formData.phone.trim(),
-        serviceType: Array.isArray(formData.serviceType) ? formData.serviceType.join(', ') : formData.serviceType,
+        serviceType: apiServiceType,
         destinationCountry: 'Not specified',
         destinationState: 'Not specified',
         nationality: 'Not specified',
