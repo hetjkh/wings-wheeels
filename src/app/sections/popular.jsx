@@ -1,5 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
+import Link from "next/link";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, MapPin, Clock, Star, Calendar, Users } from "lucide-react";
 
@@ -182,8 +184,16 @@ const popular = () => {
           }
         }
 
-        // If no fresh cache or cache is expired, fetch new rates
-        const response = await fetch('https://open.er-api.com/v6/latest/AED');
+        // If no fresh cache or cache is expired, fetch new rates with timeout
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+        
+        const response = await fetch('https://open.er-api.com/v6/latest/AED', {
+          signal: controller.signal,
+        });
+        
+        clearTimeout(timeoutId);
+        
         if (!response.ok) throw new Error('Failed to fetch rates');
         
         const data = await response.json();
@@ -268,7 +278,7 @@ const popular = () => {
           </h2>
           <p className="text-sm lg:text-base text-gray-700 max-w-2xl leading-relaxed Poppins">
             Discover breathtaking destinations with our curated travel
-            experiences
+            experiences. <Link href="/gallery" className="text-black underline hover:text-gray-700">Browse our travel packages</Link> or <Link href="/contact" className="text-black underline hover:text-gray-700">contact us</Link> to plan your perfect getaway.
           </p>
         </div>
 
@@ -381,10 +391,13 @@ const popular = () => {
             }`}
           >
             <div className="relative h-[500px] rounded-2xl overflow-hidden shadow-2xl">
-              <img
+              <Image
                 src={currentDestination.image}
                 alt={currentDestination.name}
-                className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
+                fill
+                className="object-cover transition-transform duration-700 hover:scale-105"
+                sizes="(max-width: 768px) 100vw, 50vw"
+                priority={currentIndex === 0}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent"></div>
               <div className="absolute bottom-6 left-6 text-white">
@@ -414,10 +427,13 @@ const popular = () => {
                   : "opacity-70 hover:opacity-100 hover:scale-105"
               }`}
             >
-              <img
+              <Image
                 src={destination.image}
                 alt={destination.name}
+                width={80}
+                height={80}
                 className="w-full h-full object-cover"
+                loading="lazy"
               />
             </div>
           ))}

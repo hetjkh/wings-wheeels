@@ -17,7 +17,7 @@ const geistMono = Geist_Mono({
 export const metadata = {
   title: "Wings & Wheels Travel and Tourism | Seamless Travel Experiences",
   description:
-    "Wings & Wheels Travel and Tourism in Dubai and Abu Dhabi offers air tickets, visas, hotel bookings, tour packages, insurance, transfers, and 24/7 support. Stress-free, secure, and tailored travel experiences just for you.",
+    "Dubai & Abu Dhabi's trusted travel agency. Book flights, visas, hotels & tours with 24/7 support. Stress-free, secure travel experiences tailored for you.",
   icons: {
     icon: "/favicon.png",       // Default favicon
     shortcut: "/favicon.png",   // For older browsers
@@ -91,10 +91,10 @@ export default function RootLayout({ children }) {
         </noscript>
       </head>
       <body className="bg-background font-sans antialiased">
-        {/* Meta Pixel Code */}
+        {/* Meta Pixel Code - Loaded with lazy strategy to reduce initial requests */}
         <Script
           id="meta-pixel"
-          strategy="afterInteractive"
+          strategy="lazyOnload"
           dangerouslySetInnerHTML={{
             __html: `
               !function(f,b,e,v,n,t,s)

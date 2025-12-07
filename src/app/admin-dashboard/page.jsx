@@ -624,16 +624,39 @@ export default function AdminDashboard() {
     // Clear any existing interval
     if (connectionCheckInterval.current) {
       clearInterval(connectionCheckInterval.current);
+      connectionCheckInterval.current = null;
     }
     
-    // Check connection status every 3 seconds
+    let checkCount = 0;
+    const maxChecks = 60; // Maximum 3 minutes (60 checks * 3 seconds)
+    
+    // Check connection status every 3 seconds with timeout
     connectionCheckInterval.current = setInterval(async () => {
       try {
+        checkCount++;
+        
+        // Timeout after maxChecks attempts
+        if (checkCount > maxChecks) {
+          clearInterval(connectionCheckInterval.current);
+          connectionCheckInterval.current = null;
+          setConnectionProgress('Connection timeout. Please try again.');
+          setConnectingInstance(null);
+          return;
+        }
+        
         const token = Cookies.get('authToken');
         if (!token) {
+          if (connectionCheckInterval.current) {
+            clearInterval(connectionCheckInterval.current);
+            connectionCheckInterval.current = null;
+          }
           window.location.href = '/';
           return;
         }
+
+        // Add timeout to fetch request
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
 
         const response = await fetch('https://wwtravels.net/api/instances/all', {
           method: 'POST',
@@ -641,9 +664,16 @@ export default function AdminDashboard() {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`,
           },
+          signal: controller.signal,
         });
 
+        clearTimeout(timeoutId);
+
         if (response.status === 401 || response.status === 403) {
+          if (connectionCheckInterval.current) {
+            clearInterval(connectionCheckInterval.current);
+            connectionCheckInterval.current = null;
+          }
           Cookies.remove('authToken');
           window.location.href = '/';
           return;
@@ -663,19 +693,30 @@ export default function AdminDashboard() {
             setInstances(data.instances);
             
             // Clear the monitoring
-            clearInterval(connectionCheckInterval.current);
+            if (connectionCheckInterval.current) {
+              clearInterval(connectionCheckInterval.current);
+              connectionCheckInterval.current = null;
+            }
             setConnectingInstance(null);
             
             // Auto-close success modal after 3 seconds
-            setTimeout(() => {
+            const successTimer = setTimeout(() => {
               setShowConnectingModal(false);
             }, 3000);
+            
+            // Store timer for cleanup if needed
+            return () => clearTimeout(successTimer);
           } else if (instance?.whatsapp?.status === 'connecting') {
             setConnectionProgress('Authenticating...');
           }
         }
       } catch (error) {
-        console.error('Connection monitoring error:', error);
+        if (error.name === 'AbortError') {
+          console.error('Connection monitoring request timeout');
+        } else {
+          console.error('Connection monitoring error:', error);
+        }
+        // Don't clear interval on error, let it retry
       }
     }, 3000);
   };
@@ -688,6 +729,7 @@ export default function AdminDashboard() {
     // Clear connection monitoring
     if (connectionCheckInterval.current) {
       clearInterval(connectionCheckInterval.current);
+      connectionCheckInterval.current = null;
     }
     setConnectingInstance(null);
   };

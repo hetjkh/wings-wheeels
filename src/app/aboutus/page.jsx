@@ -530,10 +530,13 @@ const AboutUs = () => {
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
               <div>
-                <img
+                <Image
                   src="https://images.pexels.com/photos/3935702/pexels-photo-3935702.jpeg?auto=compress&cs=tinysrgb&w=800"
                   alt="Travel expertise and consultation"
+                  width={800}
+                  height={384}
                   className="w-full h-96 object-cover rounded-2xl shadow-xl transition-all duration-500"
+                  loading="lazy"
                 />
               </div>
               <div className="space-y-8">

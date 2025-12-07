@@ -1,4 +1,5 @@
 import React from "react";
+import Link from "next/link";
 import Image from "next/image";
 
 const beforego = () => {
@@ -16,7 +17,7 @@ const beforego = () => {
                 <p className="text-sm lg:text-base text-gray-700 max-w-2xl leading-relaxed Poppins">
                   Essential things to review before heading to the
                   airport—documents, packing list, travel plans, and online
-                  check-in for a smooth journey.
+                  check-in for a smooth journey. Need help? <Link href="/contact" className="text-black underline hover:text-gray-700">Contact our travel experts</Link> or <Link href="/quick-inquiry" className="text-black underline hover:text-gray-700">submit a quick inquiry</Link>.
                 </p>
               </div>
 
@@ -52,7 +53,7 @@ const beforego = () => {
                   <p className="text-sm text-gray-500">
                     Review your itinerary one last time. Note down contact
                     numbers for your accommodations, tour operators, and our
-                    agency in case you need assistance.
+                    agency in case you need assistance. <Link href="/contact" className="text-black underline hover:text-gray-700">Get our 24/7 support contact details</Link>.
                   </p>
                 </div>
 

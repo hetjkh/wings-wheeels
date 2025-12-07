@@ -3,6 +3,7 @@
 import { usePathname } from "next/navigation";
 import WhatsAppWidget from "./components/WhatsAppWidget";
 import WelcomeModal from "./components/WelcomeModal";
+import ErrorBoundary from "@/components/ErrorBoundary";
 
 function isAdminPath(pathname) {
   return pathname.startsWith('/admin-dashboard') || pathname.startsWith('/admin-login');
@@ -23,7 +24,7 @@ export default function ClientLayout({ children }) {
   const isPrivacyPolicy = isPrivacyPolicyPath(pathname);
 
   return (
-    <>
+    <ErrorBoundary>
       {children}
       {showComponents && !isQuickInquiry && !isPrivacyPolicy && (
         <>
@@ -31,6 +32,6 @@ export default function ClientLayout({ children }) {
           <WelcomeModal />
         </>
       )}
-    </>
+    </ErrorBoundary>
   );
 }

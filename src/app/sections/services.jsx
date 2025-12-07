@@ -1,5 +1,6 @@
 "use client";
 import React, { useMemo, memo } from "react";
+import Link from "next/link";
 import Image from "next/image";
 import { ArrowUpRight, Star, Quote } from "lucide-react";
 
@@ -117,7 +118,7 @@ const service = () => {
             <p className="text-sm lg:text-base text-gray-300 max-w-2xl leading-relaxed Poppins">
               We take care of everything you need for a smooth and enjoyable
               trip. From booking flights to helping with visas and more—we've
-              got you covered.
+              got you covered. <Link href="/contact" className="text-white underline hover:text-gray-300">Get in touch</Link> to book your services or <Link href="/gallery" className="text-white underline hover:text-gray-300">explore our travel packages</Link>.
             </p>
           </div>
 

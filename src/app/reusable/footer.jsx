@@ -54,12 +54,12 @@ const Footer = () => {
                   />
                 </div>
                 <div className="flex flex-col">
-                  <h1
+                  <div
                     className="text-white text-xl sm:text-2xl font-bold tracking-wide"
                     style={{ fontFamily: '"Bodoni Bd BT", serif' }}
                   >
                     WINGS & WHEELS
-                  </h1>
+                  </div>
                   <p
                     className="text-gray-300 text-sm sm:text-base -mt-1"
                     style={{ fontFamily: '"Bodoni Bd BT", serif' }}

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Quote } from "lucide-react";
 
 const reviews = [
@@ -43,7 +44,7 @@ const review = () => {
             </h2>
             <p className="text-sm lg:text-base text-gray-200 max-w-2xl leading-relaxed Poppins">
               Our customers are at the heart of everything we do. Here's what
-              real travelers say about their experiences with Wings & Wheels.
+              real travelers say about their experiences with Wings & Wheels. <Link href="/contact" className="text-white underline hover:text-gray-300">Join our satisfied customers</Link> and <Link href="/gallery" className="text-white underline hover:text-gray-300">explore our travel packages</Link>.
             </p>
           </div>
 

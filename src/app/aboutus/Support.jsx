@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import Image from 'next/image';
 import {
   Clock,
   Phone,
@@ -155,8 +156,11 @@ const SupportSection = () => {
                     }`}
                   >
 
-                    <img
+                    <Image
                       src="https://images.pexels.com/photos/1906658/pexels-photo-1906658.jpeg?auto=compress&cs=tinysrgb&w=600"
+                      width={600}
+                      height={400}
+                      loading="lazy"
                       alt="Flight and travel support"
                       className="w-full h-48 md:h-64 object-cover rounded-xl shadow-lg"
                     />
@@ -256,10 +260,13 @@ const SupportSection = () => {
                     }`}
                   >
 
-                    <img
+                    <Image
                       src="https://images.pexels.com/photos/3278215/pexels-photo-3278215.jpeg?auto=compress&cs=tinysrgb&w=600"
                       alt="Destination support and local assistance"
+                      width={600}
+                      height={400}
                       className="w-full h-48 md:h-64 object-cover rounded-xl shadow-lg"
+                      loading="lazy"
                     />
                   </div>
                 </div>
@@ -280,10 +287,13 @@ const SupportSection = () => {
                         : "opacity-0 -translate-x-8"
                     }`}
                   >
-                    <img
+                    <Image
                       src="https://images.pexels.com/photos/2034335/pexels-photo-2034335.jpeg?auto=compress&cs=tinysrgb&w=600"
                       alt="Return journey support"
+                      width={600}
+                      height={400}
                       className="w-full h-full object-cover rounded-xl shadow-lg"
+                      loading="lazy"
                     />
                   </div>
                   <div

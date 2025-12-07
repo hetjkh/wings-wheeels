@@ -152,8 +152,16 @@ const Navbar = ({ showContactButton = true }) => {
         }
       }
 
-      // Fetch rates with USD as base
-      const response = await fetch("https://open.er-api.com/v6/latest/USD");
+      // Fetch rates with USD as base with timeout
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+      
+      const response = await fetch("https://open.er-api.com/v6/latest/USD", {
+        signal: controller.signal,
+      });
+      
+      clearTimeout(timeoutId);
+      
       if (!response.ok) throw new Error("Failed to fetch rates");
 
       const data = await response.json();
@@ -524,7 +532,7 @@ const Navbar = ({ showContactButton = true }) => {
                 />
               </div>
               <div className="flex flex-col ml-2">
-                <h1
+                <div
                   className="text-black text-sm sm:text-lg md:text-xl lg:text-2xl font-bold tracking-wide leading-none whitespace-nowrap"
                   style={{
                     fontFamily: isRTL
@@ -533,7 +541,7 @@ const Navbar = ({ showContactButton = true }) => {
                   }}
                 >
                   {currentTranslation.companyName}
-                </h1>
+                </div>
                 <p
                   className="text-black text-xs sm:text-sm md:text-base leading-none mt-[-2px]"
                   style={{

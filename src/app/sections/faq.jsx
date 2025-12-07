@@ -1,5 +1,6 @@
 "use client";
 import React, { useState } from "react";
+import Link from "next/link";
 import { ChevronDown, ChevronUp } from "lucide-react";
 
 
@@ -50,7 +51,7 @@ const FAQ = () => {
             Frequently Asked Questions
           </h2>
           <p className="text-sm lg:text-base text-gray-700 max-w-2xl leading-relaxed Poppins">
-            Find answers to common questions about our services
+            Find answers to common questions about our services. Need more help? <Link href="/contact" className="text-black underline hover:text-gray-700">Contact our travel experts</Link> or <Link href="/quick-inquiry" className="text-black underline hover:text-gray-700">submit a quick inquiry</Link>.
           </p>
         </div>
 
@@ -100,18 +101,15 @@ const FAQ = () => {
             Didn't find the answer you're looking for?
           </h3>
           <p className="text-gray-600 mb-4 Poppins">
-            
-              
-               "Contact our expert team for personalized assistance"
-        
+            Contact our expert team for personalized assistance. <Link href="/aboutus" className="text-black underline hover:text-gray-700">Learn more about our team</Link> or <Link href="/gallery" className="text-black underline hover:text-gray-700">explore our travel destinations</Link>.
           </p>
           <div className="flex flex-col sm:flex-row gap-3">
-            <button
-              onClick={() => window.open("tel:+971547858338")}
-              className="bg-black text-white hover:bg-gray-800 px-6 py-3 rounded-full text-sm font-medium transition-all duration-300 Poppins cursor-pointer"
+            <Link
+              href="/contact"
+              className="bg-black text-white hover:bg-gray-800 px-6 py-3 rounded-full text-sm font-medium transition-all duration-300 Poppins cursor-pointer text-center"
             >
               Contact Agent
-            </button>
+            </Link>
             <button
               onClick={() => window.open("https://wa.me/+971547858338")}
               className="bg-transparent border-2 border-black text-black hover:bg-black hover:text-white px-6 py-3 rounded-full text-sm font-medium transition-all duration-300 Poppins cursor-pointer"

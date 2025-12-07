@@ -1,0 +1,29 @@
+# robots.txt for Wings & Wheels Travel and Tourism
+# https://wwtravels.net
+
+# Allow all search engines to crawl the site
+User-agent: *
+Allow: /
+
+# Block admin and private areas
+Disallow: /admin-dashboard
+Disallow: /admin-login
+Disallow: /api/
+
+# Block example/test pages
+Disallow: /examples
+
+# Allow important pages
+Allow: /
+Allow: /contact
+Allow: /gallery
+Allow: /aboutus
+Allow: /quick-inquiry
+Allow: /privacy-policy
+
+# Sitemap location (update when sitemap is created)
+Sitemap: https://wwtravels.net/sitemap.xml
+
+# Crawl-delay (optional - helps prevent server overload)
+# Crawl-delay: 1
+

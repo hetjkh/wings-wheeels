@@ -96,13 +96,20 @@ const QuickLeadForm = ({ isOpen, onClose, variant = "modal" }) => {
       // Submit to backend API (handles WhatsApp and Email notifications)
       console.log('Submitting payload:', payload);
       
+      // Add timeout to prevent hanging
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+      
       const response = await fetch('https://wwtravels.net/api/bookings/create', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
+        signal: controller.signal,
       });
+
+      clearTimeout(timeoutId);
 
       const data = await response.json();
       console.log('Backend response:', data);
@@ -150,7 +157,11 @@ const QuickLeadForm = ({ isOpen, onClose, variant = "modal" }) => {
       
     } catch (error) {
       console.error('Error submitting form:', error);
-      alert('Failed to submit. Please try again or contact us via WhatsApp.');
+      if (error.name === 'AbortError' || error.message.includes('timeout')) {
+        alert('Request timeout. Please check your connection and try again.');
+      } else {
+        alert('Failed to submit. Please try again or contact us via WhatsApp.');
+      }
       setIsSubmitting(false);
     }
   };

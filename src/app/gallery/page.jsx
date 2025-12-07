@@ -383,45 +383,72 @@ const TravelGallery = () => {
 
   // Fetch API offers
   useEffect(() => {
+    let isMounted = true;
+    const abortController = new AbortController();
+    
     const fetchOffers = async () => {
       try {
         setIsLoadingOffers(true);
         setApiError(null);
 
-        const response = await fetch("https://wwtravels.net/api/offers/all");
+        // Add timeout to prevent hanging
+        const timeoutId = setTimeout(() => abortController.abort(), 15000);
+        
+        const response = await fetch("https://wwtravels.net/api/offers/all", {
+          signal: abortController.signal,
+        });
+        
+        clearTimeout(timeoutId);
+        
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
 
         const data = await response.json();
 
-        if (data.success && data.offers) {
-          // Transform API data to match our gallery structure
-          const transformedOffers = data.offers.map((offer, index) => ({
-            id: `exclusive-${offer._id}`,
-            image: offer.image,
-            title: offer.name,
-            location: "Special Deal",
-            category: "EXCLUSIVE OFFERS",
-            allImages: [offer.image], // API only provides one image per offer
-            height: 380 + Math.floor(Math.random() * 50),
-            price: offer.price,
-            apiData: offer, // Store original API data for reference
-          }));
+        if (isMounted) {
+          if (data.success && data.offers) {
+            // Transform API data to match our gallery structure
+            const transformedOffers = data.offers.map((offer, index) => ({
+              id: `exclusive-${offer._id}`,
+              image: offer.image,
+              title: offer.name,
+              location: "Special Deal",
+              category: "EXCLUSIVE OFFERS",
+              allImages: [offer.image], // API only provides one image per offer
+              height: 380 + Math.floor(Math.random() * 50),
+              price: offer.price,
+              apiData: offer, // Store original API data for reference
+            }));
 
-          setApiOffers(transformedOffers);
-        } else {
-          throw new Error("Invalid API response format");
+            setApiOffers(transformedOffers);
+          } else {
+            throw new Error("Invalid API response format");
+          }
         }
       } catch (error) {
-        console.error("Error fetching offers:", error);
-        setApiError(error.message);
+        if (isMounted) {
+          if (error.name === 'AbortError') {
+            console.error("Request timeout while fetching offers");
+            setApiError("Request timeout. Please refresh the page.");
+          } else {
+            console.error("Error fetching offers:", error);
+            setApiError(error.message);
+          }
+        }
       } finally {
-        setIsLoadingOffers(false);
+        if (isMounted) {
+          setIsLoadingOffers(false);
+        }
       }
     };
 
     fetchOffers();
+    
+    return () => {
+      isMounted = false;
+      abortController.abort();
+    };
   }, []);
 
   // Format price in AED

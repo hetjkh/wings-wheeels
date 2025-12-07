@@ -10,17 +10,14 @@ export default function PageTransition({ children }) {
 
   useEffect(() => {
     // Show animation when route changes
-    const handleRouteChange = () => {
-      setIsAnimating(true);
-      // Reset animation after it completes (adjust timing to match your GIF)
-      const timer = setTimeout(() => {
-        setIsAnimating(false);
-      }, 2000); // Adjust this duration based on your GIF length
-      
-      return () => clearTimeout(timer);
-    };
-
-    handleRouteChange();
+    setIsAnimating(true);
+    // Reset animation after it completes (adjust timing to match your GIF)
+    const timer = setTimeout(() => {
+      setIsAnimating(false);
+    }, 2000); // Adjust this duration based on your GIF length
+    
+    // Cleanup timer on unmount or pathname change
+    return () => clearTimeout(timer);
   }, [pathname]);
 
   return (

@@ -1,4 +1,5 @@
 import React, { useMemo, memo } from "react";
+import Link from "next/link";
 import { ArrowUpRight, Star, Quote } from "lucide-react";
 
 const whyChooseReasons = [
@@ -72,7 +73,7 @@ const chooseus = () => {
             <p className="text-sm lg:text-base text-gray-700 max-w-2xl leading-relaxed Poppins">
               With years of experience and a passion for travel, we make sure
               every trip is smooth, safe, and perfectly planned. Here's why
-              thousands of travelers trust us with their dream vacations.
+              thousands of travelers trust us with their dream vacations. <Link href="/aboutus" className="text-black underline hover:text-gray-700">Discover our story</Link> and <Link href="/contact" className="text-black underline hover:text-gray-700">start planning your journey</Link> today.
             </p>
           </div>
 

@@ -1,5 +1,6 @@
 "use client";
 import React, { useMemo, useState, useEffect, useRef } from 'react';
+import Image from 'next/image';
 import Navbar from '../reusable/navbar';
 import Footer from '../reusable/footer';
 import { Button } from '@/components/ui/button';
@@ -167,13 +168,20 @@ export default function QuickInquiryPage() {
       // Submit to backend API (handles WhatsApp and Email notifications)
       console.log('Submitting payload:', payload);
       
+      // Add timeout to prevent hanging
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+      
       const response = await fetch('https://wwtravels.net/api/bookings/create', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
+        signal: controller.signal,
       });
+
+      clearTimeout(timeoutId);
 
       const data = await response.json();
       console.log('Backend response:', data);
@@ -210,7 +218,11 @@ export default function QuickInquiryPage() {
       
     } catch (error) {
       console.error('Error submitting form:', error);
-      alert('Failed to submit. Please try again or contact us via WhatsApp.');
+      if (error.name === 'AbortError' || error.message.includes('timeout')) {
+        alert('Request timeout. Please check your connection and try again.');
+      } else {
+        alert('Failed to submit. Please try again or contact us via WhatsApp.');
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -288,11 +300,14 @@ export default function QuickInquiryPage() {
                     </button>
                   </div>
                 </div>
-                <div className="hidden lg:block">
-                  <img
+                <div className="hidden lg:block relative w-full h-[400px]">
+                  <Image
                     src="https://images.unsplash.com/photo-1488646953014-85cb44e25828?q=80&w=1600&auto=format&fit=crop"
                     alt="Traveler looking at map"
-                    className="rounded-2xl border-2 border-black shadow-[8px_8px_0_0_rgba(0,0,0,1)]"
+                    fill
+                    className="rounded-2xl border-2 border-black shadow-[8px_8px_0_0_rgba(0,0,0,1)] object-cover"
+                    loading="lazy"
+                    sizes="(max-width: 1024px) 0vw, 50vw"
                   />
                 </div>
               </div>
@@ -326,10 +341,13 @@ export default function QuickInquiryPage() {
                       <div className="space-y-4 animate-fade-in">
                         {/* Destination Photo */}
                         <div className="relative w-full h-48 rounded-xl overflow-hidden border-2 border-black">
-                          <img 
+                          <Image 
                             src={testimonial.photo} 
                             alt={testimonial.place}
-                            className="w-full h-full object-cover"
+                            fill
+                            className="object-cover"
+                            loading="lazy"
+                            sizes="(max-width: 768px) 100vw, 50vw"
                           />
                           <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
                           <div className="absolute bottom-4 left-4 right-4">

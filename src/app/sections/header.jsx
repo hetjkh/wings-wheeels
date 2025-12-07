@@ -1,5 +1,6 @@
 "use client"
 import React from "react";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 
@@ -11,8 +12,7 @@ const header = () => {
           {/* Left Content */}
           <div className="flex-1 space-y-6 max-w-2xl">
             <h1 className="text-2xl lg:text-5xl font-bold text-black leading-tight GeistBlack">
-              WE PROVIDE SEAMLESS EXPERIENCES
-              TAILORED JUST FOR YOU.
+              Your Dream Travel Experience in Dubai & Abu Dhabi Starts Here
             </h1>
 
             <div className="space-y-3">
@@ -22,8 +22,8 @@ const header = () => {
               <p className="text-sm text-black leading-relaxed Poppins">
                 Ready to explore? We're a team of passionate travelers dedicated
                 to making your dream vacation a reality. Whether you're seeking
-                a relaxing beach getaway, a thrilling mountain expedition, or an
-                immersive cultural tour, we've got you covered.
+                a relaxing <Link href="/gallery" className="text-black underline hover:text-gray-700">beach getaway</Link>, a thrilling mountain expedition, or an
+                immersive cultural tour, we've got you covered. <Link href="/aboutus" className="text-black underline hover:text-gray-700">Learn more about our travel expertise</Link> or <Link href="/contact" className="text-black underline hover:text-gray-700">contact us</Link> to start planning your perfect trip.
               </p>
             </div>
 
@@ -40,6 +40,7 @@ const header = () => {
               </Button>
             </div>
           </div>
+
 
           {/* Right Image */}
           <div className="flex-1 w-full max-w-xl">

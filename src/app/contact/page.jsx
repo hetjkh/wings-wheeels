@@ -1,5 +1,6 @@
 "use client"
 import React, { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -614,14 +615,20 @@ const ContactUsPage = () => {
           break;
       }
 
-      // Submit to backend API
+      // Submit to backend API with timeout
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+      
       const response = await fetch('https://wwtravels.net/api/bookings/create', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(bookingData)
+        body: JSON.stringify(bookingData),
+        signal: controller.signal,
       });
+
+      clearTimeout(timeoutId);
 
       const data = await response.json();
 
@@ -713,7 +720,11 @@ const ContactUsPage = () => {
       
     } catch (error) {
       console.error('Error submitting form:', error);
-      setSubmitError(error.message || 'An error occurred while submitting the form. Please try again.');
+      if (error.name === 'AbortError' || error.message.includes('timeout')) {
+        setSubmitError('Request timeout. Please check your connection and try again.');
+      } else {
+        setSubmitError(error.message || 'An error occurred while submitting the form. Please try again.');
+      }
     } finally {
       setIsLoading(false);
     }
@@ -2298,10 +2309,13 @@ const ContactUsPage = () => {
                             onClick={() => window.open(social.url, '_blank')}
                             title={`Follow us on ${social.name}`}
                           >
-                            <img 
+                            <Image 
                               src="/assets/gallery/winter/facebook.png" 
                               alt="Facebook" 
+                              width={40}
+                              height={40}
                               className="w-10 h-10"
+                              loading="lazy"
                             />
                           </Button>
                         ) : social.name === 'Instagram' ? (
@@ -2317,10 +2331,13 @@ const ContactUsPage = () => {
                             onClick={() => window.open(social.url, '_blank')}
                             title={`Follow us on ${social.name}`}
                           >
-                            <img 
+                            <Image 
                               src="/assets/gallery/winter/instagram.png" 
                               alt="Instagram" 
+                              width={40}
+                              height={40}
                               className="w-10 h-10"
+                              loading="lazy"
                             />
                           </Button>
                         ) : social.name === 'LinkedIn' ? (
@@ -2336,10 +2353,13 @@ const ContactUsPage = () => {
                             onClick={() => window.open(social.url, '_blank')}
                             title={`Follow us on ${social.name}`}
                           >
-                            <img 
+                            <Image 
                               src="/assets/gallery/winter/linkedin.png" 
                               alt="LinkedIn" 
+                              width={40}
+                              height={40}
                               className="w-10 h-10"
+                              loading="lazy"
                             />
                           </Button>
                         ) : social.name === 'WhatsApp' ? (
@@ -2355,10 +2375,13 @@ const ContactUsPage = () => {
                             onClick={() => window.open(social.url, '_blank')}
                             title={`Follow us on ${social.name}`}
                           >
-                            <img 
+                            <Image 
                               src="/assets/gallery/winter/social.png" 
                               alt="WhatsApp" 
+                              width={40}
+                              height={40}
                               className="w-10 h-10"
+                              loading="lazy"
                             />
                           </Button>
                         ) : (
@@ -2400,10 +2423,13 @@ const ContactUsPage = () => {
                     className="flex items-center gap-2 cursor-pointer p-2 rounded-lg bg-green-50 border border-green-200 transition-all duration-300 hover:bg-green-100 hover:-translate-y-0.5"
                     onClick={() => window.open(socialMediaLinks[3].url, '_blank')}
                   >
-                    <img 
+                    <Image 
                       src="/assets/gallery/winter/social.png" 
                       alt="WhatsApp" 
+                      width={24}
+                      height={24}
                       className="w-6 h-6"
+                      loading="lazy"
                     />
                     <div className="w-full flex justify-center h-auto items-start flex-col">
                       <p className="font-semibold text-black text-sm">
