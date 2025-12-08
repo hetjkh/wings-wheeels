@@ -81,6 +81,7 @@ export default function RootLayout({ children }) {
         <meta name="facebook-domain-verification" content="e62q9undb0swxzo77yppxzybvllqdc" />
         
         {/* Meta Pixel Code - No Script Fallback */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
         <noscript>
           <img 
             height="1" 

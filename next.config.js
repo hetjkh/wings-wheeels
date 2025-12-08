@@ -24,8 +24,6 @@ const nextConfig = {
   // Performance optimizations
   compress: true,
   poweredByHeader: false,
-  // Reduce build memory usage
-  swcMinify: true,
   // Increase build timeout for server builds
   staticPageGenerationTimeout: 120,
   // Add timeout for API routes
