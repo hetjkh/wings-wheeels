@@ -82,13 +82,12 @@ export default function RootLayout({ children }) {
         
         {/* Meta Pixel Code - No Script Fallback */}
         <noscript>
-          <Image 
-            height={1} 
-            width={1} 
+          <img 
+            height="1" 
+            width="1" 
             style={{ display: 'none' }}
             src="https://www.facebook.com/tr?id=824744313750053&ev=PageView&noscript=1"
             alt=""
-            unoptimized
           />
         </noscript>
       </head>

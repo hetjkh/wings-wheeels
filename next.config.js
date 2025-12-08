@@ -18,10 +18,16 @@ const nextConfig = {
     // Enable image optimization
     dangerouslyAllowSVG: true,
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
+    // Disable image optimization during build to reduce memory usage
+    unoptimized: false,
   },
   // Performance optimizations
   compress: true,
   poweredByHeader: false,
+  // Reduce build memory usage
+  swcMinify: true,
+  // Increase build timeout for server builds
+  staticPageGenerationTimeout: 120,
   // Add timeout for API routes
   async headers() {
     return [
