@@ -22,10 +22,6 @@ const nextConfig = {
   // Performance optimizations
   compress: true,
   poweredByHeader: false,
-  // Reduce memory usage
-  experimental: {
-    optimizeCss: true,
-  },
   // Add timeout for API routes
   async headers() {
     return [

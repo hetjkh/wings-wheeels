@@ -1,5 +1,6 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import Script from "next/script";
+import Image from "next/image";
 import "./globals.css";
 import ClientLayout from "./ClientLayout";
 
@@ -81,12 +82,13 @@ export default function RootLayout({ children }) {
         
         {/* Meta Pixel Code - No Script Fallback */}
         <noscript>
-          <img 
-            height="1" 
-            width="1" 
+          <Image 
+            height={1} 
+            width={1} 
             style={{ display: 'none' }}
             src="https://www.facebook.com/tr?id=824744313750053&ev=PageView&noscript=1"
             alt=""
+            unoptimized
           />
         </noscript>
       </head>
