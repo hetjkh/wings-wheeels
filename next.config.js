@@ -1,13 +1,19 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    domains: ['images.pexels.com', 'res.cloudinary.com', 'pps.whatsapp.net'],
     remotePatterns: [
       {
         protocol: 'https',
         hostname: 'res.cloudinary.com',
       },
-      
+      {
+        protocol: 'https',
+        hostname: 'images.pexels.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'pps.whatsapp.net',
+      },
     ],
     // Optimize image loading
     formats: ['image/avif', 'image/webp'],
