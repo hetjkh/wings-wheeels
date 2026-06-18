@@ -10,63 +10,63 @@ const services = [
     title: "AIR TICKETS",
     description:
       "We help you book the best domestic and international flights at great prices. Fast, simple, and stress-free.",
-    image: "https://res.cloudinary.com/dvrko1y0a/image/upload/v1758524797/1_rb3pfo.jpg",
+    image: "/assets/1.jpg",
   },
   {
     id: 2,
     title: "VISA ASSISTANCE",
     description:
       "We guide you through the whole visa process—forms, documents, appointments—so you get approval without the hassle.",
-    image: "https://res.cloudinary.com/dvrko1y0a/image/upload/v1758524797/2_u4tnoo.jpg",
+    image: "/assets/2.jpg",
   },
   {
     id: 3,
     title: "TOUR PACKAGES",
     description:
       "Choose from local and international tour packages. Whether you want relaxation, or fun—we have something for everyone.",
-    image: "https://res.cloudinary.com/dvrko1y0a/image/upload/v1758524797/3_gvrkev.jpg",
+    image: "/assets/3.jpg",
   },
   {
     id: 4,
     title: "HOTEL RESERVATIONS",
     description:
       "Find and book the perfect accommodation for your stay. From luxury resorts to budget-friendly options.",
-    image: "https://res.cloudinary.com/dvrko1y0a/image/upload/v1758524797/4_v5agc2.jpg",
+    image: "/assets/4.jpg",
   },
   {
     id: 5,
     title: "TRAVEL INSURANCE",
     description:
       "Protect your trip with comprehensive travel insurance. Coverage for medical emergencies, trip cancellations, and more.",
-    image: "https://res.cloudinary.com/dvrko1y0a/image/upload/v1758524798/5_jrxq4b.jpg",
+    image: "/assets/5.jpg",
   },
   {
     id: 6,
     title: "TRANSFERS",
     description:
       "Reliable airport transfers and local transportation. Door-to-door service for a hassle-free journey.",
-    image: "https://res.cloudinary.com/dvrko1y0a/image/upload/v1758524799/6_qitdoe.jpg",
+    image: "/assets/6.jpg",
   },
   {
     id: 7,
     title: "ITINERARY PLANNING",
     description:
       "Custom itineraries designed around your interests. Make the most of every moment of your trip.",
-    image: "https://res.cloudinary.com/dvrko1y0a/image/upload/v1758524798/7_xqj4go.jpg",
+    image: "/assets/7.jpg",
   },
   {
     id: 8,
     title: "24/7 SUPPORT",
     description:
       "Round-the-clock assistance whenever you need it. Our team is always here to help during your travels.",
-    image: "https://res.cloudinary.com/dvrko1y0a/image/upload/v1758524798/8_itkslq.jpg",
+    image: "/assets/8.jpg",
   },
   {
     id: 9,
     title: "TRAVEL CONSULTATION",
     description:
       "Expert advice and personalized recommendations. Let us help you plan the perfect adventure.",
-    image: "https://res.cloudinary.com/dvrko1y0a/image/upload/v1758524797/9_dtwoka.jpg",
+    image: "/assets/9.jpg",
   },
 ];
 

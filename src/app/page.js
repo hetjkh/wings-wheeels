@@ -4,6 +4,7 @@ import Navbar from './reusable/navbar';
 // Lazy load components to improve initial load time
 const Header = lazy(() => import('./sections/header'));
 const Service = lazy(() => import('./sections/services'));
+const Paylater = lazy(() => import('./sections/paylater'));
 const Popular = lazy(() => import('./sections/popular'));
 const Chooseus = lazy(() => import('./sections/chooseus'));
 const Review = lazy(() => import('./sections/review'));
@@ -30,6 +31,10 @@ const Home = () => {
 
       <Suspense fallback={<LoadingSpinner />}>
         <Service />
+      </Suspense>
+
+      <Suspense fallback={<LoadingSpinner />}>
+        <Paylater />
       </Suspense>
 
       <Suspense fallback={<LoadingSpinner />}>

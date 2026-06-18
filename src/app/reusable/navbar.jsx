@@ -56,6 +56,7 @@ const translations = {
     navItems: [
       { name: "HOME", path: "/" },
       { name: "ABOUT", path: "/aboutus" },
+      { name: "BLOG", path: "/blog" },
       { name: "OFFERS", path: "/gallery" },
       { name: "CONTACT US", path: "/contact" },
     ],
@@ -85,6 +86,7 @@ const translations = {
     navItems: [
       { name: "الرئيسية", path: "/" },
       { name: "من نحن", path: "/aboutus" },
+      { name: "المدونة", path: "/blog" },
       { name: "العروض", path: "/gallery" },
       { name: "اتصل بنا", path: "/contact" },
     ],

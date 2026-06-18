@@ -46,8 +46,8 @@ const header = () => {
           <div className="flex-1 w-full max-w-xl">
             <div className="relative w-full h-[300px] sm:h-[400px] md:h-[500px] rounded-lg overflow-hidden shadow-xl">
               <Image
-                src="https://res.cloudinary.com/dvrko1y0a/image/upload/v1756620061/het_lhki1n.jpg"
-                alt="Travel experience"
+                src="/assets/het.jpg"
+                alt="Tropical resort travel experience"
                 fill
                 className="object-cover rounded-lg"
                 priority
